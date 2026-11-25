@@ -9,6 +9,11 @@ manifest.
 
 ## [Unreleased]
 
+### Changed
+
+- **Updates:** installations trust the owner's minisign key by default
+  (`Config\Updates::$publicKeys`; upstream kpskeletor `30ef4b0`).
+
 ### Added
 
 - siFruit starts from **kpskeletor 1.1.0** (`c5ff670`, https://github.com/SIENSIS/kpskeletor): the
