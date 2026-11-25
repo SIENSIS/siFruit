@@ -11,13 +11,16 @@ manifest.
 
 ### Changed
 
+- **Packages:** installations trust the owner's minisign key for module and theme packages too
+  (`Modules\Core\Config\Packages::$publicKeys`; upstream kpskeletor `b37ccce`).
 - **Updates:** installations trust the owner's minisign key by default
   (`Config\Updates::$publicKeys`; upstream kpskeletor `30ef4b0`).
 
 ### Added
 
-- **`tools/release.ps1`**: signs and publishes application releases and module or theme packages
-  from Windows (`docs/updates.md`, "With the script"; upstream kpskeletor `5fe080b`).
+- **`tools\release`** (`tools/release.cmd` + `tools/release.ps1`, interactive): signs and publishes
+  application releases and module or theme packages from Windows (`docs/updates.md`, "With the
+  script"; upstream kpskeletor `5fe080b`, `640463e`).
 - siFruit starts from **kpskeletor 1.1.0** (`c5ff670`, https://github.com/SIENSIS/kpskeletor): the
   Core and the modules of the skeleton, without kpskeletor's build sessions and reports. Its
   history is in [kpskeletor's changelog](https://github.com/SIENSIS/kpskeletor/blob/main/CHANGELOG.md).
