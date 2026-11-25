@@ -95,7 +95,7 @@ release archives, libsodium). The signature is `<package>.zip.minisig`:
 - the upload form takes the `.minisig` file with the ZIP.
 
 Trusted publisher keys go in `$publicKeys` of `app/Config/Packages.php` (the base64 line of the
-publisher's `.pub` file, or the whole file); a signature by an unknown key, a bad signature or a
+publisher's `.pub` file, or the whole file; the Core trusts the owner's key by default); a signature by an unknown key, a bad signature or a
 signature with no key configured refuses the package. A package without a signature is accepted
 (and shown as unsigned) unless `packages.requireSignature = true` in `.env`, which production
 sites should set once their publishers sign. How a publisher signs:
@@ -112,7 +112,7 @@ with `sha256sum -c`. The public key the command prints (`RW…`, the second line
 `minisign.pub`) goes in `$publicKeys` of `app/Config/Packages.php` on every site that installs the
 publisher's packages. The secret key never leaves the publisher's computer.
 
-On the owner's Windows computer, `tools/release.ps1 -Module <Name>` (or `-Module <slug> -Theme`)
+On the owner's Windows computer, `tools\release` (choose "A module package" or "A theme package")
 runs `modules:package --sign`, verifies the checksum and the signature, creates the signed git tag
 `<Name>-v<version>` (`theme-<slug>-v<version>` for a theme; not a semantic-version tag, so
 `app:update` never offers it) and publishes a GitHub release that is not marked as the latest,
@@ -244,7 +244,7 @@ or a parent of another theme; its folder, assets and option values are removed.
 |---|---|---|
 | `allowDemoInProduction` | false | Demo data may be loaded/removed in production |
 | `autoEnable` | false | Enable modules found by `modules:sync` in production too (D-29-02) |
-| `publicKeys` | [] | Trusted publisher keys (minisign public keys; an array: set it in `app/Config/Packages.php`) |
+| `publicKeys` | the owner's key (`RWQnDO+3…`) | Trusted publisher keys (minisign public keys; an array: set it in `app/Config/Packages.php`, which can replace or extend the default) |
 | `requireSignature` | false | Refuse unsigned packages |
 | `maxPackageBytes` | 20 MB | Largest ZIP |
 | `maxUncompressedBytes` | 100 MB | Largest uncompressed total |

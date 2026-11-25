@@ -31,11 +31,14 @@ class Packages extends BaseConfig
 
     /**
      * Trusted publisher keys (minisign public keys: the base64 line or the whole `.pub` file).
-     * A package with a `.minisig` signature must be signed by one of them.
+     * A package with a `.minisig` signature must be signed by one of them. Default: the key of
+     * kpskeletor's owner (the same that signs its releases, `Config\Updates::$publicKeys`), so
+     * the owner's signed modules install without configuration; `app/Config/Packages.php` can
+     * replace or extend the list.
      *
      * @var list<string>
      */
-    public array $publicKeys = [];
+    public array $publicKeys = ['RWQnDO+3LwpRMySktACY0pBcmiPrViANxFv1gIhHzUS9qbwWuwPHs5hG'];
 
     /** Refuses unsigned packages (signature by one of $publicKeys). */
     public bool $requireSignature = false;

@@ -13,3 +13,4 @@
 /.gitattributes export-ignore
 /.github        export-ignore
 /tests          export-ignore
+*.cmd  text eol=crlf
