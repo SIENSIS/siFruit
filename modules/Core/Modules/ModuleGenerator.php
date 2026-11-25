@@ -1,0 +1,198 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Modules;
+
+use CodeIgniter\I18n\Time;
+use Modules\Core\Config\Version;
+
+/**
+ * Generates an empty module from the templates in `Modules/Templates` (`make:module <Name>`):
+ * manifest (resource, menu, grants, a setting, widget, task and the empty backup/api/csp/outbound
+ * declarations), routes, language files (ca, es, en), controller, view with an example ES-module
+ * component, asset folders, a migration, the initial-data and demo seeders, a widget stub, a
+ * scheduled-task stub and feature tests (manifest, permissions, migration up/down/up).
+ *
+ * With a CRUD table (`make:module <Name> --crud=<table>`) the migration creates that table and
+ * the manifest, menu and language files declare its `crud` resource (`CrudScaffold`); the
+ * controller and route are then written by `kpcrudy:make` and rewritten to the Core's factory.
+ * With `--api` too, the manifest declares the kpapy resource in `$api`, a scope test is written
+ * (`Tests/<Name>ApiTest.php`) and `kpapy:make` writes the controller and route (`ApiScaffold`).
+ */
+final class ModuleGenerator
+{
+    /** Template => target path inside the module ({{Name}} is replaced). */
+    private const FILES = [
+        'Module.php.tpl'      => 'Config/Module.php',
+        'Routes.php.tpl'      => 'Config/Routes.php',
+        'Controller.php.tpl'  => 'Controllers/Home.php',
+        'view.php.tpl'        => 'Views/index.php',
+        'Language.ca.php.tpl' => 'Language/ca/{{Name}}.php',
+        'Language.es.php.tpl' => 'Language/es/{{Name}}.php',
+        'Language.en.php.tpl' => 'Language/en/{{Name}}.php',
+        'Migration.php.tpl'   => 'Database/Migrations/{{date}}-000001_{{migrationClass}}.php',
+        'Seeder.php.tpl'      => 'Database/Seeds/{{Name}}Seeder.php',
+        'DemoSeeder.php.tpl'  => 'Database/Seeds/{{Name}}DemoSeeder.php',
+        'Widget.php.tpl'      => 'Widgets/{{Name}}Widget.php',
+        'Task.php.tpl'        => 'Tasks/{{Name}}Task.php',
+        'Test.php.tpl'        => 'Tests/{{Name}}ModuleTest.php',
+        'component.js.tpl'    => 'Assets/js/{{name}}.js',
+        'CLAUDE.md.tpl'       => 'CLAUDE.md',
+    ];
+
+    /**
+     * Extra files of `make:module <Name> --standalone` (a module developed in its own repository):
+     * the standalone `CLAUDE.md` (with a summary of the skeleton's rules) replaces the plain one.
+     */
+    private const STANDALONE_FILES = [
+        'standalone/composer.json.tpl' => 'composer.json',
+        'standalone/README.md.tpl'     => 'README.md',
+        'standalone/CLAUDE.md.tpl'     => 'CLAUDE.md',
+    ];
+
+    /** Empty folders kept with a .gitkeep file. */
+    private const FOLDERS = ['Assets/css', 'Assets/img', 'Models', 'Entities', 'Services', 'Notifications'];
+
+    private readonly string $root;
+
+    public function __construct(?string $root = null)
+    {
+        $this->root = rtrim($root ?? ROOTPATH . 'modules', '/\\');
+    }
+
+    /**
+     * Problems with a module name, or null when it can be created.
+     */
+    public function nameError(string $name): ?string
+    {
+        if (preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) !== 1) {
+            return lang('Core.make.invalidName', [$name]);
+        }
+
+        if (in_array($name, ManifestValidator::RESERVED_NAMES, true)) {
+            return lang('Core.make.reserved', [$name]);
+        }
+
+        if (is_dir($this->root . '/' . $name)) {
+            return lang('Core.make.exists', [$name]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates the module folder.
+     *
+     * @return string The module path
+     *
+     * @throws \InvalidArgumentException when the name is invalid or the module exists
+     */
+    public function generate(string $name, ?string $crudTable = null, bool $api = false, bool $standalone = false): string
+    {
+        $path = $this->root . '/' . $name;
+
+        foreach ($this->files($name, $crudTable, $api, $standalone) as $file => $content) {
+            $this->write($path . '/' . $file, $content);
+        }
+
+        return $path;
+    }
+
+    /**
+     * The files of a new module (path inside the module => content), written by `generate()` and
+     * used by the code generator (`Modules\Core\Generator\Engine`) as the base of a module built
+     * from a definition. `$values` overrides template values (e.g. `{{crudClaude}}`).
+     *
+     * @param array<string, string> $values
+     *
+     * @return array<string, string>
+     *
+     * @throws \InvalidArgumentException when the name is invalid or the module exists
+     */
+    public function files(string $name, ?string $crudTable = null, bool $api = false, bool $standalone = false, array $values = []): array
+    {
+        $error = $this->nameError($name) ?? ($crudTable !== null ? CrudScaffold::tableError($crudTable) : null);
+
+        if ($error === null && $api && $crudTable === null) {
+            $error = lang('Core.make.apiNeedsCrud');
+        }
+
+        if ($error !== null) {
+            throw new \InvalidArgumentException($error);
+        }
+
+        [$major, $minor] = explode('.', Version::CORE);
+
+        $lower   = strtolower($name);
+        $table   = $crudTable ?? $lower . '_items';
+        $replace = [
+            '{{Name}}'           => $name,
+            '{{name}}'           => $lower,
+            '{{date}}'           => Time::now()->format('Y-m-d'),
+            '{{coreConstraint}}' => '^' . $major . '.' . $minor,
+            '{{table}}'          => $table,
+            '{{migrationClass}}' => 'Create' . ($crudTable === null ? $name . 'Items' : str_replace(' ', '', ucwords(str_replace('_', ' ', $table)))),
+            ...CrudScaffold::templateValues($name, $crudTable),
+            ...ApiScaffold::templateValues($name, $api ? $crudTable : null),
+            ...self::claudeValues($name, $crudTable, $api),
+            '{{vendor}}'         => 'your-vendor',
+            ...$values,
+        ];
+
+        $templates = $standalone ? [...self::FILES, ...self::STANDALONE_FILES] : self::FILES;
+        $files     = [];
+
+        foreach ($templates as $template => $target) {
+            $content                           = (string) file_get_contents(__DIR__ . '/Templates/' . $template);
+            $files[strtr($target, $replace)] = strtr($content, $replace);
+        }
+
+        if ($api && $crudTable !== null) {
+            $content                                = (string) file_get_contents(__DIR__ . '/Templates/ApiTest.php.tpl');
+            $files['Tests/' . $name . 'ApiTest.php'] = strtr($content, $replace);
+        }
+
+        foreach (self::FOLDERS as $folder) {
+            $files[$folder . '/.gitkeep'] = '';
+        }
+
+        return $files;
+    }
+
+    /**
+     * The lines of the module's `CLAUDE.md` that depend on `--crud` / `--api`.
+     *
+     * @return array<string, string>
+     */
+    private static function claudeValues(string $name, ?string $crudTable, bool $api): array
+    {
+        if ($crudTable === null) {
+            return ['{{crudClaude}}' => '', '{{apiClaude}}' => '', '{{crudGrantClaude}}' => '', '{{apiRouteClaude}}' => ''];
+        }
+
+        $resource = CrudScaffold::resource($name, $crudTable);
+        $key      = CrudScaffold::resourceKey($name, $crudTable);
+        $lower    = strtolower($name);
+
+        return [
+            '{{crudClaude}}'      => "\n- `{$resource}` (crud − `import`): the kpcrudy CRUD of `{$crudTable}`, `<back office>/{$lower}/{$key}`.",
+            '{{apiClaude}}'       => $api ? "\n- API: `api/v1/" . ApiScaffold::path($name, $crudTable) . "` (kpapy, same resource `{$resource}`; scopes = its permissions)." : '',
+            '{{crudGrantClaude}}' => ", `{$resource}.*`",
+            '{{apiRouteClaude}}'  => $api ? '; the API route has the `kpapy` filter' : '',
+        ];
+    }
+
+    private function write(string $file, string $content): void
+    {
+        $dir = dirname($file);
+
+        if (! is_dir($dir) && ! mkdir($dir, 0775, true) && ! is_dir($dir)) {
+            throw new \RuntimeException(lang('Core.sync.namespacesNotWritable', [$dir]));
+        }
+
+        if (file_put_contents($file, $content) === false) {
+            throw new \RuntimeException(lang('Core.sync.namespacesNotWritable', [$file]));
+        }
+    }
+}

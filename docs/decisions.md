@@ -1,0 +1,3539 @@
+# Decisions
+
+Decisions here override `docs/specification.md` when they disagree (the specification is updated
+when a decision is applied). Open questions come from `docs/plan.md` ("Contradictions and open
+questions") and from each session's report; they are answered with `deploy/decide.md`.
+
+| ID | Session | Title | Status |
+|---|---|---|---|
+| D-00-01 | 00 | Branch names and pushing to `main` | Applied |
+| D-00-02 | 00 | Session 36 finish text | Applied |
+| D-00-03 | 00 | Module discovery with a single `Modules\` namespace | Applied |
+| D-00-04 | 00 | `modules/Events/Config/Events.php` | Applied |
+| D-00-05 | 00 | `Config\Modules` and `Modules.*` settings | Applied |
+| D-00-06 | 00 | `setting()` and manifest defaults | Applied |
+| D-00-07 | 00 | `Auth.minPasswordLength` vs Shield | Applied |
+| D-00-08 | 00 | API routes "registered by `modules:sync`" | Applied |
+| D-00-09 | 00 | `kpcrudy:make` output vs Core conventions | Applied |
+| D-00-10 | 00 | Order of work | Applied |
+| D-00-11 | 00 | Bootstrap instructions already applied | Applied |
+| D-00-12 | 00 | Migrations of third-party packages | Applied |
+| D-00-13 | 00 | Per-user 2FA with Shield | Applied |
+| D-00-14 | 00 | Remember-me vs absolute session lifetime | Applied |
+| D-00-15 | 00 | "Email never inline" | Applied |
+| D-00-16 | 00 | Shield wildcards are now richer | Applied |
+| D-00-17 | 00 | "My …" screens behind `can:` | Applied |
+| D-00-18 | 00 | Permission names outside `<module>-<resource>` | Applied |
+| D-00-19 | 00 | Building Shield's `AuthGroups` from tables | Applied |
+| D-00-20 | 00 | The resolver needs a user, not the session | Applied |
+| D-00-21 | 00 | Default grants vs implied permissions | Applied |
+| D-00-22 | 00 | `users_permissions` | Applied |
+| D-00-23 | 00 | Uploads in kpcrudy/kpapy bypass the Storage service | Applied |
+| D-00-24 | 00 | Inline `<script>`/`<style>` in library views | Applied |
+| D-00-25 | 00 | `style=""` ban vs real components and content | Applied |
+| D-00-26 | 00 | Cache busting of ES modules | Applied |
+| D-00-27 | 00 | PWA details | Applied |
+| D-00-28 | 00 | CodeIgniter's `secureheaders` filter | Applied |
+| D-00-29 | 00 | Outbound traffic that is not HTTPS-through-`OutboundClient` | Applied |
+| D-00-30 | 00 | Route-security test for the API | Applied |
+| D-00-31 | 00 | Acceptance criterion 2 before session 32 | Applied |
+| D-00-32 | 00 | Child theme inside the `Tasks` module | Applied |
+| D-00-33 | 00 | The web server writing into `public/` and the project root | Applied |
+| D-00-34 | 00 | New dependencies vs "ask before adding a dependency" | Applied |
+| D-00-35 | 00 | Rich text before the editor exists | Applied |
+| D-00-36 | 00 | News group visibility as `multiselect` | Applied |
+| D-00-37 | 00 | Profile fields and birthdays have no table | Applied |
+| D-00-38 | 00 | Groups as data | Applied |
+| D-00-39 | 00 | Upload folders | Applied |
+| D-00-40 | 00 | Translated content in kpcrudy | Applied |
+| D-00-41 | 00 | Visibility names and calendar permissions | Applied |
+| D-00-42 | 00 | Where ordinary users read private news | Applied |
+| D-00-43 | 00 | `about` and `cache:clear` hooks | Applied |
+| D-00-44 | 00 | Path placeholders | Applied |
+| D-00-45 | 00 | Restoring `.env` and keys | Applied |
+| D-00-46 | 00 | AES-256-GCM for large archives | Applied |
+| D-00-47 | 00 | Backup password on the command line | Applied |
+| D-00-48 | 00 | Release signing for Updates | Applied |
+| D-00-49 | 00 | `composer audit` offline | Applied |
+| D-00-50 | 00 | The `--probe` targets the site itself | Applied |
+| D-00-51 | 00 | File permissions of CodeIgniter's own files | Applied |
+| D-00-52 | 00 | `app.maskKey` fallback | Applied |
+| D-00-53 | 00 | Captcha implementation | Applied |
+| D-00-54 | 00 | `If-Match` for writes | Applied |
+| D-00-55 | 00 | Brand-new required libraries | Applied |
+| D-00-56 | 00 | Tasks module vs scheduled tasks naming | Applied |
+| D-01-01 | 01 | The `can:` filter before RBAC exists | Accepted (proposal) |
+| D-01-02 | 01 | Migration stub of `make:module` | Accepted (proposal) |
+| D-01-03 | 01 | Registered modules whose folder disappeared | Accepted (proposal) |
+| D-01-04 | 01 | Allowed values in the manifest | Accepted (proposal) |
+| D-01-05 | 01 | Core version during development | Accepted (proposal) |
+| D-02-01 | 02 | One table for the manifest declarations | Accepted (proposal) |
+| D-02-02 | 02 | Manifest defaults through a Settings handler | Accepted (proposal) |
+| D-02-03 | 02 | Disabled modules answer 404 through a global filter | Accepted (proposal) |
+| D-02-04 | 02 | Default grants applied once: a flag in `modules` | Accepted (proposal) |
+| D-02-05 | 02 | Core resource `modules` and its default grants | Accepted (proposal) |
+| D-02-06 | 02 | Demo data: confirmations, seeder base class and stub | Accepted (proposal) |
+| D-02-07 | 02 | Cache scopes with version keys | Accepted (proposal) |
+| D-02-08 | 02 | Activity log entries before the Activity session | Accepted (proposal) |
+| D-03-01 | 03 | Theme folders, namespaces and loading | Accepted (proposal) |
+| D-03-02 | 03 | Where theme option values are stored | Applied |
+| D-03-03 | 03 | Theme assets before `assets:publish` | Accepted (proposal) |
+| D-03-04 | 03 | Error pages and the 403 of `can:` | Accepted (proposal) |
+| D-03-05 | 03 | Theme preview pages | Applied |
+| D-03-06 | 03 | "The assets it loads" in the theme manifest | Accepted (proposal) |
+| D-03-07 | 03 | Site name before the Settings session | Accepted (proposal) |
+| D-03-08 | 03 | What `BackendController::render()` adds | Accepted (proposal) |
+| D-03-09 | 03 | `--name=value` options in the module commands | Accepted (proposal) |
+| D-04-01 | 04 | Where the front-end PHP classes live | Accepted (proposal) |
+| D-04-02 | 04 | Development serving rule for edited assets | Accepted (proposal) |
+| D-04-03 | 04 | Asset manifest format and owners | Accepted (proposal) |
+| D-04-04 | 04 | Details of the strict CSP | Accepted (proposal) |
+| D-04-05 | 04 | Module CSP sources at runtime | Accepted (proposal) |
+| D-04-06 | 04 | Where the light/dark choice is stored before the profile exists | Accepted (proposal) |
+| D-04-07 | 04 | Breakpoints and state of the back-office sidebar | Accepted (proposal) |
+| D-04-08 | 04 | PWA settings, icons and worker | Accepted (proposal) |
+| D-04-09 | 04 | CSRF token for scripts without sessions for every visitor | Accepted (proposal) |
+| D-04-10 | 04 | Project views with inline code from CodeIgniter | Accepted (proposal) |
+| D-05-01 | 05 | Own login, magic-link and reset controllers | Accepted (proposal) |
+| D-05-02 | 05 | Session tracking and remote logout | Accepted (proposal) |
+| D-05-03 | 05 | Groups and grants before RBAC | Accepted (proposal) |
+| D-05-04 | 05 | Names, units and defaults of the Auth settings | Accepted (proposal) |
+| D-05-05 | 05 | App tokens vs personal tokens | Accepted (proposal) |
+| D-05-06 | 05 | CSRF and back-office filters before the security session | Accepted (proposal) |
+| D-05-07 | 05 | Where a login lands and profile preferences | Accepted (proposal) |
+| D-05-08 | 05 | New-device notices | Accepted (proposal) |
+| D-06-01 | 06 | Email codes through the Core action | Accepted (proposal) |
+| D-06-02 | 06 | 2FA storage, TOTP and recovery codes | Accepted (proposal) |
+| D-06-03 | 06 | Remember-me and the 2FA step | Accepted (proposal) |
+| D-06-04 | 06 | A password login counts as re-authentication | Applied (decided) |
+| D-06-05 | 06 | 2FA group policy and re-authentication settings | Accepted (proposal) |
+| D-06-06 | 06 | Re-authentication screen, URLs and non-GET requests | Accepted (proposal) |
+| D-07-01 | 07 | The `backend` filter chain | Accepted (proposal) |
+| D-07-02 | 07 | Syntax of `can:` with several permissions | Accepted (proposal) |
+| D-07-03 | 07 | Unknown and disabled permissions are refused to everybody | Accepted (proposal) |
+| D-07-04 | 07 | Grant changes and extra escalation rules before the matrix screen | Accepted (proposal) |
+| D-07-05 | 07 | Resolver wiring, the development check and diagnostics | Accepted (proposal) |
+| D-08-01 | 08 | Menu keys, zones, rendering and breadcrumbs | Accepted (proposal) |
+| D-08-02 | 08 | Security headers on every response | Accepted (proposal) |
+| D-08-03 | 08 | Rate-limit service and its settings | Accepted (proposal) |
+| D-08-04 | 08 | OutboundClient details and the allow-list sources | Accepted (proposal) |
+| D-08-05 | 08 | What `safe_redirect()` accepts | Accepted (proposal) |
+| D-09-01 | 09 | Where `app.maskKey` lives and when the application refuses to start | Accepted (proposal) |
+| D-09-02 | 09 | CRUD page header, messages as toasts and the confirmation modal | Accepted (proposal) |
+| D-09-03 | 09 | `CrudFactory` details and how `permissions:check` inspects CRUDs | Accepted (proposal) |
+| D-09-04 | 09 | `make:module --crud`: running `kpcrudy:make` and what is rewritten | Accepted (proposal) |
+| D-09-05 | 09 | The sample CRUD lives in the tests, not in a module | Accepted (proposal) |
+| D-10-01 | 10 | The API core in a core module `Api` | Accepted (proposal) |
+| D-10-02 | 10 | Second factor of the app login: authenticator app, else an emailed code | Accepted (proposal) |
+| D-10-03 | 10 | API limits, CORS and login rules | Accepted (proposal) |
+| D-10-04 | 10 | No session on the API, its language and `api/v1/me` | Accepted (proposal) |
+| D-10-05 | 10 | Personal tokens: scopes, expiry, last IP and the administrators' list | Accepted (proposal) |
+| D-11-01 | 11 | The notification type contract | Accepted (proposal) |
+| D-11-02 | 11 | The email channel: queue, sending task and the recipient's language | Accepted (proposal) |
+| D-11-03 | 11 | Recipients, preferences and mandatory types | Accepted (proposal) |
+| D-11-04 | 11 | Notification screens, URLs and the bell | Accepted (proposal) |
+| D-11-05 | 11 | How the scheduler decides, locks and records runs; the `schedule` resource | Accepted (proposal) |
+| D-11-06 | 11 | The poor man's cron | Accepted (proposal) |
+| D-12-01 | 12 | Who writes the activity log | Accepted (proposal) |
+| D-12-02 | 12 | CRUD writes logged by a Core subclass of kpcrudy's `Crud` | Accepted (proposal) |
+| D-12-03 | 12 | Entry format, action codes and labels, security events | Accepted (proposal) |
+| D-12-04 | 12 | Retention setting `Core.activityRetentionDays` | Applied |
+| D-12-05 | 12 | Personal data and network fields in the log | Accepted (proposal) |
+| D-13-01 | 13 | Private file URL and who may read a private file | Applied (decided) |
+| D-13-02 | 13 | Upload settings `Core.uploadTypes`, `Core.uploadMaxSize`, `Core.uploadAllowSvg` | Applied (decided) |
+| D-13-03 | 13 | `stored_files` in the Core | Accepted (proposal) |
+| D-13-04 | 13 | Headers of served private files | Accepted (proposal) |
+| D-13-05 | 13 | Upload checks in detail | Accepted (proposal) |
+| D-14-01 | 14 | Which settings belong to Settings › Security, and the `list` type | Applied (decided) |
+| D-14-02 | 14 | Names of the new site-wide and CSP settings | Applied (decided) |
+| D-14-03 | 14 | Settings permissions, routes and actions | Accepted (proposal) |
+| D-14-04 | 14 | What "weakening the baseline" means | Accepted (proposal) |
+| D-14-05 | 14 | Test email and clear caches | Accepted (proposal) |
+| D-14-06 | 14 | Site-wide settings built now | Accepted (proposal) |
+| D-15-01 | 15 | Users permission names, URLs and setting (decide) | Applied (decided) |
+| D-15-02 | 15 | Groups as data: names, deletion, new groups and the 2FA policy | Accepted (proposal) |
+| D-15-03 | 15 | Adding and editing users; no deletion | Accepted (proposal) |
+| D-15-04 | 15 | Who manages whose account | Accepted (proposal) |
+| D-15-05 | 15 | Impersonation mechanics and the permission matrix save | Accepted (proposal) |
+| D-16-01 | 16 | Dashboard permission names, URLs and the login landing page (decide) | Applied (decided) |
+| D-16-02 | 16 | Group layouts: defaults, several groups, what users may change | Accepted (proposal) |
+| D-16-03 | 16 | The widget contract, async data and failures | Accepted (proposal) |
+| D-16-04 | 16 | The back-office home in the menu and breadcrumbs | Accepted (proposal) |
+| D-16-05 | 16 | Dashboard is a core module | Applied (decided) |
+| D-16-06 | 16 | Quick links: free URLs and the order chosen by the administrator (decide) | Applied (decided) |
+| D-17-01 | 17 | News permission names, URLs, settings and the reader's API permissions (decide) | Applied (decided) |
+| D-17-02 | 17 | Sanitising a translated body before kpcrudy reads the form | Accepted (proposal) |
+| D-17-03 | 17 | Post statuses, publishing, scheduling and expiry | Accepted (proposal) |
+| D-17-04 | 17 | Who reads what: visibility rules and the notice audience | Accepted (proposal) |
+| D-17-05 | 17 | The menu link type before the Menus module | Accepted (proposal) |
+| D-17-06 | 17 | The cover through a kpcrudy upload handler on the Storage service | Accepted (proposal) |
+| D-17-07 | 17 | The API's visibility as a `where()` condition | Applied |
+| D-17-08 | 17 | Images inside the rich-text body (decide) | Applied (decided) |
+| D-18-01 | 18 | HTTPS and the web installer | Accepted (proposal) |
+| D-18-02 | 18 | The site before installation: redirect, base URL and boot checks | Accepted (proposal) |
+| D-18-03 | 18 | Passwords and the non-interactive installer | Accepted (proposal) |
+| D-18-04 | 18 | Demo data while installing | Accepted (proposal) |
+| D-18-05 | 18 | 2FA for the first superadmin without a Core → Auth dependency | Accepted (proposal) |
+| D-18-06 | 18 | `app:install` with an existing `.env` | Accepted (proposal) |
+| D-18-07 | 18 | The `security:check` summary before session 30 | Accepted (proposal) |
+| D-18-08 | 18 | Order of the steps, `.env` permissions and the lock file | Accepted (proposal) |
+| D-19-01 | 19 | Demo users' random passwords: shown once, how | Accepted (proposal) |
+| D-19-02 | 19 | Routes under `api/` outside `api/v1/` | Accepted (proposal) |
+| D-19-03 | 19 | `make:module --api` | Applied |
+| D-19-04 | 19 | Shared Core helpers extracted from News | Accepted (proposal) |
+| D-19-05 | 19 | HTTP on `localhost` with `php spark serve` | Applied (decided) |
+| D-20-01 | 20 | Pages permission names, URLs, the home page setting and the theme's page templates (decide) | Applied (decided) |
+| D-20-02 | 20 | Private pages: login for guests, 404 for the wrong group | Accepted (proposal) |
+| D-20-03 | 20 | The rich-text editor: Quill 2 under the enforced CSP | Accepted (proposal) |
+| D-20-04 | 20 | The catch-all page route, reserved slugs and the home page hook | Accepted (proposal) |
+| D-20-05 | 20 | Slugs per language and the language of a page | Accepted (proposal) |
+| D-20-06 | 20 | What a revision keeps and what a restore writes back | Accepted (proposal) |
+| D-20-07 | 20 | Content helpers extracted from News into the Core | Accepted (proposal) |
+| D-21-01 | 21 | Menus permission names, URLs and the Core contracts for menus (decide) | Applied (decided) |
+| D-21-02 | 21 | Menu items edited in a tree editor and a form of their own | Accepted (proposal) |
+| D-21-03 | 21 | The customisation layer: differences, field-by-field scopes, hidden subtrees | Accepted (proposal) |
+| D-21-04 | 21 | Custom links and menu items: addresses and the 403 rule | Accepted (proposal) |
+| D-21-05 | 21 | Public menus: visibility, depth, cache and the active item | Accepted (proposal) |
+| D-21-06 | 21 | Demo data that depends on another module's demo | Accepted (proposal) |
+| D-22-01 | 22 | Files permission names, URLs, settings and space paths (decide) | Applied (decided) |
+| D-22-02 | 22 | The file manager is a screen of its own over JSON endpoints | Accepted (proposal) |
+| D-22-03 | 22 | Virtual folders: `files.folder`, files referencing `stored_files` | Accepted (proposal) |
+| D-22-04 | 22 | Who reads a private file, and the folder ACL details (decide) | Applied (decided) |
+| D-22-05 | 22 | Quotas, trash and thumbnails | Accepted (proposal) |
+| D-22-06 | 22 | Upload progress without inline styles | Accepted (proposal) |
+| D-23-01 | 23 | File picker URLs, the avatar URL and the picker contract (decide) | Applied (decided) |
+| D-23-02 | 23 | The file picker lives in the Core with a pluggable backend | Accepted (proposal) |
+| D-23-03 | 23 | What a picker field may browse and choose | Accepted (proposal) |
+| D-23-04 | 23 | Avatars: saving, replacing and serving | Accepted (proposal) |
+| D-23-05 | 23 | "Images of the site itself" in rich text | Accepted (proposal) |
+| D-24-01 | 24 | Events permission names, URLs and configuration (decide) | Applied (decided) |
+| D-24-02 | 24 | Groups a user may target with a restricted event (decide) | Applied (decided) |
+| D-24-03 | 24 | `event_audience` with a `group_id` and a `user_id` column | Accepted (proposal) |
+| D-24-04 | 24 | The audience's users field is a multiple select (no AJAX search) | Accepted (proposal) |
+| D-24-05 | 24 | No manifest settings for Events: configuration in `Config\Calendar` | Accepted (proposal) |
+| D-24-06 | 24 | CSV import of translated fields with kpcrudy's own columns | Accepted (proposal) |
+| D-24-07 | 24 | Administration scope without `events-events.all` | Accepted (proposal) |
+| D-24-08 | 24 | Calendar library and time zones in the calendar view | Accepted (proposal) |
+| D-24-09 | 24 | Recurrence storage, exceptions and counts | Accepted (proposal) |
+| D-24-10 | 24 | Reminders: offsets, occurrences and access | Accepted (proposal) |
+| D-25-01 | 25 | iCal URLs, the calendar API names and the subscription screen (decide) | Applied (decided) |
+| D-25-02 | 25 | The personal feed's secret: shown once, hashed, re-authentication | Accepted (proposal) |
+| D-25-03 | 25 | Deterministic feeds: DTSTAMP, ETag and the cache | Accepted (proposal) |
+| D-25-04 | 25 | Calendars of disabled modules, permissions and access policies | Accepted (proposal) |
+| D-25-05 | 25 | Publishing contract: idempotency, unpublish as soft delete, purge on uninstall | Accepted (proposal) |
+| D-25-06 | 25 | New columns `events.allow_reminders` and the notice's event date | Accepted (proposal) |
+| D-25-07 | 25 | The birthdays calendar: off by default, day and month only | Accepted (proposal) |
+| D-25-08 | 25 | Who sees whose birthday: consent, permission, group table and an administrative calendar (decide) | Applied (decided) |
+| D-25-09 | 25 | Birthday greetings as notifications (decide) | Applied (decided) |
+| D-25-10 | 25 | Per-language settings that follow the site's languages (decide) | Applied (decided) |
+| D-26-01 | 26 | Core API permission names and URLs (decide) | Applied (decided) |
+| D-26-02 | 26 | Public API endpoints: GET only, no permission resolver, public records only | Accepted (proposal) |
+| D-26-03 | 26 | Read markers in the API are not written to the activity log | Accepted (proposal) |
+| D-26-04 | 26 | The OpenAPI document written by `modules:sync` | Accepted (proposal) |
+| D-26-05 | 26 | Calendar access policies and providers in the events API | Accepted (proposal) |
+| D-26-06 | 26 | `make:module --api` needs `--crud` | Accepted (proposal) |
+| D-27-01 | 27 | Backup permission names, URLs, settings and default grants (decide) | Applied (decided) |
+| D-27-02 | 27 | Maintenance mode now, as a file and a global filter, and the `progress/*` paths (decide) | Applied (decided) |
+| D-27-03 | 27 | The database dump: Query Builder only, schema from the backup's own migrations | Accepted (proposal) |
+| D-27-04 | 27 | Restores from the back office: a job after the response, progress in files | Accepted (proposal) |
+| D-27-05 | 27 | Uploaded backup files are not stored through the Storage service (decide) | Applied (decided) |
+| D-27-06 | 27 | The safety backup, a failed restore and the `.env` | Accepted (proposal) |
+| D-27-07 | 27 | `SafeZip` in the Core; what a restore never writes | Accepted (proposal) |
+| D-27-08 | 27 | What the modules' `$backup` declarations mean | Accepted (proposal) |
+| D-27-09 | 27 | `AuthSession` with a session row started on the fly | Accepted (proposal) |
+| D-28-01 | 28 | Updates URLs, default grants, configuration keys and where the check result lives (decide) | Applied (decided) |
+| D-28-02 | 28 | Maintenance mode by hand: where, who, the message and the superadmin bypass (decide) | Applied (decided) |
+| D-28-03 | 28 | The release archive: assets, minisign format, keys and rotation | Accepted (proposal) |
+| D-28-04 | 28 | `app:update`: verify before maintenance, protected paths, local changes, recovery | Accepted (proposal) |
+| D-28-05 | 28 | Versions: the installed version, tags, pre-releases and modules' repositories | Accepted (proposal) |
+| D-28-06 | 28 | `OutboundClient` drops credentials on cross-origin redirects | Accepted (proposal) |
+| D-28-07 | 28 | The maintenance page drawn by the theme without the database | Accepted (proposal) |
+| D-29-01 | 29 | Modules screen URLs, manifest `description`/`author`, `Config\Packages` keys, command options and Core events (decide) | Applied (decided) |
+| D-29-02 | 29 | Modules found by `modules:sync`: enabled automatically only outside production (decide) | Applied (decided) |
+| D-29-03 | 29 | Packages are read without running their code; `modules:sync` in a new process | Accepted (proposal) |
+| D-29-04 | 29 | One table `module_packages` for staged installs and uninstall requests | Accepted (proposal) |
+| D-29-05 | 29 | What the web server does with packages: validation, `php -l`, no code folders | Accepted (proposal) |
+| D-29-06 | 29 | Backups, uninstall clean-up and latest versions through Core events | Accepted (proposal) |
+| D-29-07 | 29 | Themes tab: preview image and colours, switching with `modules.toggle` | Accepted (proposal) |
+| D-29-08 | 29 | What an uninstall removes, and `--keep-data` | Accepted (proposal) |
+| D-29-09 | 29 | Package signatures (minisign) and the allowed files | Accepted (proposal) |
+| D-30-01 | 30 | Security status URLs, the `securityChecks` event, `Config\ProductionCheck` keys and `security:audit` (decide) | Decided |
+| D-30-02 | 30 | What is an error, a warning or information in `security:check` | Accepted (proposal) |
+| D-30-03 | 30 | What `--probe` sends, and the login throttling probe | Accepted (proposal) |
+| D-30-04 | 30 | "The web server writes only …" checked from the console and from the page | Accepted (proposal) |
+| D-30-05 | 30 | Stored results, the daily task and the notification to superadmins | Accepted (proposal) |
+| D-31-01 | 31 | Settings `Core.defaultLocale` and `Core.locales` (decide) | Applied (decided) |
+| D-31-02 | 31 | The tests run with English as the configured default locale | Accepted (proposal) |
+| D-31-03 | 31 | Catalan copies only of the system files users see; Shield's Catalan texts in `app/Language/ca` | Accepted (proposal) |
+| D-31-04 | 31 | Semantics of the `translated` setting type | Accepted (proposal) |
+| D-31-05 | 31 | Guests get the browser's language; no language switcher | Accepted (proposal) |
+| D-31-06 | 31 | File names of the language service and the key test | Accepted (proposal) |
+| D-32-01 | 32 | Manifest key `$enabledByDefault` for modules installed disabled (decide) | Applied (decided) |
+| D-32-02 | 32 | Tasks API reuses the CRUD resources; paths `tasks/tasks` and `tasks/projects` | Accepted (proposal) |
+| D-32-03 | 32 | The public request form always asks for a captcha (its own image URL) | Accepted (proposal) |
+| D-32-04 | 32 | Attachments of to-do tasks: a picker field with up to 5 keys + a `task_attachments` index | Accepted (proposal) |
+| D-32-05 | 32 | Generator templates stay in `modules/Core/Modules/Templates`; no packager option for `CLAUDE.md` yet | Accepted (proposal) |
+| D-33-01 | 33 | Documents renamed to the specification's names (`permissions.md`, `calendar.md`, `installing-modules.md`) | Accepted (proposal) |
+| D-33-02 | 33 | The JavaScript and widget tutorials describe the Tasks code as built | Accepted (proposal) |
+| D-33-03 | 33 | Extra operation names in lower case only (manifest validation) | Accepted (proposal) |
+| D-34-01 | 34 | Tutorial 13's release: Tasks 0.2.0 adds `tasks.started_at` | Accepted (proposal) |
+| D-34-02 | 34 | Tutorials 3 and 4 summarise and link the tutorials of `frontend.md` and `widgets.md` | Accepted (proposal) |
+| D-34-03 | 34 | Tutorials 1 and 11 are followed in a scratch module `Tasks2`; the finished code differs where later tutorials change it | Accepted (proposal) |
+| D-35-01 | 35 | End-to-end tests against a demo site installed beforehand; axe (WCAG 2.0/2.1 A and AA) fails the test | Accepted (proposal) |
+| D-35-02 | 35 | Secret scanning with the gitleaks release binary, not the GitHub Action | Accepted (proposal) |
+| D-35-03 | 35 | One minisign verifier in the Core (`Modules\Core\Security\Minisign`) | Accepted (proposal) |
+| D-35-04 | 35 | WCAG AA colours of the default theme: darker text shades derived from the palette | Accepted (proposal) |
+| D-37-01 | 37 | Content languages from the site's locales: helpers, removed constants and language changes | Accepted (proposal) |
+| D-37-02 | 37 | Public language switch and the language of public URLs (decide) | Applied (decided) |
+| D-38-01 | 38 | Settings zone of the back-office menu grouped in five containers (decide) | Applied (decided) |
+| D-38-02 | 38 | Menu group entries declared with a `group` key in `$menu` (keys `group.<name>`) (decide) | Applied (decided) |
+| D-38-03 | 38 | Who sees "Administració" on the public site, and where it links | Accepted (proposal) |
+| D-38-04 | 38 | The web installer's password fields get the button in session 39 | Accepted (proposal) |
+| D-38-05 | 38 | Order and icons inside the settings groups | Accepted (proposal) |
+| D-39-01 | 39 | The web installer publishes the Core's assets before installing, so its pages can load the Core's scripts | Accepted (proposal) |
+| D-39-02 | 39 | Web installer jobs: storage, lifetime, rate limit, lock and the order of the last steps | Accepted (proposal) |
+| D-40-01 | 40 | Configurable back-office path chosen at install time (decide) | Applied (decided) |
+| D-40-02 | 40 | Stored back-office links use the canonical prefix `backend/…`, resolved when shown | Accepted (proposal) |
+| D-41-01 | 41 | A `Devtools` module only for development, with the manifest key `$developmentOnly` (decide) | Applied (decided) |
+| D-41-02 | 41 | In development, Devtools may write module code from the back office (decide) | Decided |
+| D-41-03 | 41 | Devtools answers only local requests, to the superadmin, with re-authentication for writes (decide) | Applied (decided) |
+| D-41-04 | 41 | Devtools menu entry in its own settings group "Desenvolupament" | Applied (decided) |
+| D-41-05 | 41 | Devtools routes not registered for non-local web requests; a docs viewer for the recipes' links | Accepted (proposal) |
+| D-42-01 | 42 | `nikic/php-parser` as a development dependency to edit existing manifests and routes (decide) | Decided |
+| D-42-02 | 42 | The code generator's draft-only POSTs without re-authentication or the forms rate limit (`DevtoolsRoutes::DRAFT`) | Accepted (proposal) |
+| D-42-03 | 42 | The generator engine in the Core; demo values made with Faker at generation time; one-page wizard with the draft in the session | Accepted (proposal) |
+| D-42-04 | 42 | Group titles in the generator; `groups:export` / `groups:import` to copy groups without users (owner's request) | Applied (owner's request) |
+| D-43-01 | 43 | Signing packages from the local Devtools form, with safeguards for the key (decide) | Decided |
+| D-43-02 | 43 | How the package builder and the signing form apply D-43-01 (left-out files, request emptied, cleanup page, key upload in memory) | Accepted (proposal) |
+| D-44-01 | 44 | Web Push encryption and VAPID implemented in the Core with OpenSSL, no library (decide) | Applied (decided) |
+| D-44-02 | 44 | Web Push: channel name, tables, URLs, settings, keys and the endpoint allow-list (decide) | Applied (decided) |
+| D-44-03 | 44 | How session 44 applies D-44-02 (default channels, stored preferences, rename route, logout question, service worker without the PWA, limits) | Accepted (proposal) |
+| D-45-01 | 45 | Pages from sections: section types (`$sectionTypes`), tables, page layout and editor URL (decide) | Applied (decided) |
+| D-45-02 | 45 | How session 45 applies D-45-01 (editor flow, stored shape, links, images, headings, demo images) | Accepted (proposal) |
+| D-46-01 | 46 | Embedded content: allowed hosts in Settings › Security, CSP `frame-src`, click to load (decide) | Applied (decided) |
+| D-46-02 | 46 | Carousel: no automatic rotation by default (decide) | Applied (decided) |
+| D-46-03 | 46 | A page marked as the main news list: `/news` redirects to it (decide) | Applied (decided) |
+| D-46-04 | 46 | How session 46 applies D-46-01 … D-46-03 (gallery visibility, embed hosts and CSP per page, section hooks, the main list page) | Accepted (proposal) |
+| D-47-01 | 47 | Reusable blocks and theme zones: tables, the theme's `$zones`, URLs and permissions (decide) | Applied (decided) |
+| D-47-02 | 47 | How session 47 builds D-47-01: block tables, the `pages` prefix beside `pages-blocks`, page models, zones and footer columns | Accepted (proposal) |
+| D-48-01 | 48 | Contact module: names, URLs, settings and who reads the messages (decide) | Applied (decided) |
+| D-48-02 | 48 | Contact form: captcha policy, no third-party captcha, retention of messages (decide) | Applied (decided) |
+| D-48-03 | 48 | Contact module as built: the `contact-messages.all` permission, the names of the extra settings, Reply-To in the Core's mail queue, the section's signed recipients (decide) | Applied (decided) |
+| D-49-01 | 49 | Icons inside rich text: the sanitiser keeps `<i class="bi bi-<name>" aria-hidden="true">` (decide) | Decided |
+| D-49-02 | 49 | Icon fields marked with `data-icon-picker`, icon list generated by `assets:publish` (decide) | Decided |
+| D-50-01 | 50 | Site search: contract, tables, URLs and settings (decide) | Applied (decided) |
+| D-50-02 | 50 | Site search: how it was built (ranking, languages, links, noindex, rate limit subject) | Accepted (proposal) |
+| D-51-01 | 51 | Chat assistant: module name, resources, URLs and settings (decide) | Applied (decided) |
+| D-51-02 | 51 | Chat assistant: what is stored (unanswered questions) and for how long (decide) | Applied (decided) |
+| D-51-03 | 51 | Chat assistant: the public FAQ page `faq` and the Core event `themeFloating` (decide) | Applied (decided) |
+| D-51-04 | 51 | Chat assistant: how it was built (matching threshold, links, rate limit, bubble, unanswered questions) | Accepted (proposal) |
+| D-52-01 | 52 | The tutorial module is renamed from `Tasks` to `Tutorial` (decide) | Applied (decided) |
+| D-52-02 | 52 | Tutorial module rename: how it was built (child theme, tutorial 13's migration, scratch module `Tutorial2`, renamed-module hint, history kept) | Accepted (proposal) |
+| D-53-01 | 53 | System information and log viewer: place, permissions, URLs; logs read only (decide) | Applied (decided) |
+| D-53-02 | 53 | The PHP extensions of System information come from composer.json | Accepted (proposal) |
+| D-53-03 | 53 | "Cron not running" means an active scheduled task overdue by more than an hour | Accepted (proposal) |
+| D-53-04 | 53 | Log viewer: rate limit `widgets`, pages read backwards by byte offset, first page logged | Accepted (proposal) |
+| D-53-05 | 53 | Devtools mail previews: which e-mails are "security e-mails", and previewData() defaults | Accepted (proposal) |
+| D-54-01 | 54 | Images: dated folders, 1920 px limit, original discarded, variants on upload (decide) | Decided |
+| D-54-02 | 54 | How images were built: module folders by path, optimiser marks in `stored_files`, `src` = widest variant, setting in Settings › Security | Accepted (proposal) |
+| D-55-01 | 55 | Unused files: references declared by modules, command and admin screen, optional automatic deletion off by default (decide) | Applied (decided) |
+| D-55-02 | 55 | How unused files are found: texts scanned for keys, names and upload paths, disabled modules' references count, exact folders, test-only grace in development | Accepted (proposal) |
+| D-56-01 | 56 | Importing the old Caparrella website (CaparrellaImport, development only) and its theme | Accepted (proposal) |
+| D-56-02 | 56 | Theme options `favicon` and `appIcon` (browser icon, installed-app icon) | Applied (owner's request) |
+| D-57-01 | 57 | Back-office Calendar menu: a group with Agenda, Events and Categories | Applied (decided) |
+| D-57-02 | 57 | The agenda shows every event of the administration to holders of `events-events.all` (switch, off by default) (decide) | Applied (decided) |
+| D-57-03 | 57 | Collapsible folder tree in the file manager: initial state, remembered state, filter, keyboard | Accepted (proposal) |
+| D-58-01 | 58 | The impersonated user's forced steps (password change, 2FA set-up) do not apply while impersonating | Accepted (proposal) |
+| D-58-02 | 58 | One public header partial (`site_header`) for the public and auth layouts; Caparrella's account link and switches in the menu bar | Accepted (proposal) |
+
+## D-00-01 — Branch names and pushing to `main`
+
+- **Where:** `deploy/*.md` "Before starting" steps 2 and 4, `deploy/next.md`, `deploy/README.md`
+- **Problem:** Sessions create `session-NN-<slug>` and push `main`, but cloud environments assign their own branch (this one is `claude/modest-goldberg-jjs8kp`) and often allow pushing only to it. `next.md` finds unfinished sessions by `session-NN-*` branches.
+- **Proposal:** identify sessions by the pull request title "Session NN: …" and by `docs/progress.md` (record the branch name there); when `main` cannot be pushed, stop and ask the owner to merge the pull request (already allowed by the files), and never force-push.
+- **Alternatives:** A) Always create `session-NN-<slug>` even when the environment assigns another branch (may fail to push).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Per títol de PR (recomanada)». Sessions are identified by the pull request title "Session NN: …" and by `docs/progress.md` (which records the real branch name); the environment's assigned branch is accepted; when `main` cannot be pushed the session stops and asks the owner to merge the pull request; never force-push. **Must change:** `deploy/next.md`, `deploy/continue.md` and the shared "Before starting"/"Finish" steps of `deploy/NN-*.md`.
+- **Applied in:** deploy/01–36 (Before starting / Finish), deploy/next.md, deploy/continue.md, deploy/review-fixes.md, deploy/README.md, CLAUDE.md
+
+## D-00-02 — Session 36 finish text
+
+- **Where:** `deploy/36-release.md`
+- **Problem:** Its Scope says it merges itself into `main`, but the shared *Finish* section says "The next session merges it".
+- **Proposal:** follow the Scope (merge after the pull request), and treat the Finish line as boilerplate.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** deploy/36
+
+## D-00-03 — Module discovery with a single `Modules\` namespace (decide)
+
+- **Where:** spec "Directory layout" (Autoloading/Discovery), `CLAUDE.md`
+- **Problem:** CodeIgniter 4.7's `FileLocator::search()` only looks at `<namespace root>/Config/Routes.php` (also `Events`, `Registrar`, `Commands/`), so `Modules\` → `modules/` finds nothing inside `modules/News/`. Registering every module statically in `app/Config/Autoload.php` breaks acceptance 2 ("without touching any core file").
+- **Proposal:** keep `Modules\`/`Themes\` for class autoloading and add one PSR-4 entry per module (`Modules\News` → `modules/News`) from a **generated static file** (`app/Config/ModuleNamespaces.php`) written by `make:module`, `modules:sync` and `modules:install`, and loaded by `Autoload.php`; no scanning at runtime.
+- **Alternatives:** A) Scan `modules/*/Config/Module.php` on every boot (no command needed, disk access per request, against "no scan to make a route reachable"). B) One `autoload.psr-4` entry per module in `composer.json` + `composer dump-autoload` (touches a core file per module).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Fitxer generat (recomanada)». A generated static file `app/Config/ModuleNamespaces.php` (one PSR-4 namespace per module, e.g. `Modules\\News` → `modules/News`) is written by `make:module`, `modules:sync` and `modules:install` and merged by `app/Config/Autoload.php`; no scanning at runtime. **Must change:** specification "Directory layout"/discovery, session 01 scope, `CLAUDE.md` (copying a module by hand requires `php spark modules:sync`).
+- **Applied in:** `docs/specification.md`, deploy/01, CLAUDE.md
+
+## D-00-04 — `modules/Events/Config/Events.php`
+
+- **Where:** spec "Configuration and settings" ("every module may ship `Config/<Name>.php`") and the `Events` module
+- **Problem:** CodeIgniter includes every discovered `Config/Events.php` as an event-listener file, so a config class with that name is included as a script (possible "cannot redeclare class"). The same pattern makes `setting('Events.x')` resolve to `Config\Events`.
+- **Proposal:** the Events module uses `Config/Calendar.php` and the settings namespace `Calendar`/`Events` without a config class of that name; the manifest validator refuses module config files named `Events`, `Routes`, `Registrar`, `Filters`, `Modules`, `Services`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/01, deploy/24
+
+## D-00-05 — `Config\Modules` and `Modules.*` settings (decide)
+
+- **Where:** spec "Package validation" (publisher keys "listed in `Config\Modules`"), "Demo data" (`Modules.allowDemoInProduction`)
+- **Problem:** `app/Config/Modules.php` is CodeIgniter's discovery configuration.
+- **Proposal:** put package keys and module options in `Modules\Core\Config\Packages` (`Config\Packages` override in `app/Config`), and name the setting `Packages.allowDemoInProduction` or `Core.allowDemoInProduction`.
+- **Alternatives:** A) Everything in `Config\\Core` (`Core.allowDemoInProduction`, `Core.publisherKeys`). B) Extend CodeIgniter's `Config\\Modules` as the specification says (conflict risk with framework updates).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Config\\Packages (recomanada)». Publisher keys and module package options live in `Modules\\Core\\Config\\Packages` (overridable by `app/Config/Packages.php` and `.env`); the demo setting is `Packages.allowDemoInProduction`. **Must change:** specification "Package validation" and "Demo data"; sessions 02 and 29.
+- **Applied in:** `docs/specification.md`, deploy/02, deploy/29
+
+## D-00-06 — `setting()` and manifest defaults
+
+- **Where:** spec "Configuration and settings"
+- **Problem:** `codeigniter4/settings` falls back to the property of a config class with that short name; modules declare defaults in the manifest, not in a config class, so `setting('News.perPage')` returns `null` before a value is saved.
+- **Proposal:** the Core registers manifest defaults (a `ModuleSettings` handler or a Core `settings()` wrapper used everywhere), and a test checks every declared key returns its default.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/02
+
+## D-00-07 — `Auth.minPasswordLength` vs Shield (decide)
+
+- **Where:** spec "Authentication", session 05
+- **Problem:** Shield reads `Config\Auth::$minimumPasswordLength` (default 8); a new key `minPasswordLength` is ignored by Shield's validators. Shield 1.4.1 reads `config('Auth')->minimumPasswordLength` directly (not through `setting()`), so even a setting with Shield's name is not applied by itself.
+- **Proposal:** keep the setting (name it `Auth.minimumPasswordLength` to match Shield) and copy its value into the shared `Config\Auth` instance early in the request (Core event `pre_system` / Registrar), with a test that a password shorter than the setting is refused.
+- **Alternatives:** A) Keep `Auth.minPasswordLength` and translate it to Shield's property (two names for one value). B) File configuration only (`app/Config/Auth.php` / `.env`), removed from Settings › Security.
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Nom de Shield + còpia (recomanada)». The setting is named `Auth.minimumPasswordLength` (Shield's name); the Core copies the stored value into the shared `config('Auth')` instance early in every request, and a test checks that a shorter password is refused. **Must change:** specification "Authentication" and Settings › Security; sessions 05 and 14.
+- **Applied in:** `docs/specification.md`, deploy/05, deploy/14
+
+## D-00-08 — API routes "registered by `modules:sync`"
+
+- **Where:** spec "JSON API" (modules expose resources), manifest `$api` (`'handler' => Api\Posts::class`), session 10; versus "Discovery is the only loading mechanism", "never require a scan just to make a route reachable" and "`Routes.php` never queries the database"
+- **Problem:** kpapy's `kpapy:make` writes `Resource::routes(...)` into the module's own `Config/Routes.php` with a *controller method*.
+- **Proposal:** routes stay in each module's `Config/Routes.php` (written by `kpapy:make` / `make:module --api`, path `api/v1/<path>`); `$api` is metadata validated by `modules:sync` and `permissions:check` (routes and manifest must match); disabled modules answer 404 through the module filter. The `handler` key names the controller (`Api\Posts::index`).
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/10
+
+## D-00-09 — `kpcrudy:make` output vs Core conventions
+
+- **Where:** spec "Common module base" (`make:module --crud` reuses `kpcrudy:make`), session 09
+- **Problem:** `kpcrudy:make` writes `\Kpcrudy\Crud::routes(...)` with an optional `--filter`, extends `<ns>\Controllers\BaseController`, and instantiates `new Crud()`; the Core wants `CrudFactory::routes()` (backend + `can:` + `as`) and `CrudFactory::make()`.
+- **Proposal:** `make:module --crud` calls `kpcrudy:make` with `--namespace`, `--extends "Modules\Core\Controllers\BackendController"`, `--as <module>-<resource>` and `--filter backend`, then rewrites the generated route line to `CrudFactory::routes()` and the constructor to `CrudFactory::make()`; `permissions:check` catches anything left.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/09
+
+## D-00-10 — Order of work
+
+- **Where:** —
+- **Problem:** spec last paragraph ("Core kernel → assets and themes → Auth → RBAC → … → installer → tests/CI → docs → Tasks") and `CLAUDE.md` ("following the order in the specification") vs the session order (kpcrudy in 09 before notifications; News in 17 before Pages/Files; installer in 18; `security:check` in 30).
+- **Proposal:** the session files are the order; update the `CLAUDE.md` workflow line to say so.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md` (final paragraph), CLAUDE.md
+
+## D-00-11 — Bootstrap instructions already applied
+
+- **Where:** —
+- **Problem:** `deploy/00-bootstrap.md` §3 and `deploy/README.md` talk about `prompt_new.md`, `claude_suggest.md` and a repository `SIENSIS/ci4app`; this repository already has `docs/specification.md` and `CLAUDE.md`.
+- **Proposal:** treat §3 as done; no action besides noting it in `docs/progress.md`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** docs/progress.md
+
+## D-00-12 — Migrations of third-party packages
+
+- **Where:** spec "Database schema" ("Shield's and Settings' own migrations are run as they ship")
+- **Problem:** kpapy also ships a migration (`kpapy_login_challenges`, run with `php spark migrate -n Kpapy`) needed for the app login.
+- **Proposal:** `modules:sync` runs the namespaces `CodeIgniter\Shield`, `CodeIgniter\Settings` and `Kpapy` before the modules, and the uninstall/rollback logic never touches them.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`
+
+## D-00-13 — Per-user 2FA with Shield
+
+- **Where:** spec "Authentication" ("Email (Shield's `Email2FA` action)" chosen by each user)
+- **Problem:** Shield has one global `Config\Auth::$actions['login']`; `Email2FA` applies to every user. kpapy's `EmailProvider::isEnabledFor()` also checks that global action.
+- **Proposal:** a Core action `UserTwoFactorAction` set as the `login` action that dispatches to Shield's `Email2FA` logic or the TOTP action per user (or none); kpapy providers extended to read the user's method.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/06
+
+## D-00-14 — Remember-me vs absolute session lifetime (decide)
+
+- **Where:** spec "Session handling"
+- **Problem:** With remember-me a user is silently logged in again after the absolute lifetime.
+- **Proposal:** the absolute lifetime ends the session; remember-me re-creates it but only up to its own (setting) lifetime, and sensitive actions still require reauth; or disable remember-me when the absolute lifetime is set.
+- **Alternatives:** A) Disable remember-me (strict absolute lifetime). B) A security setting enables remember-me (off by default) and sets its lifetime.
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Recorda'm amb límit (recomanada)». The absolute lifetime ends the session; remember-me may re-create it only up to its own lifetime (a security setting, e.g. 14 days), and sensitive actions still require re-authentication. **Must change:** specification "Session handling" and Settings › Security; sessions 05, 06 and 14 (tests for expiry with and without remember-me).
+- **Applied in:** `docs/specification.md`, deploy/05, deploy/06, deploy/14
+
+## D-00-15 — "Email never inline"
+
+- **Where:** —
+- **Problem:** spec "Notifications" (email channel queued/sent by the scheduler) vs magic links, password resets, 2FA codes, API email codes and new-device notices, which must be sent immediately (Shield sends them inline).
+- **Proposal:** the rule applies to the notification email channel only; transactional security emails are sent inline with a short timeout and logged.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/11
+
+## D-00-16 — Shield wildcards are now richer
+
+- **Where:** spec "RBAC" ("Shield only expands the wildcard in the first part")
+- **Problem:** Shield 1.4.1's `PermissionMatcher` also matches prefix and multi-segment wildcards. The `<module>-<resource>.<operation>` naming still works.
+- **Proposal:** keep the naming (public convention), fix the explanation in `docs/permissions.md`, and test that `news-posts.*` does not match `news-postsx.edit`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`
+
+## D-00-17 — "My …" screens behind `can:` (decide)
+
+- **Where:** spec "Activity" ("My activity for every user, the same CRUD with `where`"), "Notifications" (list page with `where(user_id)`), News "my posts", profile, dashboard home, "my sessions"
+- **Problem:** Every `backend/` route needs a `can:` filter and CRUD routes get `can:<resource>.list`; the full-log resource `activity-log.list` must not be given to everyone.
+- **Proposal:** separate resources (`activity-mine`, `core-notifications`, `auth-profile`, `dashboard`) whose permissions are granted to every group by `defaultGrants` (or a reserved "all authenticated" permission that the `can` filter accepts explicitly).
+- **Alternatives:** A) A reserved `can:authenticated` permission accepted for any logged-in user (simpler, cannot be removed from a group, an exception in the route test).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Recursos propis (recomanada)». Every personal screen is its own resource (e.g. `activity-mine`, `core-notifications`, `auth-profile`, `dashboard`, `auth-sessions`) granted to every group through `defaultGrants`; the rule "every `backend/` route has `can:`" stays without exceptions. **Must change:** specification "RBAC", "Activity", "Notifications", "Authentication" (profile, sessions), "Dashboard"; sessions 05, 07, 11, 12, 15, 16.
+- **Applied in:** `docs/specification.md`, deploy/05, deploy/07, deploy/11, deploy/12, deploy/15, deploy/16, CLAUDE.md
+
+## D-00-18 — Permission names outside `<module>-<resource>` (decide)
+
+- **Where:** spec uses `modules.*`, `security.check`, `api.docs`, `api.tokens`, `settings.update`, `settings.<module>`, `settings.security`, `files.*`, `backup.*`, `updates.*` (Core resources named without the module; single-resource modules)
+- **Problem:** `settings.<module>` also clashes with `settings.security`/`settings.update` for modules named `Security` or `Update`.
+- **Proposal:** the manifest gets an optional resource `'name'` that overrides the generated prefix (only Core and single-resource modules), the validator rejects duplicates in the catalogue, and module names `Security`/`Update` are reserved.
+- **Alternatives:** A) Strict `<module>-<resource>` everywhere (`core-modules.*`, `core-security.check`, `settings-security.*`…; uniform, but every name in the specification changes).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Nom opcional al manifest (recomanada)». A manifest resource may declare `'name'` to override the generated prefix (Core and single-resource modules only); the validator rejects duplicate permissions in the catalogue; `Security` and `Update` are reserved module names. The names used in the specification stay. **Must change:** specification "RBAC" and "Module manifest"; `CLAUDE.md` permissions line; sessions 01, 02, 07.
+- **Applied in:** `docs/specification.md`, deploy/01, deploy/02, deploy/07, CLAUDE.md
+
+## D-00-19 — Building Shield's `AuthGroups` from tables
+
+- **Where:** spec "RBAC" ("Build Shield's `AuthGroups::$permissions` and `$matrix` from the catalogue and that table")
+- **Problem:** Shield reads them with `setting('AuthGroups.matrix')`/`setting('AuthGroups.permissions')`, and `addPermission()` throws for unknown names.
+- **Proposal:** after each sync/grant change the Core writes the computed arrays with `setting()->set('AuthGroups.…')` (Settings caches them); `group_permissions` stays the source of truth and a test checks both agree.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/07
+
+## D-00-20 — The resolver needs a user, not the session
+
+- **Where:** —
+- **Problem:** spec "RBAC" (`auth()->user()->can()`), used by iCal feeds (token, no session), `notifyPermission()`, the scheduler and CLI.
+- **Proposal:** `Authorization::for(User $user)->can()` in the Core; `CrudPermissions` uses the current user from kpapy's `Context` (API) or the session (web), and feeds/tasks pass the user explicitly.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`
+
+## D-00-21 — Default grants vs implied permissions
+
+- **Where:** —
+- **Problem:** spec manifest example: editor gets `news-posts.edit` but not `news-posts.show`, while "Implied permissions" says grants are completed with `Crud::impliedPermissions()`.
+- **Proposal:** apply implied permissions to `defaultGrants` too, and make the validator warn about incomplete sets.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/07
+
+## D-00-22 — `users_permissions`
+
+- **Where:** —
+- **Problem:** spec "RBAC" names Shield's table `users_permissions`; Shield's is `auth_permissions_users`.
+- **Proposal:** use Shield's API (`addPermission()`) and fix the name in the docs.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/07
+
+## D-00-23 — Uploads in kpcrudy/kpapy bypass the Storage service
+
+- **Where:** spec "CRUDs with kpcrudy" ("upload paths from the Storage service"), "Storage" (MIME check, re-encoding, SVG refused, private disk, `files` metadata)
+- **Problem:** kpcrudy 1.0 `upload`/`image` fields write to a filesystem path (`uploadPath`, default `public/uploads`, the same folder as the public disk) with random names and extension checks only; kpapy writes to `writable/uploads/kpapy`.
+- **Proposal:** modules never use the libraries' upload field types; they use the file-picker field (`callbackField`) backed by the Storage service; set both libraries' `uploadPath` to a non-public, unused folder, and record the gap in `docs/library-requests.md`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/09, deploy/10
+
+## D-00-24 — Inline `<script>`/`<style>` in library views
+
+- **Where:** spec "Front-end assets" ("No JavaScript inside the HTML (no inline `<script>` code)") and the CI CSP check
+- **Problem:** kpcrudy's `bootstrap5` assets partial prints a nonce'd inline `<script>` and `<style>` in every CRUD; kpapy's docs page has a nonce'd `<style>`. They comply with the CSP (nonces) but not with the "no inline code" rule. Overriding the templates would copy library code (forbidden).
+- **Proposal:** accept nonce'd blocks rendered by the two libraries as the only exception, scope the CI check to project views (`app/`, `modules/`, `themes/`), and file a library request for an external-asset option.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/04
+
+## D-00-25 — `style=""` ban vs real components and content
+
+- **Where:** spec "Front-end assets" and CSP (`style-src 'self' 'nonce-…'`)
+- **Problem:** Bootstrap progress bars and dynamic widths use `style` attributes; theme option colours need a place to be printed; rich-text editors and calendar libraries may inject `<style>` elements or style attributes; HTMLPurifier-sanitised page bodies with `style` attributes are blocked by the CSP.
+- **Proposal:** set widths via JS (CSSOM is allowed) or utility classes; serve theme variables as a generated CSS file (or one nonce'd `<style>` in the layout, explicitly allowed); pick an editor/calendar that works without `unsafe-inline` (test it under the enforced CSP); configure HTMLPurifier to drop `style` and map alignment to classes.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/20
+
+## D-00-26 — Cache busting of ES modules
+
+- **Where:** spec "Front-end assets" (`asset()` with a hash, import map prefixes to folders)
+- **Problem:** Files imported through a folder prefix (`core/ui/confirm.js`) or a relative path carry no version, so browsers keep old copies.
+- **Proposal:** the import map lists every published JS file with its hashed URL (generated from the asset manifest), or publish into a versioned folder; test that the map changes when a file changes.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/04
+
+## D-00-27 — PWA details
+
+- **Where:** spec "Minimal PWA"
+- **Problem:** A service worker controls only its folder, so it must be served from `/sw.js` (or with `Service-Worker-Allowed`); icons "from the site logo" need PNG 192/512 generated with GD (an SVG logo is refused by the upload rules).
+- **Proposal:** route `/sw.js` and `/manifest.webmanifest` from the Core, generate icons on logo change.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/04
+
+## D-00-28 — CodeIgniter's `secureheaders` filter
+
+- **Where:** spec "Security baseline" ("`secureheaders` filter plus … `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY`")
+- **Problem:** CI 4.7's filter hard-codes `X-Frame-Options: SAMEORIGIN` and `Referrer-Policy: same-origin`.
+- **Proposal:** replace it with the Core `SecurityHeaders` filter driven by `Config\SecurityHeaders` (do not stack both).
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/08
+
+## D-00-29 — Outbound traffic that is not HTTPS-through-`OutboundClient`
+
+- **Where:** spec "Outbound requests" (email goes through the `OutboundClient`, HTTPS only), "Updates" (`git pull`, `composer install`)
+- **Problem:** SMTP is not HTTP, and git/composer use their own clients.
+- **Proposal:** the allow-list applies to SMTP hosts through a check in the mail service; `git`/`composer` are console-only and documented as exceptions in `docs/outbound-requests.md`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/08
+
+## D-00-30 — Route-security test for the API
+
+- **Where:** spec "RBAC" (every `api/v1/` route has `kpapy` or is `kpapy:public`, read-only)
+- **Problem:** kpapy's own login routes use `kpapy:login` and are POST; `OPTIONS` preflight routes exist.
+- **Proposal:** the test accepts `kpapy`, `kpapy:optional`, `kpapy:hmac`, `kpapy:login` (only for `auth/token*`) and `kpapy:public` (GET only).
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/07
+
+## D-00-31 — Acceptance criterion 2 before session 32
+
+- **Where:** —
+- **Problem:** session 19 checks criterion 2, which needs `modules/Events2/CLAUDE.md`, `/check-module` (session 32) and a module that already has "a widget and a task" (session 01's `make:module` only lists manifest, routes, language, controller, views, assets, migration stub and a test).
+- **Proposal:** session 01/19 add widget and task stubs to the templates; session 19 checks criterion 2 without the `CLAUDE.md`/`/check-module` parts and session 32 completes it.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/01, deploy/19, deploy/32
+
+## D-00-32 — Child theme inside the `Tasks` module
+
+- **Where:** spec "Tutorials" (9: a child theme overriding a `Tasks` view) and session 32 ("child-theme override" in the module)
+- **Problem:** Themes live in `themes/`.
+- **Proposal:** ship `themes/tasks-demo/` (child of `default`) as part of the tutorial, installed with `themes:install` or kept in the repository and documented as tutorial material.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/32
+- **Note (session 52):** the module was renamed `Tutorial` and the theme `themes/tutorial-demo` (D-52-01, D-52-02).
+
+## D-00-33 — The web server writing into `public/` and the project root (decide)
+
+- **Where:** spec "Installing modules" ("the web server never writes code") vs Settings "publish assets", enabling a module from the UI (publishes its assets), the web installer (writes `.env`) and restoring `.env` from the UI
+- **Problem:** Published JS is executable code for browsers.
+- **Proposal:** the web user may write only `writable/` and `public/assets/modules|core`, `public/themes`, `public/uploads`; the web installer shows the `.env` content to copy when the root is not writable; document the risk in `docs/security.md`.
+- **Alternatives:** A) Console only: publishing assets, enabling modules, installing and restoring `.env` only with `php spark`; the web shows status and the command. B) As the specification says, without folder limits.
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Carpetes limitades (recomanada)». The web server user may write only `writable/`, `public/assets/modules`, `public/assets/core`, `public/themes` and `public/uploads`; when the project root is not writable the web installer shows the `.env` content to copy; the risk is documented in `docs/security.md` and checked by `security:check`. **Must change:** specification "Installing modules", "Installer", "Backup" (restore), "security:check"; sessions 18, 27, 29, 30.
+- **Applied in:** `docs/specification.md`, deploy/18, deploy/27, deploy/29, deploy/30
+
+## D-00-34 — New dependencies vs "ask before adding a dependency"
+
+- **Where:** —
+- **Problem:** `CLAUDE.md` workflow vs spec "Technical baseline" and `deploy/00-bootstrap.md` §4.4 (TOTP, QR, HTMLPurifier, Flysystem installed by the sessions that use them; an MIT editor and calendar).
+- **Proposal:** the libraries named in the specification (and an MIT/BSD editor and calendar) are pre-approved; anything else needs asking. Add this sentence to `CLAUDE.md`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** CLAUDE.md
+
+## D-00-35 — Rich text before the editor exists
+
+- **Where:** —
+- **Problem:** News (session 17) has an HTML body sanitised with HTMLPurifier, but the editor is vendored in session 20.
+- **Proposal:** News uses a textarea with HTMLPurifier in 17; session 20 switches News to `forms/editor.js` and updates its tests.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** deploy/17, deploy/20
+
+## D-00-36 — News group visibility as `multiselect`
+
+- **Where:** spec "News" ("a `multiselect` or a junction table")
+- **Problem:** A JSON/CSV column cannot be queried portably with the Query Builder on SQLite and MariaDB ("visible to any of my groups").
+- **Proposal:** use a junction table `news_groups` with kpcrudy `setRelationNN()`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/17
+
+## D-00-37 — Profile fields and birthdays have no table
+
+- **Where:** spec "Auth" (name, language, time zone, theme mode, avatar), Users "Birthdays" provider
+- **Problem:** Shield's `users` table has none of these, and "each module owns its tables".
+- **Proposal:** a `user_profiles` table owned by Auth (one migration), with an optional `birth_date` used by the provider.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/05, deploy/25
+
+## D-00-38 — Groups as data
+
+- **Where:** spec "Users" (Groups CRUD with kpcrudy, 2FA policy per group), "Groups" (reserved names)
+- **Problem:** Shield's groups are configuration (`AuthGroups::$groups`), not a table.
+- **Proposal:** a Core `groups` table (name, title, description, reserved, 2FA policy) mirrored into `setting('AuthGroups.groups')` like the matrix (item 19).
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/15
+
+## D-00-39 — Upload folders
+
+- **Where:** —
+- **Problem:** spec "Directory layout" (`public/uploads`, `writable/storage`), "Backup" (includes `writable/uploads`), kpapy (`writable/uploads/kpapy`), session 00 `.gitignore` (does not list `public/uploads`).
+- **Proposal:** the backup includes both disks plus `writable/uploads` only if non-empty; add `public/uploads/*` (except `index.html`) to `.gitignore`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/27, .gitignore, public/uploads/index.html, tests/unit/SecurityDefaultsTest.php
+
+## D-00-40 — Translated content in kpcrudy
+
+- **Where:** spec "Languages" (fallback chain), "Demo data" (Catalan only), Events (CSV import)
+- **Problem:** kpcrudy 1.0 lists show an **empty cell** when the record has no translation in the list locale (no fallback), and translated fields are **not included in CSV import**. kpapy does have `localeFallbacks`.
+- **Proposal:** set `listLocale` to the user's locale only when it is complete, otherwise `ca`; for Events import, `callbackImport()` writes the Catalan translation; record both gaps in `docs/library-requests.md`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/24
+
+## D-00-41 — Visibility names and calendar permissions
+
+- **Where:** —
+- **Problem:** News uses `public|private|groups`, Events and the calendar API `public|private|restricted`; the `news.notices` calendar declares `'permission' => 'news-posts.list'`, which ordinary users (who can read notices on the dashboard) do not have.
+- **Proposal:** map `groups` → `restricted` in the News publisher; calendar `permission` becomes optional and visibility per event decides; for News leave it empty.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/25
+
+## D-00-42 — Where ordinary users read private news (decide)
+
+- **Where:** spec "News" ("private news only in the back office and the dashboard", "mark as read from the widget and the detail page")
+- **Problem:** The back-office CRUD requires `news-posts.list`.
+- **Proposal:** a read-only "reader" screen (`news-read.view`, granted to every group) listing the news the user can see, with the detail page and "mark as read".
+- **Alternatives:** A) The dashboard widget opens the full post in a modal (no list or history). B) Private posts on the public site for logged-in users with access (contradicts "back office only").
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Pantalla de lectura (recomanada)». A read-only reader screen (resource `news-read`, permission `news-read.view` granted to every group) lists the posts the user may see, with the detail page and "mark as read". **Must change:** specification "News"; session 17.
+- **Applied in:** `docs/specification.md`, deploy/17
+
+## D-00-43 — `about` and `cache:clear` hooks
+
+- **Where:** spec "Installer and CLI"
+- **Problem:** CodeIgniter 4.7 already has `cache:clear`, and command discovery keeps the first command with a name, so a module cannot replace it; `about` does not exist in CodeIgniter.
+- **Proposal:** add `about` in Core; for caches, a Core `app:cache-clear` (Core caches + CodeIgniter cache), and listen to a `cache.cleared` event where possible.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/18
+
+## D-00-44 — Path placeholders
+
+- **Where:** —
+- **Problem:** spec "Files": personal space `users/{id}/`, picker example `users/{user_id}/avatar`.
+- **Proposal:** use `{user_id}` everywhere.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/22
+
+## D-00-45 — Restoring `.env` and keys
+
+- **Where:** spec "Backup" (backups contain `.env` and the encryption key; "restoring on a new server")
+- **Problem:** Restoring the old `.env` overwrites the new server's DB credentials and base URL.
+- **Proposal:** restore keeps the current `.env` by default and merges only the secrets (`encryption.key`, `app.maskKey`, `backup.password`) after confirmation; `--with-env` restores it whole (console only).
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/27
+
+## D-00-46 — AES-256-GCM for large archives
+
+- **Where:** spec "Backup"
+- **Problem:** PHP's OpenSSL GCM is one-shot (whole archive in memory).
+- **Proposal:** libsodium `crypto_secretstream_xchacha20poly1305` (streaming, authenticated) with Argon2id, or chunked AES-256-GCM with per-chunk tags and a header MAC; document the format version in the archive header.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/27
+
+## D-00-47 — Backup password on the command line
+
+- **Where:** spec "Backup" (`backup:create … [--password]`)
+- **Problem:** A value on the command line ends up in shell history and the process list.
+- **Proposal:** `--password` only as a flag that triggers a hidden prompt; non-interactive use reads `backup.password` from `.env` or an environment variable.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/27
+
+## D-00-48 — Release signing for Updates (decide)
+
+- **Where:** spec "Updates" (archive SHA-256 **and** signature, or a signed tag) but no session defines how the skeleton's releases are signed or which key ships in `Config\Updates`
+- **Problem:** Without it, every update is refused.
+- **Proposal:** session 28 defines an Ed25519 (libsodium/minisign-compatible) signature of the release archive and the public key in `Config\Updates`; session 36 documents the release procedure.
+- **Alternatives:** A) Ed25519 with the private key as a GitHub Actions secret (automatic; whoever controls the repository can sign). B) Signed git tags (GPG/SSH; only for `git pull` installs, not ZIPs).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Ed25519, clau teva (recomanada)». Session 28 implements Ed25519 signatures of the release archive (libsodium, minisign-compatible); the owner generates the key pair on their own computer and the private key never leaves it; the public key ships in `Config\\Updates`; session 36 documents the signing procedure for every release. **Must change:** specification "Updates"; sessions 28 and 36.
+- **Applied in:** `docs/specification.md`, deploy/28, deploy/36
+
+## D-00-49 — `composer audit` offline
+
+- **Where:** spec "`security:check`" ("offline cache when there is no network")
+- **Problem:** `composer audit` has no offline mode.
+- **Proposal:** run it in the daily task or CI, store the result with its date, and report "last checked on …" (warning when older than 7 days).
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/30
+
+## D-00-50 — The `--probe` targets the site itself
+
+- **Where:** —
+- **Problem:** spec "`security:check`" (probe `/.env`, HTTP→HTTPS redirect…) vs `OutboundClient` (HTTPS only, refuses loopback/private IPs).
+- **Proposal:** the probe uses a dedicated client limited to the configured base URL host (HTTP allowed only for the redirect check), never a user-supplied host other than the site's own `allowedHostnames`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/30
+
+## D-00-51 — File permissions of CodeIgniter's own files
+
+- **Where:** spec "`security:check`" (`writable/` folders `0750`, files `0640`)
+- **Problem:** CodeIgniter writes logs with `Config\Logger::$filePermissions = 0644` by default; kpcrudy/kpapy key files are `0600`.
+- **Proposal:** set the Logger to `0640`; the check accepts stricter modes.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/30, app/Config/Logger.php, tests/unit/SecurityDefaultsTest.php
+
+## D-00-52 — `app.maskKey` fallback
+
+- **Where:** spec "JSON API" ("never leave it empty: each library would then generate its own key file")
+- **Problem:** Both libraries first fall back to CodeIgniter's encryption key (then to their own key files), so ids match but change when the encryption key is rotated. Masked ids also depend on the context (table name by default) in both libraries, so the "same id in web and API" holds only for the same table.
+- **Proposal:** keep the requirement (key set, boot refused in production when empty), fix the explanation in `docs/security.md`, never set a custom `maskIds($context)` on one side only.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/10
+
+## D-00-53 — Captcha implementation
+
+- **Where:** —
+- **Problem:** spec "Authentication" (optional captcha, `hash_equals`, single use) names no mechanism, and outbound services are forbidden.
+- **Proposal:** a local image/arith captcha rendered with GD (or SVG), answer hashed in the session, invalidated after one check.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`
+
+## D-00-54 — `If-Match` for writes
+
+- **Where:** spec "JSON API" ("`If-Match` for writes")
+- **Problem:** kpapy supports it and can require it (`requireIfMatch`), which makes simple clients fail with `428`.
+- **Proposal:** support it (412 on mismatch) but do not require it by default; document it in `docs/api.md`.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/10
+
+## D-00-55 — Brand-new required libraries
+
+- **Where:** spec "Required libraries" (`^1.0`)
+- **Problem:** kpcrudy and kpapy 1.0.0 were published one day before this plan; their behaviour may change in 1.0.x.
+- **Proposal:** pin the exact version in `composer.lock`, read each `CHANGELOG.md` before updating, and file gaps in `docs/library-requests.md` instead of working around them.
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** no change needed (composer.lock already pins 1.0.0; rule kept in CLAUDE.md)
+
+## D-00-56 — Tasks module vs scheduled tasks naming
+
+- **Where:** —
+- **Problem:** spec: modules keep scheduled tasks in `Tasks/` (`TaskInterface`), and the tutorial module is named `Tasks` (`modules/Tasks/Tasks/…`, `scheduled_tasks` vs `tasks` tables, "task" in UI texts).
+- **Proposal:** keep the names (they are in the spec) but use explicit terms in docs and language keys ("scheduled task" vs "to-do task").
+- **Alternatives:** —
+- **Status:** Applied (accepted proposal)
+- **Decision (2026-11-04):** «accepta la resta»: the proposal above is accepted.
+- **Applied in:** `docs/specification.md`, deploy/11, deploy/32
+
+## D-01-01 — The `can:` filter before RBAC exists
+
+- **Where:** deploy/01 scope ("Permissions … later sessions"), `make:module` routes, `CLAUDE.md` ("every `backend/` route has a `can:` filter")
+- **Problem:** Generated module routes must declare `can:`, but the alias does not exist until the RBAC session; an unknown filter alias makes CodeIgniter fail on the route.
+- **Proposal:** Register a `can` filter now in the Core registrar (`Modules\Core\Filters\Can`) that denies by default (guests and missing permissions get 403) and checks Shield's `can()`; the RBAC session replaces the check with the central resolver.
+- **Alternatives:** A) Generate routes without a filter until session 07 (breaks the rule). B) Generate routes with Shield's `permission` filter (a different convention to migrate later).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 01 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 01 (`modules/Core`)
+
+## D-01-02 — Migration stub of `make:module`
+
+- **Where:** specification "Common module base" ("migration stub")
+- **Problem:** A stub migration that does nothing teaches nothing; an empty folder does not test the per-module migrations.
+- **Proposal:** `make:module` generates a real example migration (`<name>_items`: id, name, author and timestamp columns, soft delete) with `down()`, to be renamed or deleted before the module's first release.
+- **Alternatives:** A) An empty `Database/Migrations/` folder. B) A migration with empty `up()`/`down()`.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 01 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 01 (`modules/Core`)
+
+## D-01-03 — Registered modules whose folder disappeared
+
+- **Where:** specification "Module lifecycle"
+- **Problem:** The specification does not say what `modules:sync` does with a registry row whose module folder no longer exists.
+- **Proposal:** `modules:sync` and `modules:list` report it as "folder missing" and keep the row; removing tables and rows is `modules:uninstall`'s job.
+- **Alternatives:** A) Delete the registry row on sync (loses the installed version; tables stay orphaned).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 01 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 01 (`modules/Core`)
+
+## D-01-04 — Allowed values in the manifest
+
+- **Where:** specification "The module contract"
+- **Problem:** The specification lists the manifest keys but not every allowed value (setting types, CSP directives and sources, path formats).
+- **Proposal:** Setting types: string, text, int, float, bool, select, email, url, color, json; CSP: only https hosts, `'self'`, `'none'` and `blob:` (never `unsafe-inline`, `unsafe-eval`, `*`, `http:` or `data:`); API paths relative without slashes at the ends; backup paths relative without `..`. Later sessions may add values, never remove them.
+- **Alternatives:** A) Accept any value and let each consumer fail later (unclear errors).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 01 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 01 (`modules/Core`)
+
+## D-01-05 — Core version during development
+
+- **Where:** specification "Versioning"
+- **Problem:** The Core is not released yet; generated modules require the Core with a caret constraint.
+- **Proposal:** The Core starts at `0.1.0`; `make:module` writes `'Core' => '^<major>.<minor>'` from the current Core version. The release session sets `1.0.0`.
+- **Alternatives:** A) Start at `1.0.0` now (claims a stability the code does not have yet).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 01 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 01 (`modules/Core`)
+
+## D-02-01 — One table for the manifest declarations
+
+- **Where:** specification "Module lifecycle" step 6, deploy/02 ("Registries for widgets, tasks, notification types, menu link types, calendars, API resources"), plan session 02 (one class per registry)
+- **Problem:** Regular requests must not load the manifests, so the declarations have to be stored somewhere; the plan lists one registry class per kind but no tables.
+- **Proposal:** One `module_declarations` table (module, kind, key, JSON definition) written by `modules:sync` and read through `Modules\Core\Registry\DeclarationRegistry` (`widgets()`, `tasks()`, `notificationTypes()`, `menuLinkTypes()`, `calendars()`, `calendarProviders()`, `apiResources()`) and `SettingsRegistry`. Readers hide disabled modules, except settings, whose defaults stay readable. Map keys are qualified with the module (`News.perPage`, `News.notices`). Later sessions may add typed wrappers.
+- **Alternatives:** A) One table per registry (six tables with the same shape). B) A generated PHP file like `ModuleNamespaces.php` (no database, but one more generated file to keep in sync per installation).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-02 — Manifest defaults through a Settings handler
+
+- **Where:** specification "Configuration and settings", D-00-06
+- **Problem:** `setting('News.perPage')` must return the manifest default before a value is saved, without a wrapper that every caller must remember.
+- **Proposal:** A read-only codeigniter4/settings handler (`Modules\Core\Settings\ManifestDefaultsHandler`, alias `manifest`) placed after the database handler in `app/Config/Settings.php`. A real config class property with the same name (e.g. `Config\Auth::$minimumPasswordLength`) keeps priority, so file configuration and `.env` still set those defaults (D-00-07). `SettingCaster` and `SettingsRegistry::value()` give typed values; a test checks every declared key.
+- **Alternatives:** A) A Core `settings()` wrapper used everywhere instead of `setting()` (easy to forget; third-party code would still see `null`).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-03 — Disabled modules answer 404 through a global filter
+
+- **Where:** specification "Module lifecycle" ("a disabled module's routes answer 404"), D-00-08
+- **Problem:** Routes stay in each module's `Config/Routes.php`, which never queries the database, so disabled modules' routes are still registered.
+- **Proposal:** A global `before` filter `moduleenabled` (`Modules\Core\Filters\ModuleEnabled`, in `app/Config/Filters.php`) maps the matched controller (`Modules\<Name>\…`) to its module and throws a 404 when the module is disabled (registry state cached in the "modules" scope). Closure routes cannot be mapped to a module: modules must use controllers (already the convention).
+- **Alternatives:** A) A `module:<Name>` route filter declared on every route (one more rule for every module to remember).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-04 — Default grants applied once: a flag in `modules`
+
+- **Where:** specification "Module lifecycle" step 5, plan session 02 ("`default_grants_applied` or a flag in `modules`")
+- **Problem:** Default grants must be applied only on a module's first install, also for installations whose registry existed before this session.
+- **Proposal:** A new migration adds `modules.grants_applied`; `modules:sync` applies the expanded `defaultGrants` of every module whose flag is 0 and sets it. Grants removed by the owner are never re-added. Shield's computed `AuthGroups` arrays are written by the RBAC session (07).
+- **Alternatives:** A) A separate `default_grants_applied` table.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-05 — Core resource `modules` and its default grants
+
+- **Where:** specification "Modules screen" (permissions `modules.list`, `modules.toggle`, `modules.sync`, `modules.upload`, `modules.uninstall`), "Demo data" (`modules.demo`)
+- **Problem:** The Core must generate these permissions from its manifest; the specification only says the last two (and `modules.demo`) are superadmin only by default.
+- **Proposal:** The Core manifest declares a `crud` resource `modules` with `'name' => 'modules'`, every crud operation but `list` excluded, and the extras `toggle`, `sync`, `upload`, `uninstall`, `demo`. Default grants: `admin` gets `modules.list`, `modules.toggle`, `modules.sync`; superadmins bypass the checks (session 07).
+- **Alternatives:** A) A `page` resource (it would also generate `modules.view`, not in the specification).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-06 — Demo data: confirmations, seeder base class and stub
+
+- **Where:** specification "Demo data"
+- **Problem:** The specification says a confirmation is always required and that seeders write through `DemoData`, but not how a seeder receives it nor how the console confirms.
+- **Proposal:** Demo seeders extend `Modules\Core\Demo\DemoSeeder` and implement `load(DemoData $demo)`; running one with `db:seed` is refused (it would not be tracked). `modules:demo` and `modules:sync --demo` always ask y/n (no flag skips it; the non-interactive installer comes in session 18). Loading runs in a transaction; removal goes newest first, keeps and reports rows that other data depends on, and deletes recorded files only inside `writable/`. `make:module` generates a `<Name>DemoSeeder` stub.
+- **Alternatives:** A) Plain CodeIgniter seeders that call `DemoData` themselves (nothing guarantees they are tracked).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-07 — Cache scopes with version keys
+
+- **Where:** deploy/02 ("Caches (permissions, menus, settings, widgets, assets) with one invalidation service")
+- **Problem:** CodeIgniter's cache has no tags, and the file handler cannot delete by prefix.
+- **Proposal:** `Modules\Core\Cache\CoreCache` stores each scope's version in the cache and puts it in every key; `CacheInvalidator` (the only invalidation service) bumps the versions and then fires `modules.cacheInvalidate`. A sixth scope, `modules`, holds the enabled state and the declarations.
+- **Alternatives:** A) `cache()->clean()` on every change (drops unrelated caches such as rate limits). B) `deleteMatching()` (not supported by every handler).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-02-08 — Activity log entries before the Activity session
+
+- **Where:** specification "Modules screen" and "Demo data" ("written to the activity log")
+- **Problem:** The activity log arrives in session 12.
+- **Proposal:** Enable/disable and demo-data actions are written to the application log (`log_message('notice')`) for now; session 12 replaces those calls with activity log entries (noted in `docs/progress.md`).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 02 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 02 (`modules/Core`)
+
+## D-03-01 — Theme folders, namespaces and loading
+
+- **Where:** specification "Themes" (`themes/<name>/`, manifest `Themes\<Name>\Theme`), "Directory layout" (`Themes\` → `themes/` in PSR-4, D-00-03)
+- **Problem:** Theme folders are lower-case (`themes/default`, `themes/tasks-demo` in D-00-32) but PSR-4 maps `Themes\Default` to `themes/Default` and a hyphen cannot be part of a namespace; CodeIgniter's view locator needs the theme's namespace to find `Themes\Default\Views\…`.
+- **Proposal:** a theme slug is lower-case letters, digits and hyphens; its namespace is the StudlyCase slug (`tasks-demo` → `Themes\TasksDemo`). `ThemeRegistry` registers that namespace with the autoloader when it loads the theme (only the active chain per request, no scan of `themes/`), so hand-copied themes work without a sync and the generated `ModuleNamespaces.php` stays modules-only. The `Themes\` entry is removed from `composer.json` (Composer warned that the lower-case folders do not comply); `app/Config/Autoload.php` keeps it.
+- **Alternatives:** A) StudlyCase folders (`themes/Default`, against the specification). B) Theme namespaces in the generated namespaces file (one more step after copying a theme).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 03 (`modules/Core/Theme/ThemeRegistry.php`, `composer.json`)
+
+## D-03-02 — Where theme option values are stored (decide)
+
+- **Where:** specification "Themes" ("options … declared like settings and edited from the Settings UI"), "Configuration and settings"
+- **Problem:** Options belong to a theme (a child redeclares the parent's defaults, two themes may be active at once for the back office and the public site), and the specification does not name the settings. A settings name is a public convention.
+- **Proposal:** store them with codeigniter4/settings as `Theme.<option>` with the context `theme:<slug>` (`service('settings')->set('Theme.primaryColor', '#6f42c1', 'theme:corporate')`); the default is the merged manifest default. Built behind `ThemeOptions` (one closure reads the stored value), so the storage can change without touching the views.
+- **Alternatives:** A) One settings class per theme, `Theme<Studly>.<option>` without context (`ThemeCorporate.primaryColor`). B) One JSON setting `Theme.options` per theme context.
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Theme.opció + context (recomanada)». Theme option values are stored with codeigniter4/settings as `Theme.<option>` with the context `theme:<slug>`; the default is the merged manifest default.
+- **Applied in:** `docs/specification.md` ("Themes"); code built by session 03 (`modules/Core/Theme/ThemeOptions.php`, `docs/themes.md`, `ThemeOptionsTest`)
+
+## D-03-03 — Theme assets before `assets:publish`
+
+- **Where:** specification "Themes" ("theme assets are published like module assets"), deploy/04 (`assets:publish`)
+- **Problem:** The default theme's CSS must be reachable from `public/themes/<slug>/` now; the asset pipeline (hashes, asset manifest, `--watch`) arrives in session 04.
+- **Proposal:** `ThemeAssetPublisher` mirrors `themes/<slug>/Assets/` to `public/themes/<slug>/` (only allowed extensions: no PHP or HTML; changed files copied, stale files removed), run by `modules:sync` (step 7) and `make:theme`. URLs carry a `?v=` content hash. Session 04 folds it into `assets:publish`.
+- **Alternatives:** A) A `themes:publish` command (one more public command to retire later).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 as proposed.
+- **Applied in:** session 03 (`modules/Core/Theme/ThemeAssetPublisher.php`, `ModuleSynchronizer`)
+
+## D-03-04 — Error pages and the 403 of `can:`
+
+- **Where:** specification "Common module base" (403/404/500 pages), "Security baseline"
+- **Problem:** The specification does not say which layout the error pages use; the `can:` filter answered 403 with plain text; CodeIgniter's 404 and production 500 views have inline `<style>` blocks (against the CSP rules).
+- **Proposal:** standard views `errors/403|404|500` in the theme's `blank` layout (no menus, which need a user and permissions), rendered by `ErrorPage`, with a plain fallback page when the theme itself fails; `app/Views/errors/html/error_404.php` and `production.php` use it (the exception message is shown only outside production); the `can:` filter answers with the themed 403, or JSON (`{"error": …}`) when the client asks for `application/json`.
+- **Alternatives:** A) The back-office or public layout (needs the menu and the user, which may be what failed).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 as proposed.
+- **Applied in:** session 03 (`modules/Core/Theme/ErrorPage.php`, `modules/Core/Filters/Can.php`, `app/Views/errors/html/`)
+
+## D-03-05 — Theme preview pages (decide)
+
+- **Where:** specification "Themes" (theme authors), deploy/03 (screenshots of the standard views)
+- **Problem:** The standard views and the layouts have no screen yet that shows them all (menus, users and CRUDs come later), and theme authors need one to check an override. A new URL is a public convention.
+- **Proposal:** `GET /theme-preview/<layout>` (`backend`, `public`, `auth`, `blank`, `print`, `errors-403|404|500`) with sample content and `?theme=<slug>`, answering 404 unless `CI_ENVIRONMENT = development` **and** `theme.preview = true` (off by default; it reads no data). Easy to remove: one controller, two routes, one config property.
+- **Alternatives:** A) No preview: screenshots only once real screens exist. B) A back-office page `backend/themes/preview` behind a `can:` permission (needs RBAC, session 07).
+- **Status:** Applied (decided)
+- **Decision (2026-11-04):** «Només desenvolupament (recomanada)». Keep `GET /theme-preview/<layout>` (and `?theme=<slug>`), answering 404 unless `CI_ENVIRONMENT = development` and `theme.preview = true` (off by default); it reads no data.
+- **Applied in:** `docs/specification.md` ("Themes"); code built by session 03 (`ErrorPagesTest`, `modules/Core/Controllers/ThemePreview.php`, `modules/Core/Config/Routes.php`, `Config\Theme::$preview`)
+
+## D-03-06 — "The assets it loads" in the theme manifest
+
+- **Where:** specification "Themes" (manifest: name, version, author, parent, layouts, regions, menu locations, the assets it loads, options)
+- **Problem:** The specification names the content of the manifest but not the property names.
+- **Proposal:** `$name`, `$version`, `$author`, `$parent`, `$layouts`, `$regions` (layout → regions), `$menuLocations` (location → label key), `$styles` and `$scripts` (paths under `Assets/`, or `vendor:<path>` under `public/assets/vendor/`; loaded after the parent's) and `$options` (setting definitions plus `css` for colour options). A child declares only what it adds or changes.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 as proposed.
+- **Applied in:** session 03 (`modules/Core/Theme/ThemeManifest.php`, `docs/themes.md`)
+
+## D-03-07 — Site name before the Settings session
+
+- **Where:** specification "Configuration and settings" (site name is a site-wide setting, session 14)
+- **Problem:** The layouts print the site name in the title, the brand and the footer.
+- **Proposal:** the language line `Core.app.name` ("KP Skeletor") until session 14 adds the site settings; the logo is the theme option `logo`.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 as proposed (deviation until session 14).
+- **Applied in:** session 03 (`themes/default/Views/partials/`)
+
+## D-03-08 — What `BackendController::render()` adds
+
+- **Where:** specification "Common module base" (`BackendController`: layout, breadcrumbs…)
+- **Problem:** Every back-office view needs the layout, breadcrumbs and a page header.
+- **Proposal:** `render()` resolves the view through the theme and adds `layout` (`theme_layout('backend')`), `breadcrumbs` ("Back office" + `breadcrumb()` calls) and, when the data has a `title`, `pageHeader` (title, subtitle, icon, breadcrumbs, actions) that the layout prints; anything given in the data wins. `flash()` stores a message for the layout. `FrontendController` adds `meta()` (SEO) and `region()`.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 as proposed.
+- **Applied in:** session 03 (`modules/Core/Controllers/`)
+
+## D-03-09 — `--name=value` options in the module commands
+
+- **Where:** `docs/commands.md` (`modules:sync --demo[=A,B]`, `make:theme --parent=default`)
+- **Problem:** CodeIgniter's CLI parser keeps `--demo=News` as an option named `demo=News`, so the documented `--name=value` form of session 02 was ignored.
+- **Proposal:** the shared option reader (`ModulesSync::option()`) also accepts `--name=value`; both forms are documented.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 03 (fix of a session 02 gap).
+- **Applied in:** session 03 (`modules/Core/Commands/ModulesSync.php`)
+
+## D-04-01 — Where the front-end PHP classes live
+
+- **Where:** plan (`modules/Core/Assets/AssetPublisher.php`, `AssetManifest.php`, `ImportMap.php`)
+- **Problem:** `modules/Core/Assets/` is the Core's asset *source* folder (published to `public/assets/core/`); mixing PHP classes into it blurs the rule "Assets/ holds only publishable files".
+- **Proposal:** the classes live in `modules/Core/Frontend/` (`Modules\Core\Frontend\AssetPublisher`, `AssetManifest`, `ImportMap`, `ThemeMode`, `Pwa`, `CspViewScanner`); `Assets/` only holds JS/CSS/images. `ThemeAssetPublisher` (session 03) is folded into `AssetPublisher` and removed.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`modules/Core/Frontend/`, `docs/frontend.md`)
+
+## D-04-02 — Development serving rule for edited assets
+
+- **Where:** spec "Front-end assets" ("the asset helper can serve a module's file directly when it is newer than the published copy")
+- **Problem:** Sources under `modules/` are not web-reachable; serving them through PHP would add a route that reads code folders.
+- **Proposal:** in development only (`assets.devRefresh`, default on), the first asset lookup of a request republishes everything when a source file or folder is newer than the manifest (the web user may write `public/assets/*` and `public/themes`, D-00-33). Production never checks the sources.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`AssetManifest::create()`, `AssetPublisher::isStale()`)
+
+## D-04-03 — Asset manifest format and owners
+
+- **Where:** spec "Front-end assets" (`asset('events::js/calendar.js')`, manifest with hashes)
+- **Problem:** Owners, theme files and vendored files need a key scheme.
+- **Proposal:** `public/assets/manifest.json` (git-ignored) maps `<owner>::<path>` to `{url, hash}` (SHA-256, 12 hex): owners `core`, `<module>` (kebab case of the module name) and `theme:<slug>`; `asset()` also accepts `theme::` (active chain) and `vendor::` (hash from `vendor.json`). `core`, `theme` and `vendor` are reserved module owners. The import map is built from the manifest (bare specifiers `core/…`, `<module>/…`, `theme/…`; relative imports are refused by a test).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`modules/Core/Frontend/`, `modules/Core/Helpers/asset_helper.php`)
+
+## D-04-04 — Details of the strict CSP
+
+- **Where:** spec "Security baseline" (CSP list), deploy/04 (report-only)
+- **Problem:** The spec lists the main directives; CodeIgniter also sends `*-elem`/`*-attr` directives and needs values for fonts, workers and the manifest; a report endpoint would be an unauthenticated write.
+- **Proposal:** `CSPEnabled = true`; `default-src`, `script-src`, `style-src`, `connect-src`, `font-src`, `manifest-src`, `worker-src`, `child-src`, `base-uri`, `form-action` = `'self'`; `img-src 'self' data:` (Bootstrap's CSS icons); `object-src`, `frame-ancestors`, `script-src-attr`, `style-src-attr` = `'none'`; nonces added automatically. Report-only and `reportURI` only through `.env` (`contentsecuritypolicy.*`); no built-in report endpoint (log flooding).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`app/Config/ContentSecurityPolicy.php`, `app/Config/App.php`)
+
+## D-04-05 — Module CSP sources at runtime
+
+- **Where:** spec "Configuring headers and CSP" (modules add sources in their manifest)
+- **Problem:** `$csp` was validated since session 01 but not applied, and requests must not load manifests.
+- **Proposal:** `modules:sync` stores `$csp` as declarations of kind `csp`; a global before filter `cspmodules` adds the sources of enabled modules to the policy (`script-src`/`style-src` also to their `-elem` directive, `'none'` and forbidden sources skipped).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`DeclarationRegistry::cspSources()`, `modules/Core/Filters/ContentSecurity.php`, `app/Config/Filters.php`)
+
+## D-04-06 — Where the light/dark choice is stored before the profile exists
+
+- **Where:** spec "Light and dark mode" (logged-in users in their profile, visitors in a cookie)
+- **Problem:** There is no user profile until the Auth/Users sessions.
+- **Proposal:** everyone's choice goes to the `kp_theme` cookie for now; `ThemeMode` already takes a user-preference reader that the Users session plugs in. Theme options `defaultMode` (auto), `forceMode` (empty), `modeSwitch` (on), `primaryColorDark` and `logoDark` (empty = same as light); option definitions accept `'mode' => 'dark'` and empty colour defaults.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`modules/Core/Frontend/ThemeMode.php`, `themes/default/Theme.php`)
+
+## D-04-07 — Breakpoints and state of the back-office sidebar
+
+- **Where:** spec "Responsive design" (offcanvas on phones, icon-only on tablets, remembers its state)
+- **Problem:** Session 03 switched to the offcanvas below 992 px and had no icon-only state.
+- **Proposal:** offcanvas below 768 px, icon-only bar 768–1199 px, full from 1200 px; a top-bar toggle switches icon-only/full and is remembered in the `kp_sidebar` cookie, printed by the server as a body class (no flash). Menu labels go in `<span class="nav-text">` (contract for session 08).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`themes/default/`, `core/ui/sidebar.js`)
+
+## D-04-08 — PWA settings, icons and worker
+
+- **Where:** spec "Minimal PWA", D-00-27
+- **Problem:** Where icons are written, the setting names and the start URL.
+- **Proposal:** settings `Core.pwa` (bool, off by default) and `Core.pwaStart` (`public`/`backend`); icons generated with GD from the public theme's local raster logo (never SVG or remote) into `writable/pwa/`, file name hashed on logo and primary colour, served by `/pwa/icon-<192\|512>.png`; `/sw.js` caches nothing; all routes 404 while off. Declaring Core settings also generates `settings.core` (automatic, like any module with settings).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`modules/Core/Frontend/Pwa.php`, `modules/Core/Controllers/Pwa.php`, `modules/Core/Config/Module.php`)
+
+## D-04-09 — CSRF token for scripts without sessions for every visitor
+
+- **Where:** spec "Front-end assets" (`http.js` with the CSRF header and token refresh)
+- **Problem:** With session-based CSRF, printing the token on every page would start a session (cookie) for every anonymous visitor.
+- **Proposal:** the head prints `csrf-header`/`csrf-token` meta tags only when a session is already active (back office, forms); `http.js` sends the header on unsafe methods and takes a refreshed token from the response header when present.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`themes/default/Views/partials/head.php`, `core/http.js`)
+
+## D-04-10 — Project views with inline code from CodeIgniter
+
+- **Where:** deploy/04 (CI CSP check of `app/`)
+- **Problem:** `app/Views/welcome_message.php`, `errors/html/error_400.php` and `error_exception.php` (CodeIgniter's) have inline styles, scripts and handlers.
+- **Proposal:** the welcome page is replaced by a themed home page (`app/Views/home.php`, until the Pages module), `error_400` loses its `<style>`, the development debug page gets nonces and is the only listed exception of `csp:check`.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-04):** applied by session 04 as proposed.
+- **Applied in:** session 04 (`app/Views/`, `modules/Core/Frontend/CspViewScanner.php`)
+
+## D-05-01 — Own login, magic-link and reset controllers
+
+- **Where:** deploy/05, spec "Authentication (Shield)"
+- **Problem:** Shield's `LoginController`/`MagicLinkController` reveal whether an email exists ("Unable to find a user"), store magic-link tokens in clear and have no password-reset screen (Shield uses the magic link for that).
+- **Proposal:** the Auth module has its own controllers on Shield's authenticator API: generic messages, a dummy hash for unknown emails, captcha, per-IP/per-account limits; magic-link and reset tokens are Shield identities (`magic-link`, `reset-password`) whose secret is the SHA-256 of the token, single use; a reset sets a new password on a form (not a login).
+- **Alternatives:** A) Shield's controllers with overridden views (keep the enumeration and clear tokens).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-02 — Session tracking and remote logout
+
+- **Where:** spec "Session handling", plan risk "session store that can be enumerated"
+- **Problem:** "My sessions", remote logout and the absolute lifetime need to enumerate sessions; the file session handler cannot, and Shield's remember-me re-creates a remotely ended session.
+- **Proposal:** table `user_sessions` (one row per login, the PHP session holds a random token, only its hash is stored, with the remember-me selector); the global `authsession` filter checks it on every request: ended row → logout; past `Auth.absoluteLifetime` → the PHP session ends without touching remember-me, which may re-create it (new row `remembered`); remote logout also deletes that session's remember-me token; remember-me tokens older than `Auth.rememberLifetime` (from their creation; Shield extends them on use) are deleted before Shield reads them. Logging out keeps Shield's behaviour (all the user's remember-me tokens are deleted).
+- **Alternatives:** A) Database session handler and deleting session rows (ties the app to one handler).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-03 — Groups and grants before RBAC
+
+- **Where:** spec "Groups", deploy/05 and 07
+- **Problem:** `can:` uses Shield's matrix, which session 07 computes; until then nobody could open the profile.
+- **Proposal:** `Config\AuthGroups` lists the four groups and, as an interim bootstrap, the `auth-profile.*`/`auth-sessions.*` permissions for every group (the same as the manifest's `defaultGrants`); session 07 replaces them with the computed `setting('AuthGroups.…')`. Superadmins bypass `can:` (`Can` filter and `BackendController::can()`); `GroupRules` holds the reserved-group rules (only a superadmin assigns or removes `superadmin`, never the last one, nobody changes their own groups, the four groups cannot be renamed or deleted) and flags the user's sessions for id regeneration.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-04 — Names, units and defaults of the Auth settings
+
+- **Where:** spec "Session handling", "Rate limits", Settings › Security (session 14)
+- **Problem:** The specification names only `Auth.minimumPasswordLength`.
+- **Proposal:** Auth module settings (defaults in `Config\Auth`, equal to the manifest, a test checks it): `minimumPasswordLength` (8), `absoluteLifetime` (minutes, 720), `idleTimeout` (minutes, 0 = off), `rememberLifetime` (days, 14, 0 = off), `captcha` (off), `newDeviceNotice` (on), `loginAttemptsPerIp` (10), `loginAttemptsPerAccount` (5), `loginLockMinutes` (15), `emailLinksPerIp` (10/hour), `emailLinksPerAccount` (3/hour, extra requests silent). `AuthPolicy` raises weak values to a floor (8 characters, 5 minutes). Counters in the cache.
+- **Alternatives:** A) Seconds everywhere (harder to edit).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-05 — App tokens vs personal tokens
+
+- **Where:** spec "changing the password … revokes the tokens obtained by app logins; personal API tokens are listed"
+- **Problem:** Shield access tokens have no origin; `extra` holds their scopes.
+- **Proposal:** a personal token (created in the back office, later session) has `auth_identities.secret2 = 'personal'`; every other access token counts as an app-login token and is revoked by a password change or reset. Event `passwordChanged` (user, sessions ended).
+- **Alternatives:** A) A naming convention (fragile).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-06 — CSRF and back-office filters before the security session
+
+- **Where:** deploy/05, deploy/07 (`backend` chain), spec "Security baseline"
+- **Problem:** Login forms need CSRF, which was not enabled; `backend/*` needs login and forced reset before session 07 builds its chain.
+- **Proposal:** global `csrf` (except `api/*`) and `authsession`; `session` (Shield) and `forcereset` (Auth: only `backend/profile/password` is reachable while a reset is forced) on `backend`/`backend/*` in `Config\Filters::$filters`. Logout is a POST (GET `logout` shows a confirmation).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-07 — Where a login lands and profile preferences
+
+- **Where:** deploy/05
+- **Problem:** There is no dashboard yet; the profile stores language and colour mode but the theme reads the `kp_theme` cookie (D-04-06) and `supportedLocales` was `['en']`.
+- **Proposal:** login redirect `backend/profile` until session 16; the profile's colour mode is copied into `kp_theme` on login and on save; the profile's language is applied to back-office requests by `authsession`; `App::$supportedLocales = ['en', 'ca', 'es']` (default locale left to session 31).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-05-08 — New-device notices
+
+- **Where:** spec "an email notice when the account signs in from a new device"
+- **Problem:** Every first login of a new account would send a notice.
+- **Proposal:** random 32-byte cookie `kp_device` (1 year, HttpOnly, Lax), SHA-256 per user in `known_devices`; no notice for the first device of an account; setting `Auth.newDeviceNotice`.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 05 as proposed.
+- **Applied in:** session 05 (`modules/Auth/`, `app/Config/`)
+
+## D-06-01 — Email codes through the Core action
+
+- **Where:** spec "Authentication" ("Email (Shield's `Email2FA` logic)"), decision D-00-13
+- **Problem:** Shield's `Email2FA` class asks the user to type their email again, stores the code in clear, sends it with `emailer()` directly (not through `SecurityMailer`) and has no expiry; it also uses its own identity type, which a per-user dispatcher cannot share.
+- **Proposal:** `UserTwoFactorAction` (Shield's `login` action, `ConditionalActionInterface`: applies only to users with 2FA) keeps Shield's logic (a 6-digit code in a pending code identity, `checkAction()` to complete the login) but sends the code at once through `SecurityMailer`, stores only its SHA-256 hash (`secret2`), expires it after 10 minutes, offers "send a new code" within the email limits and counts wrong codes as failed logins. The identity secret is a random nonce that `checkAction()` compares once a code (email, TOTP or recovery) has been verified. Its routes keep Shield's names (`auth-action-show|handle|verify`) at `auth/a/*`, rendered in the theme's auth layout, plus `auth/a/cancel`.
+- **Alternatives:** use `Email2FA` unchanged for the email method (code in clear, no `SecurityMailer`).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 06 as proposed.
+- **Applied in:** session 06 (`modules/Auth/Authentication/`, `app/Config/Auth.php`)
+
+## D-06-02 — 2FA storage, TOTP and recovery codes
+
+- **Where:** spec "Authentication" (TOTP secret encrypted, recovery codes hashed, ±1 step, no reuse)
+- **Problem:** Shield has no place for a user's method, the TOTP secret or recovery codes.
+- **Proposal:** two Auth tables: `user_two_factor` (user, method `email`/`totp`, TOTP secret encrypted with CI4 Encryption and base64-encoded, last accepted time step) and `user_recovery_codes` (SHA-256 of 10 codes of 10 characters from a 31-letter alphabet, ≈50 bits each, `used_at`). TOTP with `spomky-labs/otphp` (6 digits, 30 s, SHA-1: what every app reads), 160-bit secrets, steps −1…+1 accepted and only a step later than the last accepted one (conditional update, so two simultaneous requests cannot both pass). QR with `chillerlan/php-qrcode` as an SVG `data:` image (allowed by `img-src data:`; always on white). The app method is unavailable while `encryption.key` is empty (never stored in clear). Enabling a method creates new recovery codes (shown once); turning 2FA off or an admin reset deletes them.
+- **Alternatives:** store the method in `user_profiles` (released migration: needs a new column migration anyway); bcrypt for recovery codes (slower per check, no gain at 50 random bits).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 06 as proposed.
+- **Applied in:** session 06 (`modules/Auth/`, `composer.json`)
+
+## D-06-03 — Remember-me and the 2FA step
+
+- **Where:** spec "Session handling" (remember-me) and "Two-factor authentication"
+- **Problem:** Shield issues the remember-me token inside `attempt()`, before the login action completes: a cookie obtained with the password alone would log in once the pending 2FA identity disappears (for example after an admin reset). On the other hand a valid remember-me token re-creates a session without asking for a code (Shield's behaviour: the device is trusted).
+- **Proposal:** `Config\Auth::$authenticators['session']` is `Modules\Auth\Authentication\SessionAuthenticator` (a subclass of Shield's `Session`): for a user with 2FA the login form does not ask Shield to remember them and the token is issued only after a correct code. Remember-me logins keep skipping the code (device trust, limited by `Auth.rememberLifetime`), and sensitive actions still require re-authentication with password and code.
+- **Alternatives:** disable remember-me for users with 2FA; ask the code on every remember-me login.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 06 as proposed.
+- **Applied in:** session 06 (`modules/Auth/`, `app/Config/Auth.php`)
+
+## D-06-04 — A password login counts as re-authentication (decide)
+
+- **Where:** spec "Re-authentication" (the confirmation lasts 15 minutes; a session re-created by remember-me still requires it)
+- **Problem:** Right after typing the password (and the 2FA code) at the login, a sensitive action (for example the forced 2FA set-up of a required group) would ask for them again.
+- **Proposal:** a password login, with its 2FA step, opens the re-authentication window for `Auth.reauthMinutes`; a magic-link login, a remember-me session and an unlocked idle lock do not. Changing it is one line in `LoginListener::login()`.
+- **Alternatives:** A) no login counts: every sensitive action asks again, also just after logging in (stricter, one more prompt). B) magic links count too (weaker: the email account alone would give sudo mode).
+- **Status:** Applied (decided)
+- **Decision (2026-11-05):** «A) Sí, compta (recomanada)». A password login, with its 2FA step, opens the re-authentication window for `Auth.reauthMinutes`; magic-link logins, sessions re-created by remember-me and unlocking the idle lock do not.
+- **Applied in:** `modules/Auth/Services/LoginListener.php` (built by session 06; tests `ReauthTest::testPasswordLoginOpensTheWindowForFifteenMinutes`, `TwoFactorLoginTest::testEmailCodeLogin`, `TwoFactorLoginTest::testMagicLinkLoginAlsoAsksForTheCode`, `ReauthTest::testSessionRecreatedByRememberMeStillRequiresIt`), `docs/specification.md`
+
+## D-06-05 — 2FA group policy and re-authentication settings
+
+- **Where:** spec "Policy per group (setting)", "Groups" (a `groups` table with the 2FA policy, session 15), "Re-authentication" (15 minutes, setting)
+- **Problem:** The `groups` table arrives in session 15, but the policy is needed now.
+- **Proposal:** settings `Auth.twoFactorPolicy` (json: group name → `required`|`optional`, missing groups optional; default `{}`) and `Auth.reauthMinutes` (int, 1–240, default 15), defaults in `Config\Auth` like the other Auth settings; session 15 moves the policy to the `groups` table (or makes the column write this setting). The `force2fa` filter on `backend/*` (after `forcereset`) sends a user of a required group without 2FA to `backend/profile/two-factor` (only the 2FA and password screens stay reachable; JSON gets 403); such a user can change the method but not turn 2FA off.
+- **Alternatives:** wait for session 15 (acceptance criterion 5 needs the policy now).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 06 as proposed.
+- **Applied in:** session 06 (`modules/Auth/`, `app/Config/Auth.php`, `app/Config/Filters.php`)
+
+## D-06-06 — Re-authentication screen, URLs and non-GET requests
+
+- **Where:** spec "Re-authentication" (`reauth` filter, `$this->requireReauth()`)
+- **Problem:** Where the confirmation is asked and what happens to the request that triggered it.
+- **Proposal:** `auth/reauth` (auth layout, checks the session itself) asks for the password and, with 2FA, the method's code (TOTP, or an emailed code requested with a button) or a recovery code; failures count as failed logins and past the limit end the session. The window is stored in the PHP session (so a re-created session starts without it) and forgotten at login/logout. The filter sends a GET to the screen and back afterwards; a POST/PUT/DELETE is never replayed (the user confirms and repeats it; they return to the Referer when it is a page of this site); JSON gets 401 with the URL. `BackendController::requireReauth()` runs the filter registered under the alias `reauth` (no module name in the Core) and denies when it is missing. The profile's 2FA changes (`backend/profile/two-factor/*`) are the first routes using it; impersonation (session 15) will refuse it.
+- **Alternatives:** a modal with an AJAX confirmation (needs JS for a security path); replaying the POST (stores request bodies in the session).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 06 as proposed.
+- **Applied in:** session 06 (`modules/Auth/`, `modules/Core/Controllers/BackendController.php`)
+
+## D-07-01 — The `backend` filter chain
+
+- **Where:** spec "RBAC" (`backend` chain: authentication, forced reset, forced 2FA, disabled-module check, maintenance, activity log, idle lock, throttling), example `['filter' => ['backend', 'can:…']]`
+- **Problem:** Half of the chain exists (Shield `session`, `forcereset`, `force2fa`), part runs globally already (`moduleenabled`, `authsession` with the idle lock) and the rest does not exist yet (throttling 08, activity 12, maintenance 28). A chain that each route must name can be forgotten.
+- **Proposal:** `backend` is a filter alias in `app/Config/Filters.php` listing the classes in order (`SessionAuth`, `ForcePasswordReset`, `ForceTwoFactor`) and is applied by pattern to `backend` and `backend/*` (`$filters`), replacing the three separate entries; routes only add `can:` (and `reauth`). The global filters keep covering the disabled-module check and the idle lock; later sessions append their classes to the alias. `RoutesSecurityTest` checks the pattern.
+- **Alternatives:** A) Each route group names `backend` (as in the specification's example; easy to forget). B) A Core filter class that runs a configurable list of aliases (more indirection for the same result).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 07 as proposed (not a public convention change nor a security weakening).
+- **Applied in:** session 07 (`app/Config/Filters.php`, `docs/rbac.md`)
+
+## D-07-02 — Syntax of `can:` with several permissions
+
+- **Where:** spec "RBAC" ("a `can` filter (accepts several permissions, any/all)")
+- **Problem:** CodeIgniter filter arguments are a comma-separated list; the specification does not say how "all" is written.
+- **Proposal:** `can:a.x,b.y` passes with **any** of them; `can:all,a.x,b.y` requires **all** of them (`all` has no dot, so it cannot be a permission). `can:` or `can:all` alone deny. Helpers `can()` (any) and `can_all()`.
+- **Alternatives:** A) A second alias `canall:`. B) Several `can:` filters on the route (CodeIgniter runs each one: "all" by repetition, verbose).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 07 as proposed (fills a gap; no existing name changes).
+- **Applied in:** session 07 (`modules/Core/Filters/Can.php`, `modules/Core/Helpers/can_helper.php`, `docs/specification.md`)
+
+## D-07-03 — Unknown and disabled permissions are refused to everybody
+
+- **Where:** spec "RBAC" (superadmins bypass the resolver; disabled modules hidden), "Module lifecycle"
+- **Problem:** A superadmin bypass that answers yes to any string hides typos (`can:news-post.list` would work for the developer testing as superadmin and fail for everybody else), and grants of a disabled module would still match through Shield.
+- **Proposal:** `Authorization` refuses names that are not in the catalogue of the **enabled** modules to everybody, superadmins included; superadmins hold every other permission. Shield's `AuthGroups.permissions`/`matrix` only contain the enabled catalogue and the grants (atomic or wildcard) that give some of it; grants are kept and come back when the module is enabled. `RoutesSecurityTest` and `permissions:check` also fail when a `can:` names a permission outside the catalogue.
+- **Alternatives:** A) Superadmins pass any name (the literal reading; typos go unnoticed).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 07 as proposed (stricter than the specification, not weaker).
+- **Applied in:** session 07 (`modules/Core/Permissions/Authorization.php`, `ShieldMatrix.php`, `RouteSecurityAuditor.php`, `docs/specification.md`)
+
+## D-07-04 — Grant changes and extra escalation rules before the matrix screen
+
+- **Where:** spec "RBAC" (implied permissions on save, atomic saves, escalation rules), session 15 (matrix screen)
+- **Problem:** The rules must exist and be tested in this session, but the screens come in session 15. The specification lists four escalation rules; group membership and wildcards leave gaps (an admin could add a user to a group holding more than the admin; a wildcard could hide permissions the granter lacks).
+- **Proposal:** `GrantManager` is the only way to change grants: names validated (atomic catalogue names, or Shield wildcards matching some of them; users get atomic names only), implied permissions added, group saves in one transaction, Shield's matrix rewritten, event `privilegesChanged` (user id) for every affected user, which Auth turns into `SessionTracker::privilegesChanged()`. `EscalationGuard` (Core) holds the rules and `Auth\GroupRules` delegates to it. Besides the four rules: a wildcard needs every permission it matches; adding someone to a group needs every permission of the group; only superadmins touch a superadmin's groups or permissions and the `superadmin` group's grants; nobody but a superadmin changes the grants of a group they belong to. Changes go to the application log until session 12.
+- **Alternatives:** A) Only the four rules of the specification (leaves the gaps above).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 07 as proposed (stricter, not weaker).
+- **Applied in:** session 07 (`modules/Core/Permissions/GrantManager.php`, `EscalationGuard.php`, `modules/Auth/Services/GroupRules.php`, `modules/Auth/Config/Events.php`)
+
+## D-07-05 — Resolver wiring, the development check and diagnostics
+
+- **Where:** spec "RBAC" (`CrudPermissions`, "in development it fails loudly", `permissions:check` "for every CRUD route")
+- **Problem:** `Config\Kpcrudy` and `Config\Kpapy` are created by sessions 09 and 10; no CRUD exists yet, so `permissions:check` cannot instantiate CRUDs; kpcrudy/kpapy instantiate the resolver with `new $class()`.
+- **Proposal:** `CrudPermissions` is final, has a no-argument constructor and `forUser($user)` for explicit users; sessions 09/10 set it as `$permissionResolver` with `$denyByDefault = true`. The catalogue comparison runs in every environment but production (so tests catch it), once per resource and process. `permissions:check` covers manifests, catalogue, grants, matrix and routes now; session 09 adds the CRUD comparison through `CrudPermissions::undeclared()` when `CrudFactory` exists. `permissions:check` diagnostics are English developer output (like exception messages); its summary lines are translated.
+- **Alternatives:** A) Create the kpcrudy/kpapy config files now (out of scope of this session).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 07 as proposed.
+- **Applied in:** session 07 (`modules/Core/Permissions/CrudPermissions.php`, `PermissionAudit.php`)
+
+## D-08-01 — Menu keys, zones, rendering and breadcrumbs
+
+- **Where:** spec "Menus", "Modules › Menus" (stable keys), deploy/08
+- **Problem:** The specification names keys, zones and parents but not how `parent` refers to another entry, which zones the theme prints, what happens to entries whose parent or route is missing, nor how breadcrumbs from the tree combine with the ones controllers add.
+- **Proposal:** entry key `<Module>.<resource>` or the route name (`<key>@<zone>` for the same resource in a second zone); `parent` = a resource of the same module or any key; `modules:sync` stores normalised entries in `module_declarations` (kind `menu`). Zones: `sidebar` and `settings` (under a heading) in the sidebar, `user` in the user menu (Auth declares profile and sessions there); other zones are kept for later themes/sessions. Entries without an existing route are hidden; an entry whose parent is missing goes to the root; cycles are dropped. Cache key: groups + individual permissions; `GrantManager` invalidates `menus`. Breadcrumbs come from the menu only when the controller adds none.
+- **Alternatives:** A) Mix menu and controller breadcrumbs (duplicates). B) Hide orphans (a disabled parent module would hide another module's entries).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 08 as proposed.
+- **Applied in:** session 08 (`modules/Core/Menus/`, `themes/default/Views/partials/`, `docs/menus.md`)
+
+## D-08-02 — Security headers on every response
+
+- **Where:** spec "Security baseline" (headers), D-00-28
+- **Problem:** Global "after" filters do not run for unknown routes and exception pages; the specification does not say whether a controller may change a header.
+- **Proposal:** `securityheaders` is a **required** after filter (runs for every route, existing or not) and `Config\Exceptions::handler()` wraps CodeIgniter's handler to add the same headers to error responses. `Cross-Origin-Opener-Policy: same-origin` added; HSTS `null` = production only, max-age never below one year; a header already set by a controller is kept; CodeIgniter's `secureheaders` alias removed. `forceGlobalSecureRequests` true in production (constructor), like `Cookie::$secure`.
+- **Alternatives:** A) Global after filter only (404/500 pages without headers).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 08 as proposed.
+- **Applied in:** session 08 (`app/Config/SecurityHeaders.php`, `modules/Core/Filters/SecurityHeaders.php`, `modules/Core/Http/SecureExceptionHandler.php`, `docs/security.md`)
+
+## D-08-03 — Rate-limit service and its settings
+
+- **Where:** spec "Security baseline › Rate limits" ("values in settings"), "RBAC" (throttling in the `backend` chain), D-05-04
+- **Problem:** The settings are not named and Auth already limits logins, links, 2FA and re-authentication with its own settings.
+- **Proposal:** `RateLimiter` (Throttler) with named limits and Core settings `rateLimitBackend` (300/min per user), `rateLimitApiToken` (120/min), `rateLimitApiIp` (60/min), `rateLimitFeeds` (60/h per token), `rateLimitUploads` (100/h per user), `rateLimitForms` (10/h per IP), `rateLimitWidgets` (120/min per user); `ratelimit:<limit>` filter (per user, or IP for guests) whose class closes the `backend` chain; 429 + `Retry-After` (themed `errors/429` or JSON). Auth keeps `LoginThrottle` and its `Auth.*` settings for the authentication forms; API login (`auth/token`) reuses them in session 10.
+- **Alternatives:** A) Move Auth's counters to the Core service now (rewrites tested Auth code without need).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 08 as proposed.
+- **Applied in:** session 08 (`modules/Core/Security/RateLimiter.php`, `modules/Core/Filters/RateLimit.php`, `modules/Core/Config/Module.php`)
+
+## D-08-04 — OutboundClient details and the allow-list sources
+
+- **Where:** spec "Outbound requests", D-00-29, plan session 08 (DNS rebinding)
+- **Problem:** The format of allow-list entries, the allowed ports, proxies, the setting name and how the mail service is hooked are not specified.
+- **Proposal:** entries are host names or `*.example.com` (subdomains only); sources `Config\Outbound::$allowedHosts` + `.env` `outbound.hosts` + enabled modules' `$outboundHosts` (`module_declarations` kind `outbound`) + setting `Core.outboundHosts` (JSON list); port 443 only (configurable); every resolved address must be public, connection pinned with `CURLOPT_RESOLVE`; redirects followed by hand and re-checked; direct connections unless `outbound.proxy` is set; logging to the application log until session 12 (no query strings). Mail: `app/Config/Services::email()` returns `GuardedEmail`, which refuses SMTP hosts outside the list.
+- **Alternatives:** A) CodeIgniter's CURLRequest (no address pinning, follows redirects itself).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 08 as proposed.
+- **Applied in:** session 08 (`app/Config/Outbound.php`, `modules/Core/Http/`, `modules/Core/Mail/GuardedEmail.php`, `docs/outbound-requests.md`)
+
+## D-08-05 — What `safe_redirect()` accepts
+
+- **Where:** spec "Data handling" ("redirects only to internal paths")
+- **Problem:** Absolute URLs of the site itself are common in `return` values.
+- **Proposal:** `safe_redirect($url, $fallback)` follows paths and http(s) URLs whose host is `app.baseURL`'s or in `app.allowedHostnames`; refuses `//`, backslashes, other schemes, user information and control characters; an external fallback falls back to `/`.
+- **Alternatives:** A) Paths only (breaks absolute self links).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 08 as proposed.
+- **Applied in:** session 08 (`modules/Core/Security/SafeRedirect.php`, `modules/Core/Helpers/redirect_helper.php`)
+
+## D-09-01 — Where `app.maskKey` lives and when the application refuses to start
+
+- **Where:** spec "JSON API" (the same `app.maskKey`), deploy/09 ("refuse to boot in production when it is empty")
+- **Problem:** The key must be read by two library configs; "refuse to boot" also stops `spark`, which the installer (session 18) needs to generate the key. kpcrudy/kpapy reject keys under 32 characters only when they first use them.
+- **Proposal:** `Config\App::$maskKey` (`.env` `app.maskKey`), read through `Modules\Core\Security\MaskKey` by `Config\Kpcrudy` and `Config\Kpapy` (a minimal kpapy config that session 10 completes). A Core `pre_system` listener refuses **web** requests in production when the key is empty, and in every environment when it is shorter than 32 characters; `spark` is not blocked. The `env` template documents it empty; `phpunit.xml.dist` sets a test-only value; local `.env` files get a generated one (`php -r "echo bin2hex(random_bytes(32));"`).
+- **Alternatives:** A) Refuse in `spark` too (the installer could not run). B) Throw only when a CRUD is first used (a misconfigured production would serve pages until then).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 09 as proposed.
+- **Applied in:** session 09 (`app/Config/App.php`, `app/Config/Kpcrudy.php`, `app/Config/Kpapy.php`, `modules/Core/Security/MaskKey.php`, `modules/Core/Config/Events.php`, `phpunit.xml.dist`)
+
+## D-09-02 — CRUD page header, messages as toasts and the confirmation modal
+
+- **Where:** spec "CRUDs with kpcrudy" (`showTitle = false`, "`flashKeys` mapped to the layout's toasts", "`kpcrudy:confirm` to use the theme's confirmation modal")
+- **Problem:** In section mode kpcrudy only passes `$title` to the layout, which printed a page header only from `$pageHeader`; the layout showed session messages as alerts, not toasts; kpcrudy has an `info` type the layout did not know.
+- **Proposal:** `partials/page_top` builds the page header from `$title` + `$breadcrumbs` when no `$pageHeader` is given (`renderCrud()` passes the breadcrumbs); `flashKeys` = success→`success`, danger→`error`, warning→`warning`, info→`info` (new key, also accepted by `BackendController::flash()`); `partials/flash` prints the alerts inside a `core/ui/flash` component that turns them into toasts (alerts stay without JavaScript); `core/ui/confirm.js` cancels `kpcrudy:confirm` and asks with the theme's modal. The library's `crud_container` card is not used: the CRUD markup is already a card.
+- **Alternatives:** A) Render CRUDs in fragment mode inside a Core view (loses `page()` layouts of custom operations).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 09 as proposed.
+- **Applied in:** session 09 (`themes/default/Views/partials/{page_top,flash}.php`, `modules/Core/Assets/js/ui/{flash,confirm}.js`, `modules/Core/Controllers/BackendController.php`)
+
+## D-09-03 — `CrudFactory` details and how `permissions:check` inspects CRUDs
+
+- **Where:** spec "CRUDs with kpcrudy" (`CrudFactory::make()/routes()`), D-07-05 (CRUD comparison in `permissions:check`)
+- **Problem:** CRUDs are configured inside controller actions, so a command cannot read their operations without running them; routes of `backend/*` already get the `backend` chain by pattern.
+- **Proposal:** `CrudFactory::routes()` always adds `backend` (CodeIgniter runs an alias once per request, so routes outside `backend/` are covered too), `can:<resource>.list`, extra filters appended, `as` = resource; resource names are validated. `CrudAuditor` (run by `permissions:check`) finds every kpcrudy route, requires the factory's route name and `can:`, runs the action with `CrudFactory::inspect()` and a GET web request and no user; `renderCrud()` stops before rendering; it reports CRUDs not made with the factory, a resource different from the route's, and operations not in the catalogue (`CrudPermissions::undeclared()`). Operations a CRUD adds only for some users are not seen there; `CrudPermissions` still fails loudly at run time outside production.
+- **Alternatives:** A) A static `crud()` method per controller describing the CRUD (duplicates the configuration).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 09 as proposed.
+- **Applied in:** session 09 (`modules/Core/Crud/`, `modules/Core/Permissions/PermissionAudit.php`)
+
+## D-09-04 — `make:module --crud`: running `kpcrudy:make` and what is rewritten
+
+- **Where:** D-00-09, spec "Common module base"
+- **Problem:** `kpcrudy:make` reads its options with `CLI::getOption()`, so `command()` cannot pass them; it needs the table in the database; it writes a non-strict, non-final controller without return types and `image`/`upload` field types (forbidden, D-00-23).
+- **Proposal:** `make:module <Name> --crud=<table>` generates the module with a migration for that table, a `crud` resource `<key>` (table without the `<module>_` prefix and underscores; `except` `import`), its admin grant, menu entry (under `main`) and language keys; runs `php spark migrate -n Modules\<Name>` and `php spark kpcrudy:make <table> --namespace … --extends BackendController --controller <Key> --route backend/<module>/<key> --as <module>-<key> --filter backend` as child processes; then rewrites the route to `CrudFactory::routes()`, `new Crud()` → `$this->crud()`, `render()` → `renderCrud()`, adds strict types, `final` and the return type, and replaces upload field types with a comment pointing to the file picker.
+- **Alternatives:** A) Call kpcrudy's `CrudGenerator` class directly (not documented as public API).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 09 as proposed.
+- **Applied in:** session 09 (`modules/Core/Commands/MakeModule.php`, `modules/Core/Modules/{CrudScaffold,ModuleGenerator}.php`, `modules/Core/Modules/Templates/`)
+
+## D-09-05 — The sample CRUD lives in the tests, not in a module
+
+- **Where:** deploy/09 ("A sample CRUD in a test module")
+- **Problem:** A real `modules/<Sample>` would be discovered, synced and shown in every installation.
+- **Proposal:** a test-only "Sample" module in `tests/_support/Crud/` (manifest, controller, routes and table installed by the test); the permissions come from its manifest through `CatalogueBuilder`, like a real module's. Screenshots use a module generated with `make:module Library --crud=library_books` that is not committed.
+- **Alternatives:** A) A disabled demo module shipped with the skeleton.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 09 as proposed.
+- **Applied in:** session 09 (`tests/_support/Crud/`, `tests/feature/Crud/`)
+
+## D-10-01 — The API core in a core module `Api`
+
+- **Where:** spec "JSON API (kpapy)" (`api.docs`, `api.tokens`, `Api.publicSpec`), `docs/plan.md` session 10 (files in `modules/Core/Api/`), CLAUDE.md ("never hard-code a module in the Core")
+- **Problem:** The plan put the API login providers in the Core, but they read the Auth module's 2FA data (the Core must not depend on a module); settings named `Api.*` need a module named `Api` (setting names are `<Module>.<key>`); the administrators' token list needs permissions the specification does not name.
+- **Proposal:** a module `Api` (requires Core and Auth) added to the core modules that cannot be disabled (`ModuleToggler::CORE_MODULES`). One resource named `api` (D-00-18): kpcrudy CRUD of every user's tokens (`api.list`, `api.show`, `api.delete`) plus `api.docs` and `api.tokens`; settings `Api.publicSpec`, `Api.corsOrigins`, `Api.appTokenDays`; default grants admin `api.*`, editor `api.tokens`. Names in the specification are unchanged. Modules' API resources stay in their own modules; Core resources (notifications, session 26) in the Core.
+- **Alternatives:** A) Everything in the Core with settings `Core.api*` (renames `Api.publicSpec`; Core depends on Auth). B) The admin list as a hand-written screen with `api.manage`.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 10 as proposed.
+- **Applied in:** `modules/Api/`, `modules/Core/Modules/ModuleToggler.php`, `docs/specification.md` (core modules), `docs/api.md`
+
+## D-10-02 — Second factor of the app login: authenticator app, else an emailed code
+
+- **Where:** spec "JSON API" › "Login for apps", `docs/plan.md` (`twoFactorMethods = ['totp', 'email', 'emailcode']`)
+- **Problem:** Users with email 2FA and users without 2FA both receive a code by email; two methods would differ only in the email's wording, and the app would have to handle both.
+- **Proposal:** `twoFactorMethods = ['totp', 'email']`. `totp` (`Modules\Api\TwoFactor\TotpProvider`): users whose method is the authenticator app; codes checked by Auth's `TwoFactor::verifyTotp()` (a step is never reused, shared with the web), or a recovery code. `email` (`EmailCodeProvider`): everybody else; the email names device, IP and time and links to `auth/api-login/<challenge>` (no login: the 192-bit challenge id is the proof and it can only stop the sign-in; the POST needs CSRF). Users with 2FA may also answer with a recovery code. Codes valid 10 minutes, 5 wrong codes close the challenge. kpapy's `web` method is not used.
+- **Alternatives:** A) A third method `emailcode` for users without 2FA. B) Refuse users without 2FA (`403 two-factor-required`).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 10 as proposed.
+- **Applied in:** `app/Config/Kpapy.php`, `modules/Api/TwoFactor/`, `modules/Api/Controllers/LoginDenyController.php`
+
+## D-10-03 — API limits, CORS and login rules
+
+- **Where:** spec "JSON API" › "Cross-cutting", "Security baseline" › rate limits
+- **Problem:** kpapy reads its limits and origins from its config class; the skeleton keeps them in settings.
+- **Proposal:** `Config\Kpapy`'s constructor reads `Core.rateLimitApiToken` (per token), `Core.rateLimitApiIp` (per IP, routes without a token), `Api.appTokenDays` and `Api.corsOrigins` (full `http(s)://host` origins only; `*` is dropped). The app login keeps kpapy's `rateLimitLogin` (10 per minute per IP and per account) and also counts wrong passwords in Auth's `LoginThrottle` (shared with the web form; `429` while blocked). Users who must change their password get `403 password-reset-required`; personal tokens cannot be refreshed (`403 personal-token`).
+- **Alternatives:** A) An extended `ApiFilter` using the Core's `RateLimiter` (the library's alias would have to be overridden).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 10 as proposed.
+- **Applied in:** `app/Config/Kpapy.php`, `modules/Api/Controllers/LoginController.php`
+
+## D-10-04 — No session on the API, its language and `api/v1/me`
+
+- **Where:** spec "Security baseline" › API ("the API never reads the session cookie"), "JSON API" (problem+json translated, `me`)
+- **Problem:** The global `authsession` filter opened a session (and set its cookie) on API requests; locale negotiation is off in the application, so API errors were always in the default language; `me` is not a table resource.
+- **Proposal:** `authsession` excludes `api/*`; a filter `apilocale` (Api module, on `api/*`) negotiates `Accept-Language` among ca/es/en; `GET api/v1/me` is a controller using kpapy's `Responder` (any valid token, no secrets): masked id (context `users`, the same as a future users CRUD), name, email, locale, time zone, colour mode, groups, 2FA method and the token's name, scopes and expiry; avatar URL `null` until session 23. (In development the debug toolbar still starts a session; production never.)
+- **Alternatives:** A) `me` as a kpapy `Resource` on `users` limited with `where()` (it would answer a list).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 10 as proposed.
+- **Applied in:** `app/Config/Filters.php`, `modules/Api/Filters/ApiLocale.php`, `modules/Api/Controllers/Me.php`
+
+## D-10-05 — Personal tokens: scopes, expiry, last IP and the administrators' list
+
+- **Where:** spec "JSON API" › "Personal tokens" (name, scopes, expiry, last use and IP)
+- **Problem:** The specification does not say which scopes or expiries are offered; Shield does not store the address of the last use.
+- **Proposal:** scopes `*` or permissions the user holds when creating the token (escalation refused on the server); expiry 7, 30, 90 or 365 days (default 90, never unlimited); creation behind `reauth`, the secret shown once; tokens marked personal (`secret2`, D-05). A table `api_token_ips` (Api module) keeps the last address of each token, written by `Modules\Api\Auth\TokenAuthenticator` only when it changes. Administrators list and revoke every token in a kpcrudy CRUD over `auth_identities` (type `access_token`; no secrets shown).
+- **Alternatives:** A) Free-text scopes. B) Store the IP in `auth_identities.extra` (Shield keeps the scopes there).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-05):** applied by session 10 as proposed.
+- **Applied in:** `modules/Api/Services/PersonalTokens.php`, `modules/Api/Controllers/{PersonalTokens,Tokens}.php`, `modules/Api/Database/Migrations/`
+
+## D-11-01 — The notification type contract
+
+- **Where:** spec "Notifications" (types: key, title, icon, default channels, a `render()` for the bell and an email template)
+- **Problem:** The specification does not say how a type is identified, what `render()` returns, nor when the text is produced (sending time or reading time, in which language).
+- **Proposal:** an abstract class `Modules\Core\Notifications\NotificationType`: static `title()`, `description()`, `icon()`, `defaultChannels()`, `mandatory()`; `render(): NotificationMessage` (title, body, internal path); `emailSubject()`, `emailView()`. The key is the class name (stored in `notifications.type` and `notification_preferences.type`). The constructor data is stored as JSON and rendered when shown, in the reader's language; types are rebuilt with `fromData()` without their constructor. Only types declared by enabled modules are sent; stored notifications of a vanished type render a generic text. Links are internal paths only.
+- **Alternatives:** A) Store the rendered text (one language, stale after edits). B) A string key separate from the class.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 11 as proposed.
+- **Applied in:** `modules/Core/Notifications/`, `docs/notifications.md`
+
+## D-11-02 — The email channel: queue, sending task and the recipient's language
+
+- **Where:** spec "Notifications" (email "queued or sent by the scheduler, never inline"), D-00-15
+- **Problem:** Where the queue lives, how failures are retried and in which language the email is written are not specified; the Core does not know where users keep their language.
+- **Proposal:** a `mail_queue` table (rendered subject and HTML body, status pending/sent/failed, attempts, last error, available at). The Core scheduled task `SendQueuedEmails` (every minute, without overlapping) sends 50 per run through the `email` service (GuardedEmail: SMTP host in the outbound allow-list), claims each row atomically, retries up to 5 times with growing waits (5, 10, 20, 40 minutes) and deletes sent/failed rows after 30 days. Emails are rendered when queued in the recipient's language: `RecipientLocale` asks a resolver the Auth module registers (profile locale), else the default locale.
+- **Alternatives:** A) Render at sending time (needs the type and data again). B) CodeIgniter's queue package (a new dependency).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 11 as proposed.
+- **Applied in:** `modules/Core/Mail/MailQueue.php`, `modules/Core/Tasks/SendQueuedEmails.php`, `modules/Core/Notifications/{Channels,RecipientLocale.php}`, `modules/Auth/Config/Events.php`
+
+## D-11-03 — Recipients, preferences and mandatory types
+
+- **Where:** spec "Notifications" (`notify()`, by group / permission; preferences per type; mandatory types), D-00-20
+- **Problem:** Which users are skipped, how preferences are stored and what "mandatory" means for the channels.
+- **Proposal:** `notify()` accepts users, ids or a list; each user once per call; banned and deleted users are skipped. `notifyGroup()` reads `auth_groups_users`; `notifyPermission()` checks every user with `Authorization::for($user)` (superadmins included; works without a session). Preferences: one row per user and type with the chosen channels; no row = the type's default channels; users may choose any channel (database, email). Mandatory types always use their default channels; the form shows them disabled and the server ignores them. The 2FA reset (Auth) is mandatory.
+- **Alternatives:** A) Preferences limited to the default channels. B) Notify only active (email-verified) users.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 11 as proposed.
+- **Applied in:** `modules/Core/Notifications/Notifier.php`, `modules/Auth/Notifications/TwoFactorReset.php`
+
+## D-11-04 — Notification screens, URLs and the bell
+
+- **Where:** spec "Notifications" › UI, D-00-17
+- **Problem:** URLs and operations of the list, the bell and the preferences are not specified.
+- **Proposal:** resource `core-notifications` (Core, `list`, `show`, `delete`; granted to every group). `backend/notifications` (kpcrudy, `where('user_id', me)`, mark one / selected / all as read as custom operations checked as `list`); `backend/notifications/bell` (JSON, latest 8 and the unread count); `backend/notifications/open/{id}` (GET: marks the user's own notification as read and redirects to its internal path or detail page; another user's id is "not found"); `POST backend/notifications/read-all`; preferences at `backend/profile/notifications` (GET/POST). All behind `can:core-notifications.list`. The bell is a theme partial (`partials/notifications_bell.php`) with the ES module `core/ui/bell.js`; it works without JavaScript through links and a form.
+- **Alternatives:** A) "Open" as a POST (a form per bell item). B) Preferences inside the Auth profile page (would make the Core depend on Auth's view).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 11 as proposed.
+- **Applied in:** `modules/Core/Config/{Module,Routes}.php`, `modules/Core/Controllers/{Notifications,NotificationPreferences}.php`, `themes/default/Views/partials/notifications_bell.php`
+
+## D-11-05 — How the scheduler decides, locks and records runs; the `schedule` resource
+
+- **Where:** spec "Scheduled tasks"; plan risk "locks on shared hosting (file locks vs DB locks)"
+- **Problem:** "Due" semantics (missed minutes, two processes), where locks live, where `withoutOverlapping()`/`onlyInEnvironment()` are declared, how much history is kept and the permission names of the screen.
+- **Proposal:** `TaskInterface` (`name()`, `schedule(): Schedule`, `run(): TaskResult`); the options are methods of `Schedule` (`daily('03:00')->withoutOverlapping()->onlyInEnvironment('production')`). `scheduled_tasks` keeps each declared class with its `next_run_at`; a task runs when it has passed and the runner first moves it forward in one atomic `UPDATE … WHERE next_run_at = <old>` (two processes never run a slot twice; a missed period runs once; new tasks wait for their first slot). Locks are columns of the same table (`locked_until`, `lock_owner`), so they work on every host and expire. A run blocked by the lock is recorded as `skipped`. `task_runs` keeps the latest 50 runs per task (output up to 60 KB, source cron/manual/web, user of "run now"). Failures are logged and notified (`ScheduledTaskFailed`) to the holders of `schedule.list`. Tasks of disabled modules are marked inactive. Screen: single Core resource `schedule` (D-00-18) with `schedule.list`, `schedule.show`, `schedule.run`; administrators get `schedule.*`.
+- **Alternatives:** A) File locks (`flock`, unreliable on some shared/NFS hosts). B) Run every matching minute without `next_run_at` (missed runs are lost; double runs possible).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 11 as proposed.
+- **Applied in:** `modules/Core/Scheduler/`, `modules/Core/Commands/Schedule{Run,List}.php`, `modules/Core/Controllers/Schedule.php`, `docs/scheduler.md`
+
+## D-11-06 — The poor man's cron
+
+- **Where:** spec "Scheduled tasks" (fallback "run after the response is sent"); plan risk (`fastcgi_finish_request()` absent with `php spark serve`/mod_php)
+- **Problem:** CodeIgniter triggers `post_system` before sending the response, and not every server can finish a response early.
+- **Proposal:** setting `Core.poorMansCron` (bool, off). The after filter `PoorMansCron` is part of the `backend` chain; at most once a minute (cache timestamp; the runner's atomic claims cover races) it registers a shutdown function that closes the session, calls `fastcgi_finish_request()` / `litespeed_finish_request()` when available and runs the due tasks with source `web`. On other servers the browser waits for the tasks (documented).
+- **Alternatives:** A) An asynchronous HTTP request to a "tick" URL (an outbound call from a regular request, forbidden). B) Only on the dashboard.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 11 as proposed.
+- **Applied in:** `modules/Core/Filters/PoorMansCron.php`, `app/Config/Filters.php`, `modules/Core/Config/Module.php`
+
+## D-12-01 — Who writes the activity log
+
+- **Where:** spec "Activity log", "Modules" › "Activity"; `docs/plan.md` session 12 (listeners in `modules/Core/Config/Events.php` for Shield, kpapy, reauth, 403s and tokens)
+- **Problem:** The plan puts every listener in the Core, but the Core must never hard-code a module (`CLAUDE.md`), and the log must keep working when the Activity module is disabled.
+- **Proposal:** The Core owns the table, `ActivityLogger` (service `activity`, helpers `activity_log()` / `security_log()`), `SecretMasker`, `SafeLogger` and the retention task; each module logs its own events where they happen: Auth (Shield `login`/`logout`, failed logins, throttling, 2FA, re-authentication, profile, sessions, groups), Api (kpapy `kpapy.auth.*` in `modules/Api/Config/Events.php`, tokens, new IP), Core (403s from `can:`, rate limits, grants, modules, demo data, scheduler, outbound, preferences). The Activity module only has the two read-only screens and can be disabled.
+- **Alternatives:** A) Every listener in the Core's `Config/Events.php` (the Core would know Auth's and Api's events). B) The logger inside the Activity module (nothing logged while it is disabled).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 12 as proposed.
+- **Applied in:** `modules/Core/Activity/`, `modules/Core/Helpers/activity_helper.php`, `modules/{Auth,Api,Core}/…`, `docs/activity.md`
+
+## D-12-02 — CRUD writes logged by a Core subclass of kpcrudy's `Crud`
+
+- **Where:** spec "Activity log" ("kpcrudy `afterWrite()` hooks, custom operations"); session 09 note ("`afterWrite()` for the activity log")
+- **Problem:** kpcrudy keeps a single `afterWrite` callback: a Core hook set by `CrudFactory` would be replaced by a module's own `afterWrite()`, and vice versa. Custom operations and exports have no hook.
+- **Proposal:** `Modules\Core\Crud\AuditedCrud extends Kpcrudy\Crud` (made by `CrudFactory::make()`, so no module code changes) logs after kpcrudy's own hooks in `callHook()` (insert, update with the changed fields only, delete, restore; bulk actions and imports included), wraps POST custom operations and custom bulk actions (logged unless the callback returns `false`) and logs CSV exports. `skipActivity(…)` leaves out operations that only change the user's own view or log a richer entry themselves (notifications "read", schedule "run"). Module hooks keep working as documented.
+- **Alternatives:** A) A Core `afterWrite()` that modules must not override (easy to break). B) A library request for several `afterWrite` callbacks (blocks this session).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 12 as proposed.
+- **Applied in:** `modules/Core/Crud/{AuditedCrud,CrudFactory}.php`, `modules/Core/Controllers/BackendController.php`, `docs/cruds.md`
+
+## D-12-03 — Entry format, action codes and labels, security events
+
+- **Where:** spec "Activity log" (columns, `security` type, append-only)
+- **Problem:** The specification lists columns but not how actions are named and translated, which events are `security`, nor where the summary text comes from (UI texts only in language files).
+- **Proposal:** `action` is a code (`insert`, `login_failed`, `token_new_ip`…); its label is `<Module>.activity.<action>`, then `Activity.actions.<action>`, else the code. `summary` is data (a record's title/name/username/email, an email typed at login, a path), never a sentence; `changes` is JSON `{before, after, changes}` masked by key. `type` is `security` for failed logins/codes/re-authentications, throttling, 403s, re-authentication, password/email/2FA/recovery-code changes, grants and user permissions, token creation/revocation/new IP, denied app logins and refused outbound requests; everything else is `activity`. Errors stay in the file log (with `SafeLogger`). Settings changes, refused uploads and refused packages are logged by sessions 14, 13 and 29.
+- **Alternatives:** A) Store a translated sentence (frozen in the writer's language). B) Store language keys with parameters (breaks when a module is removed).
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 12 as proposed.
+- **Applied in:** `modules/Core/Activity/ActivityLogger.php`, `modules/Activity/Controllers/Activity.php`, language files of Core, Auth, Api and Activity, `docs/activity.md`
+
+## D-12-04 — Retention setting `Core.activityRetentionDays` (decide)
+
+- **Where:** spec "Activity log" ("Retention by setting (e.g. 365 days), purged by a scheduled task")
+- **Problem:** The setting has no name; settings names are a public convention.
+- **Proposal:** `Core.activityRetentionDays` (int, default 365, 1–3650) in the Core's manifest (the log is the Core's, D-12-01); the Core scheduled task `PurgeActivityLog` runs daily at 03:17 and deletes older entries in chunks of 1000, then writes a `purge` entry. Shown in Settings by session 14.
+- **Alternatives:** A) `Activity.retentionDays` in the Activity module (the purge would stop while the module is disabled). B) Separate retention for `security` entries (e.g. 2 years).
+- **Status:** Applied
+- **Decision (2026-11-06):** «Core.activityRetentionDays (recomanada)». A single retention setting `Core.activityRetentionDays` (int, default 365, 1–3650) owned by the Core; the Core scheduled task `PurgeActivityLog` purges older entries daily, also while the Activity module is disabled. Nothing to change: session 12 built it this way.
+- **Applied in:** `modules/Core/Config/Module.php`, `modules/Core/Tasks/PurgeActivityLog.php`, `modules/Core/Language/*/Core.php`, `docs/activity.md`, `docs/specification.md` (session 12; tests in `modules/Core/Tests/ActivityLoggerTest.php`)
+
+## D-12-05 — Personal data and network fields in the log
+
+- **Where:** spec "Activity" (IP and user agent hidden without `activity-log.network`), "My activity"
+- **Problem:** A failed login stores what was typed (sometimes a password in the email field); "My activity" would show the IP addresses of the user's own entries.
+- **Proposal:** A failed login keeps the typed login name only when it is a valid email address. IP and user agent are hidden with `hideFields()` from every user without `activity-log.network`, on both screens (users see their own entries without them). Each entry stores the IP of the request that caused it (for a failed login: the attacker's).
+- **Alternatives:** A) Store the typed text as is. B) Show users their own IP addresses.
+- **Status:** Accepted (proposal)
+- **Decision (2026-11-06):** applied by session 12 as proposed.
+- **Applied in:** `modules/Core/Activity/ActivityLogger.php` (`typedEmail()`), `modules/Activity/Controllers/Activity.php`
+
+
+## D-13-01 — Private file URL and who may read a private file (decide)
+
+- **Where:** spec "Storage" (private disk "served through a controller that checks permissions"), "Files" (folder ACL and `FileAccessPolicy`, session 22); `docs/plan.md` session 13 (route `files/private/(:segment)`, "temporary permission rule")
+- **Problem:** The URL of a private file and the rule used before the folder permissions exist are not specified; URLs are a public convention and the rule is security.
+- **Proposal:** `GET files/private/{key}`, where `key` is a random 128-bit identifier (32 hex characters, `stored_files.file_key`, unrelated to the file name); `?download=1` forces a download. Anything not allowed, unknown, on the public disk or missing on disk is a **404** (the existence of a file is not revealed, also to guests). The rule is a class (`Config\Storage::$accessRule`, interface `FileAccessRule`): until session 22 `OwnerAccess` = the user who uploaded the file and superadmins; the Files module replaces it with the folder permissions and its `FileAccessPolicy` registry. A misconfigured rule denies everything.
+- **Alternatives:** A) Masked numeric ids (`app.maskKey`): rotating the mask key would break every stored link. B) Login required and 403 for others (reveals that the file exists). C) Administrators read every private file now (before `files.all` exists).
+- **Status:** Applied
+- **Decision (2026-11-06):** «Clau aleatòria + 404 (recomanada)». Private files are served at `files/private/{key}` with a random 128-bit key; only the uploader and superadmins may read them until session 22 replaces the rule with folder permissions; everybody else, guests included, gets a 404. Nothing to change: session 13 built it this way.
+- **Applied in:** `app/Config/Storage.php`, `modules/Core/Storage/{Storage,OwnerAccess,FileAccessRule}.php`, `modules/Core/Controllers/PrivateFiles.php`, `modules/Core/Config/Routes.php`, `docs/storage.md`, `docs/specification.md` ("Storage"), `deploy/22-files-manager.md` (tests `PrivateFilesTest`)
+
+## D-13-02 — Upload settings `Core.uploadTypes`, `Core.uploadMaxSize`, `Core.uploadAllowSvg` (decide)
+
+- **Where:** spec "Storage" ("a setting allows SVG only through a sanitiser", "a setting can turn [re-encoding] off per field"), "Files" ("extension and MIME allow-lists from settings, size limits")
+- **Problem:** The settings have no names; settings names are a public convention.
+- **Proposal:** Core settings (the Storage service is the Core's and is used without the Files module): `Core.uploadTypes` (string, comma-separated extensions, default `jpg,jpeg,png,gif,webp,pdf,txt,csv,odt,ods,odp,doc,docx,xls,xlsx,ppt,pptx`), `Core.uploadMaxSize` (int, MB, default 10, 1–2048) and `Core.uploadAllowSvg` (bool, default off). A field (`UploadRules`) can only narrow them: an extension must be in both lists and the smaller size wins. Re-encoding is a field option (`UploadRules::$reencode`, default on), not a global setting. Extensions in `Config\Storage::$forbiddenExtensions` (code, HTML, executables, server configuration) are refused whatever the settings say. Shown in Settings › Security by session 14.
+- **Alternatives:** A) `Files.*` settings in the Files module (uploads of other modules would have no rules while it is disabled). B) Separate lists per disk or for images.
+- **Status:** Applied
+- **Decision (2026-11-06):** «Paràmetres del Core (recomanada)». The global upload rules are Core settings `Core.uploadTypes`, `Core.uploadMaxSize` (MB, default 10) and `Core.uploadAllowSvg` (off), which every field can only narrow; re-encoding is a per-field option. Nothing to change in the code: session 13 built it this way.
+- **Applied in:** `modules/Core/Config/Module.php`, `modules/Core/Storage/{UploadValidator,UploadRules}.php`, `modules/Core/Language/*/Core.php`, `docs/storage.md`, `docs/specification.md` ("Storage", "Files"), `deploy/14-settings.md` (tests `StorageTest::testTheDefaultRulesComeFromTheSettings`, `UploadRulesTest`)
+
+## D-13-03 — `stored_files` in the Core
+
+- **Where:** spec "Storage" ("the original name is kept in the database"), "Files" (`files` table with file-manager metadata, session 22); `docs/plan.md` session 13 ("`stored_files` minimal unless the Files `files` table is created here")
+- **Problem:** The Storage service needs a record per file (original name, MIME type, owner, URL key) before the Files module exists, and must keep working without it.
+- **Proposal:** The Core table `stored_files` (`file_key`, `disk`, `path`, `original_name`, `extension`, `mime`, `size`, `checksum` SHA-256, `width`, `height`, `uploaded_by`, `created_at`) written only by `Storage::store()`/`storeContents()` and removed by `Storage::delete()`. Session 22's `files` table adds the file-manager metadata (visibility, alt, tags, trash) with a reference to `stored_files.id` instead of repeating these columns.
+- **Alternatives:** A) Create the Files `files` table now in the Core (file-manager columns in the Core). B) No table until session 22 (no original names, no private URLs).
+- **Status:** Accepted (proposal)
+
+## D-13-04 — Headers of served private files
+
+- **Where:** spec "Storage" (stored MIME type, `nosniff`, `attachment` for private files that are not images or PDF)
+- **Problem:** "Images" includes SVG, which can run scripts when opened; the spec does not say how private files are cached or framed.
+- **Proposal:** `Content-Type` = the stored type (the canonical type of the allowed extension, never the client's), `X-Content-Type-Options: nosniff`, `Content-Disposition: inline` only for raster images (JPEG, PNG, GIF, WebP) and PDF, `attachment` for everything else (SVG included) and with `?download=1`; `Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; sandbox` (PDF without `sandbox`: browsers' PDF viewers do not work sandboxed), `X-Frame-Options: SAMEORIGIN` (previews in the file manager), `Cross-Origin-Resource-Policy: same-origin`, `Cache-Control: private, no-transform, no-store, must-revalidate`. The global security headers are added as usual. The public upload folder gets the same `nosniff`/sandbox headers and SVG as attachment from the web server (`public/uploads/.htaccess`, `docs/web-server.md`).
+- **Alternatives:** A) SVG inline with the sandbox CSP. B) Private caching with `ETag` (CodeIgniter's `DownloadResponse` cannot answer 304).
+- **Status:** Accepted (proposal)
+
+## D-13-05 — Upload checks in detail
+
+- **Where:** spec "Storage" (allow-list and MIME check, SVG through a sanitiser, image re-encoding, no execution), "Security baseline" (uploads)
+- **Problem:** The spec lists the rules but not how they are checked, nor which sanitiser to use (adding a dependency needs the owner's approval; only Flysystem is pre-approved here).
+- **Proposal:** The MIME type is detected from the contents with `finfo` and must belong to the extension (`Config\Mimes` + `Config\Storage::$extraMimes`); HTML/XML/SVG/PHP contents under another extension and `<?php` in the first 64 KB are refused; images must decode with `getimagesize`, match their extension and stay under 40 megapixels, then are re-encoded with GD (EXIF orientation applied first; animated GIFs keep their first frame); SVG is cleaned by the Core's own allow-list `SvgSanitizer` (DOM, no DOCTYPE/entities, no scripts, handlers, styles, `foreignObject`, links or external references). Paths are normalised by `PathNormalizer` (no `..`, `.`, absolute, backslashes, control characters or hidden segments) before Flysystem's own check; stored names are random (`<32 hex>.<ext>`). Public disk: folders `0755`, files `0644` (the web server reads them); private disk: `0750`/`0640`. Refused uploads are logged as `security` entries `Core`/`upload_refused` with the reason, disk and folder.
+- **Alternatives:** A) `enshrined/svg-sanitize` (a new dependency). B) Trust the browser's MIME type (forgeable).
+- **Status:** Accepted (proposal)
+
+## D-14-01 — Which settings belong to Settings › Security, and the `list` type (decide)
+
+- **Where:** specification "Configuration and settings" (Settings › Security lists the settings it shows; definitions have a `group`), "Module manifest" (`$settings`)
+- **Problem:** The Settings UI must know which declared settings need `settings.security` + re-authentication instead of `settings.<module>`, without the Settings module hard-coding other modules; and several security settings are lists (outbound hosts, CORS origins, CSP origins) that a JSON textarea makes error-prone. Both are manifest conventions.
+- **Proposal:** A setting whose `group` is `security` or `security.<sub>` is shown only in Settings › Security (one card per module, a heading per `<sub>`); every other setting is on its module's tab. A new setting type `list` (list of strings, edited one per line, cast by `SettingCaster`). `Core.outboundHosts` and `Api.corsOrigins` change from `json` to `list` (same stored array). Validation rules that refuse weakening values are ordinary rule names (`csp_sources`, `outbound_hosts`, `min_config[…]`…) registered by a module's registrar in `Config\Validation::$ruleSets`.
+- **Alternatives:** A) A new boolean manifest key `'security' => true` (group keeps only meaning a heading). B) A fixed list of setting names in the Settings module (hard-codes other modules). C) No `list` type: JSON textareas.
+- **Status:** Applied
+- **Decision (2026-11-06):** «Grup «security» (recomanada)». A setting whose `group` is `security` or `security.<sub>` is shown only in Settings › Security; other settings stay on their module's tab. The new setting type `list` (one entry per line) is kept, and `Core.outboundHosts` and `Api.corsOrigins` use it. Nothing to change in the code: session 14 built it this way.
+- **Applied in:** `docs/specification.md` ("Module manifest", "Configuration and settings"), `CLAUDE.md` ("Settings"), `docs/settings.md`; code of session 14 (`modules/Core/Settings/SettingCaster.php`, `modules/Core/Modules/ManifestValidator.php`, `modules/Settings/Services/SettingsEditor.php`; tests `SettingsFormTest`, `SettingsScreensTest`)
+
+## D-14-02 — Names of the new site-wide and CSP settings (decide)
+
+- **Where:** specification "Configuration and settings" (site name, time zone; "extra CSP origins per directive")
+- **Problem:** The specification does not name them; settings names are a public convention.
+- **Proposal:** `Core.siteName` (string, empty = the language line `Core.app.name`, read with `site_name()`), `Core.timezone` (string, default `UTC`, the display time zone of `ui_date()`; dates stay stored in UTC), and one `list` setting per directive: `Core.cspScriptSrc`, `Core.cspStyleSrc` (no wildcards), `Core.cspImgSrc`, `Core.cspFontSrc`, `Core.cspConnectSrc`, `Core.cspFrameSrc`, `Core.cspMediaSrc`, merged by the `cspmodules` filter.
+- **Alternatives:** A) One JSON setting `Core.cspOrigins` (directive => list; needs a custom form). B) `Core.appName` / `Core.siteTimezone`. C) Change `Config\App::$appTimezone` instead (stored dates would shift).
+- **Status:** Applied
+- **Decision (2026-11-06):** «Noms proposats (recomanada)». The settings are named `Core.siteName` (empty = the language line `Core.app.name`), `Core.timezone` (the display time zone; dates stay stored in UTC) and one `list` setting per CSP directive: `Core.cspScriptSrc`, `Core.cspStyleSrc` (no wildcards), `Core.cspImgSrc`, `Core.cspFontSrc`, `Core.cspConnectSrc`, `Core.cspFrameSrc`, `Core.cspMediaSrc`. Nothing to change in the code: session 14 built it this way.
+- **Applied in:** `docs/specification.md` ("Configuration and settings", "Security baseline" › "Configuring headers and CSP"), `docs/settings.md`; code of session 14 (`modules/Core/Config/Module.php`, `modules/Core/Filters/ContentSecurity.php`, `modules/Core/Helpers/ui_helper.php`; tests `SettingsScreensTest::testACspOriginAddedInTheUiAppearsInTheHeader`, `testAModuleTabIsSavedCastAndLogged`)
+
+## D-14-03 — Settings permissions, routes and actions
+
+- **Where:** specification "Configuration and settings" (`settings.update` opens the UI, `settings.<module>` changes a tab, `settings.security` + re-authentication), "Modules" › "Settings" (actions), D-00-33
+- **Problem:** The specification does not say what a user with `settings.update` but without `settings.<module>` sees, which permission the theme tab and the actions need, nor how `settings.update`/`settings.security` are generated.
+- **Proposal:** The Settings module has one resource `name => 'settings'` of type `crud` with every CRUD operation excluded and the extras `update` and `security` (exactly `settings.update`, `settings.security`). `settings.update` opens every tab (read-only without the tab's permission: fields disabled, POST refused by the `can:` filter's 403 and `forbidden` entry); the theme tab saves with `settings.core`. URLs `backend/settings` (first tab), `backend/settings/<module>` (lower case; 404 for a module without non-security settings), `backend/settings/theme`, `backend/settings/security` (`can:settings.security` + `reauth`, GET and POST), `backend/settings/actions`. Test email and clear caches: `settings.update`; publish assets: `settings.security` + `reauth` (it writes JavaScript into `public/`). Default grant: `admin` → `settings.*`.
+- **Alternatives:** A) Hide tabs without their permission. B) `settings.update` also for publishing assets.
+- **Status:** Accepted (proposal)
+
+## D-14-04 — What "weakening the baseline" means
+
+- **Where:** specification "Configuration and settings" ("values that would weaken the baseline (e.g. `unsafe-inline`) are refused"), "Security baseline" (CSP origins "validated as origins (no wildcards for scripts)")
+- **Problem:** Only `unsafe-inline` is named.
+- **Proposal:** Bounds in each setting's `rules` (e.g. password ≥ 8, remember-me ≤ 365 days, rate limits ≤ 10000) plus: CSP origins only `https://host[:port]`, `https://*.host` or `wss://host` (no keywords, `*`, schemes alone, `http:`, `data:` or paths; scripts/styles without wildcards); outbound hosts only host names or `*.domain` (no IPs, local names, schemes or ports); CORS origins `https://host[:port]` (`http://` only for localhost); upload types never a forbidden extension; the minimum password length never below `Config\Auth` (`min_config`); 2FA policy only for existing groups. Refusals are `security_settings_refused` security entries; the CSP filter re-checks stored origins. The UI stores only overrides (a value equal to the file configuration or manifest default is forgotten).
+- **Alternatives:** A) Refuse any value weaker than the file default (would forbid raising a rate limit).
+- **Status:** Accepted (proposal)
+
+## D-14-05 — Test email and clear caches
+
+- **Where:** specification "Modules" › "Settings" (actions), D-00-15 (email never inline except security emails)
+- **Problem:** A test email sent inline would block the request and contradict D-00-15; "clear caches" could also wipe the rate limiter's counters.
+- **Proposal:** The test email goes to the logged-in user through `mail_queue` (sent by `SendQueuedEmails` within a minute; the screen shows the queue length). "Clear caches" invalidates the Core's cache scopes and the theme registry only. Both are logged.
+- **Alternatives:** A) Send the test email inline with a short timeout. B) `cache()->clean()`.
+- **Status:** Accepted (proposal)
+
+## D-14-06 — Site-wide settings built now
+
+- **Where:** specification "Configuration and settings" (site name, logo, default/available locales, time zone, maintenance mode, idle lock, captcha, 2FA policy, mail transport, themes)
+- **Problem:** Several of them belong to later sessions or already exist elsewhere.
+- **Proposal:** Built now: site name, time zone (display), themes (theme tab), and in Settings › Security the existing idle lock, captcha and 2FA policy. Later: default/available locales (session 31), maintenance mode (session 28, used by `app:update`); the mail transport stays in `.env` (it holds secrets; "send a test email" checks it); the logo is the theme option `logo`. The user's own time zone (profile) is applied by session 31.
+- **Alternatives:** A) A maintenance-mode setting now without the filter.
+- **Status:** Accepted (proposal)
+
+## D-15-01 — Users permission names, URLs and setting (decide)
+
+- **Where:** specification "Modules" › "Users" (users CRUD, row operations, groups CRUD, matrix, impersonation time limit "setting, e.g. 30 minutes"), "RBAC" (names `<module>-<resource>.<operation>`; D-00-18 allows a `'name'` override only for Core resources and single-resource modules)
+- **Problem:** The specification names no permission, URL or setting for the Users module, and all three are public conventions. The module has three resources, so the convention gives `users-users.*`, which reads oddly.
+- **Proposal:** Permissions by the convention: `users-users.{list,show,add,edit,ban,forcereset,reset2fa,logout,impersonate,access}`, `users-groups.{list,show,add,edit,delete}`, `users-matrix.{view,edit}` (operation keys lower case without separators, as kpcrudy custom operations require). URLs `backend/users`, `backend/users/<op>/<masked id>`, `backend/users/access/<id>`, `backend/users/groups`, `backend/users/permissions`, and `POST auth/impersonation/stop`. Setting `Users.impersonationMinutes` (int, 30, 1–120, group `security.impersonation`). Built this way; renaming later means changing the manifest, the routes and the tests (no data migration while unreleased).
+- **Alternatives:** A) `'name'` overrides for a core module with several resources: `users.*`, `groups.*`, `permissions.*` (shorter; needs an exception to D-00-18 for core modules). B) Resources `accounts`/`groups`/`matrix` → `users-accounts.*` (avoids the repetition).
+- **Status:** Applied
+- **Decision (2026-11-09):** «Convenció actual (recomanada)». The Users module keeps the generated names `users-users.{list,show,add,edit,ban,forcereset,reset2fa,logout,impersonate,access}`, `users-groups.{list,show,add,edit,delete}` and `users-matrix.{view,edit}` (no exception to D-00-18), the URLs `backend/users`, `backend/users/<op>/<masked id>`, `backend/users/access/<id>`, `backend/users/groups`, `backend/users/permissions` and `POST auth/impersonation/stop`, and the setting `Users.impersonationMinutes`. Nothing to change in the code: session 15 built it this way.
+- **Applied in:** `docs/specification.md` ("Modules" › "Users"), `docs/users.md`; code of session 15 (`modules/Users/Config/Module.php`, `modules/Users/Config/Routes.php`, `modules/Auth/Config/Routes.php`)
+
+## D-15-02 — Groups as data: names, deletion, new groups and the 2FA policy
+
+- **Where:** specification "Authentication" › "Groups" (Core `groups` table mirrored into `setting('AuthGroups.groups')`), "Modules" › "Users" (Groups CRUD, 2FA policy per group, "a new group receives the personal-screen grants every group has"); D-00-38, D-06-05
+- **Problem:** The specification does not say whether names change, what deleting a group does to its members, how the "grants every group has" are found, nor where the 2FA policy setting of session 06 goes.
+- **Proposal:** Core migration `groups` (name unique, title, description, reserved, `two_factor`); `GroupRegistry` creates the four reserved groups on `modules:sync` (titles from `Config\AuthGroups`) and mirrors every change into `AuthGroups.groups` with the policy as each group's `twoFactor` key, which `AuthPolicy::twoFactorPolicy()` reads. Names are set once (`[a-z][a-z0-9_-]{1,49}`, never reserved); reserved groups and groups with members cannot be deleted; deleting a group deletes its grants. A new group gets the grants all four reserved groups share (the personal screens). The `Auth.twoFactorPolicy` setting, its rule and its Settings › Security field are removed (stored values are not migrated: nothing is released).
+- **Alternatives:** A) Renaming custom groups (rewrites memberships and grants). B) Deleting a group with members removes their membership. C) Keep `Auth.twoFactorPolicy` written by the Groups screen.
+- **Status:** Accepted (proposal)
+
+## D-15-03 — Adding and editing users; no deletion
+
+- **Where:** specification "Modules" › "Users" ("Shield identities handled through hooks… password changes go through Shield")
+- **Problem:** The email and password are not columns of `users`; letting administrators set passwords hands them other people's credentials; the specification lists no deletion.
+- **Proposal:** kpcrudy over `users` (`deleted_at` rows outside the CRUD) with virtual inputs for the email and an initial password, validated in `beforeInsert` (Shield's local password rules, unique email) and saved through Shield in `afterInsert` (identity, default group, forced password change at the first login). Edit: user name, email (through Shield, logged as a security entry) and "active" (not one's own). Administrators never set another user's password (they force a reset). No deletion: accounts are banned.
+- **Alternatives:** A) Delete through Shield's soft delete (orphaned content in later modules). B) An admin-set password on edit.
+- **Status:** Accepted (proposal)
+
+## D-15-04 — Who manages whose account
+
+- **Where:** specification "RBAC" › "Escalation rules", D-07-04
+- **Problem:** The rules cover grants and groups, but editing an account (email), forcing a reset or resetting the 2FA of a stronger account lets an administrator take it over.
+- **Proposal:** `EscalationGuard::canManageUser()`: superadmins manage every account; anybody else only accounts that are not superadmins and hold nothing they do not hold (groups' grants and individual permissions). Every row operation but edit is refused on one's own account; the groups and permissions screen too. The buttons are hidden and the server refuses the same.
+- **Alternatives:** A) Only the "superadmin" rule (an admin could take over an account with permissions they lack).
+- **Status:** Accepted (proposal)
+
+## D-15-05 — Impersonation mechanics and the permission matrix save
+
+- **Where:** specification "Modules" › "Users" (impersonation), "Authentication" (session id regeneration on impersonation), "RBAC" › "Permission matrix screen"
+- **Problem:** Where the impersonation lives (Users requires Auth, and Auth's filters must refuse sensitive actions), what happens to the session, the expiry and the pending request, and how the matrix treats columns, unknown names and grants it does not show.
+- **Proposal:** Impersonation is an Auth service (session state only, no table): superadmins only, never a superadmin, a banned/inactive user, oneself or twice; started by the Users operation after a re-authentication; the PHP session keeps the impersonator's tracked row; ids regenerated and the re-authentication window forgotten at start and end; the `authsession` filter adds the banner to the top-bar region and ends an expired impersonation without running the pending request; re-authentication (hence every `reauth` route), the password and the email change are refused meanwhile; logout ends both; every step is a security entry. Matrix: columns of the actor's own groups and `superadmin` are read-only; each editable column posts an empty marker and only posted columns change; only atomic names and resource wildcards are accepted (anything else refuses the whole save); grants the screen does not show are kept; every group is checked before any write and all are saved in one transaction.
+- **Alternatives:** A) An `impersonations` table (not needed: the activity log keeps the history). B) Replaying the pending request as the impersonator after expiry.
+- **Status:** Accepted (proposal)
+
+## D-16-01 — Dashboard permission names, URLs and the login landing page (decide)
+
+- **Where:** specification "Modules" › "Dashboard" ("the dashboard home is the resource `dashboard`, granted to every group"; per-group configuration "from the UI"), "Dashboard widgets"; D-00-17, D-00-18; plan session 16 (routes `backend/`, `backend/dashboard/widgets/(:segment)/data`, `backend/dashboard/groups`); D-05-08 (login on the profile "until session 16")
+- **Problem:** The specification names the resource but not its operations, the permission of the group configuration, the URLs of the user layout, nor where a login lands now; all are public conventions. The Dashboard module is not a core module, so it can be disabled.
+- **Proposal:** One resource `dashboard` with the `'name'` override (single-resource module): `dashboard.view` (home, own layout, async data; granted to every group) and `dashboard.configure` (group layouts; `admin` gets `dashboard.*`). URLs: `backend` (route `dashboard`), `backend/dashboard/customize`, `POST backend/dashboard/layout`, `POST backend/dashboard/layout/reset`, `backend/dashboard/widgets/<id>/data`, `backend/dashboard/groups[/<group>]` (route `dashboard-groups`; menu "Dashboard widgets" in the settings zone). Widget ids `<module>.<name>` (`core.scheduled-tasks`, `core.quick-links`, `users.summary`). A login, the start and the end of an impersonation land on `backend`; `backend` always exists: the Dashboard is a core module (D-16-05). Built this way; renaming means changing the manifest, routes, tests and `Config\Auth::$redirects`.
+- **Alternatives:** A) A separate resource for the configuration: `dashboard-groups.{view,edit}` (needs two resources, so no `'name'` override: `dashboard-dashboard.view`). B) Keep the login on `backend/profile`.
+- **Status:** Applied
+- **Decision (2026-11-09):** «Com està (recomanada)». The Dashboard keeps `dashboard.view` (every group) and `dashboard.configure` (admin), the URLs `backend` (route `dashboard`), `backend/dashboard/customize`, `POST backend/dashboard/layout`, `POST backend/dashboard/layout/reset`, `backend/dashboard/widgets/<id>/data` and `backend/dashboard/groups[/<group>]` (route `dashboard-groups`), widget ids `<module>.<name>`, and a login or an impersonation lands on `backend`. Nothing to change in the code: session 16 built it this way.
+- **Applied in:** `docs/specification.md` ("Modules" › "Dashboard", "Dashboard widgets"), `docs/widgets.md`; code of session 16 (`modules/Dashboard/Config/Module.php`, `modules/Dashboard/Config/Routes.php`, `app/Config/Auth.php`)
+
+## D-16-02 — Group layouts: defaults, several groups, what users may change
+
+- **Where:** specification "Modules" › "Dashboard" (per group: available widgets, default order and size, options; per user: reorder, resize, hide, restore)
+- **Problem:** The specification does not say what a group without configuration shows, which group wins when a user is in several, nor what users may change.
+- **Proposal:** Table `dashboard_group_widgets` (`group_name`, `widget`, `enabled`, `position`, `size`, `options` JSON); a widget without a row is **enabled** with its defaults (manifest order, first size, default options), so new modules' widgets appear for groups holding their permission and the shipped dashboard is useful without configuration; the permission check is never skipped. A widget is available when one of the user's groups enables it; position, size and options come from the first such group in `GroupRegistry` order (reserved first). Users change only order, size (within `sizes()`) and visibility, stored as one JSON row per user (`dashboard_user_layouts`); options stay per group. Saving a group layout is logged (`group_layout_saved`); a user's layout is a personal preference and is not.
+- **Alternatives:** A) Disabled by default (an empty dashboard until an administrator configures each group). B) Options per user.
+- **Status:** Accepted (proposal)
+
+## D-16-03 — The widget contract, async data and failures
+
+- **Where:** specification "Dashboard widgets" (`id()`, `title()`, `permission()`, `sizes()`, `settings()`, `render()` or `data()`; "slow widgets load asynchronously and are cached per user for a few minutes"; isolation), "Security baseline" (rate limit of async widget URLs)
+- **Problem:** The specification lists the methods but not how async widgets are marked, what the data URL returns, how options are typed, nor where the framework lives.
+- **Proposal:** Framework in the Core (`Modules\Core\Widgets`: `WidgetInterface` + `icon()`, `AsyncWidgetInterface` with `data()`, `renderData()`, `component()`, `cacheSeconds()`, `refreshSeconds()`; base classes `Widget`/`AsyncWidget`; `WidgetRegistry`, `WidgetRenderer`, `WidgetOptions`, `WidgetSizes`); the Dashboard module stores and shows the layouts. Sizes `small|medium|large|full`; permission null = only `dashboard.view`. Option types `int`, `bool`, `string`, `select`, `menu`. The data URL answers `{widget, data, html}` (`no-store`), 403 for unknown, server-side or unavailable widgets (security log `widget_forbidden`), 500 with a generic message on failure; the cache (scope `widgets`) is keyed by user, language and options and read only after the checks. Failures are written to the application log, never shown. `ManifestValidator` refuses `$widgets` classes that do not implement `WidgetInterface`; the `make:module` widget stub implements it.
+- **Alternatives:** A) A `async(): bool` flag on one interface. B) Rendering async widgets' HTML only in the browser.
+- **Status:** Accepted (proposal)
+
+## D-16-04 — The back-office home in the menu and breadcrumbs
+
+- **Where:** D-08-01 (active entry by route, then exact path, then longest path prefix)
+- **Problem:** The home's path `backend` is a prefix of every back-office path, so the "Dashboard" entry was marked active on every screen.
+- **Proposal:** Path prefixes count only for entries whose path has at least two segments; a one-segment entry (the home) is active only on itself or by route name.
+- **Alternatives:** A) A per-entry `exact` key in the manifest menu.
+- **Status:** Accepted (proposal)
+
+## D-16-05 — Dashboard is a core module
+
+- **Where:** specification "Module lifecycle" (core modules `Core`, `Auth`, `Api`, `Users`, `Settings` cannot be disabled), "Modules" › "Dashboard"; D-16-01
+- **Problem:** The Dashboard module could be disabled, and then `backend`, where a login and an impersonation land, answered 404.
+- **Proposal:** Add `Dashboard` to `ModuleToggler::CORE_MODULES`: it cannot be disabled, so `backend` always exists. Disabling it would give nothing a user cannot already get by hiding every widget (an empty home).
+- **Alternatives:** A) Keep it optional and send the login to the profile when it is disabled.
+- **Status:** Applied (decided)
+- **Decision (2026-11-09):** «Fes que el dashboard no es pugui desactivar, ja que en ell pots eliminar tots els widgets i que et quedi com una pantalla buida, que seria el mateix efecte que desactivar-lo». The Dashboard is a core module that cannot be disabled.
+- **Applied in:** `modules/Core/Modules/ModuleToggler.php`, `modules/Dashboard/Config/Module.php`, `modules/Dashboard/CLAUDE.md`, `docs/specification.md` ("Module lifecycle"), `docs/commands.md`, `docs/widgets.md`; tests `ModuleToggleTest::testCoreModulesCannotBeDisabled`, `DashboardModuleTest::testItIsACoreModule`
+
+## D-16-06 — Quick links: free URLs and the order chosen by the administrator (decide)
+
+- **Where:** specification "Modules" › "Dashboard" (*Quick links*: "configurable shortcuts per group"); `modules/Core/Widgets/QuickLinks.php`, `WidgetOptions`
+- **Problem:** The quick links could only be entries of the back-office menu, shown in alphabetical order; the owner wants links to external sites and the order set by the administrator.
+- **Proposal:** A new option type `links`: one ordered list (at most `Core.widgetMaxLinks` items: a Core setting, default 20, 1–100, added at the owner's request) whose items are either a back-office menu entry (filtered by each user's permissions, as before) or a free link (one label, up to 100 characters, and an address). Addresses: `https://` URLs (no credentials) or internal paths starting with `/`; `http:`, `javascript:`, `data:`, `mailto:` and the rest are refused. Free links are shown to every user of the group (an internal path still answers 403 when the user lacks its permission). External links open in a new tab with `rel="noopener noreferrer"` and an "external" icon. The editor in Dashboard › Group layouts is a single ordered list with up/down/remove/add buttons and drag and drop (a position field without JavaScript). Stored lists of menu keys keep working.
+- **Alternatives:** A) Also `http://`. B) Also `mailto:`/`tel:`. C) An optional permission per free link. D) One label per language. E) Two separate lists (menu entries, free links).
+- **Status:** Applied
+- **Decision (2026-11-09):** «https + camins interns», «Tots els del grup», «Un sol text», «Llista única ordenable» (the four recommended options). Free links accept `https://` URLs and internal paths only, are shown to every user of the group, have one untranslated label, and are edited with menu entries in one list whose order the administrator sets.
+- **Applied in:** `modules/Core/Config/Module.php` (setting `Core.widgetMaxLinks`, group `dashboard`), `modules/Core/Widgets/WidgetOptions.php` (type `links`, `linkUrl()`, `maxLinks()`), `modules/Core/Widgets/QuickLinks.php`, `modules/Core/Views/widgets/quick_links.php`, `modules/Dashboard/Views/links_editor.php`, `modules/Dashboard/Assets/js/links-editor.js`, `modules/Dashboard/Views/groups.php`, language files (Core, Dashboard), `docs/specification.md`, `docs/widgets.md`; tests `GroupLayoutTest::testFreeLinksAndTheOrderChosenByTheAdministrator`, `GroupLayoutTest::testInvalidValuesAreRefused`, `WidgetsTest::testFreeLinkAddresses`, `WidgetsTest::testStoredMenuKeysStillWorkAsLinks`, `WidgetsTest::testTheMostLinksComeFromTheSetting`, `GroupLayoutTest::testTheLimitOfLinksIsASetting`; `SettingsScreensTest` posts the new field
+
+## D-17-01 — News permission names, URLs, settings and the reader's API permissions (decide)
+
+- **Where:** specification "Modules" › "News" (resources `posts` with extras `publish`, `author`, `readers`, and `categories`; "my posts"; public routes; "two settings"), D-00-42 (reader screen `news-read`, `type: page`, `news-read.view` for every group), plan session 17 (routes), "JSON API" (`setResource()` = the CRUD's resource)
+- **Problem:** The specification does not name the "my posts" resource, the reader's URLs, the two settings nor the permissions of the `news` API resource. The API lists and shows posts (kpapy operations `list` and `show`), but the reader resource is a page with only `view`: kpapy checks token scopes against `<resource>.<operation>`, so a token limited to `news-read.view` could not list anything, and `news-posts.list` (authors only) would hide the API from ordinary users.
+- **Proposal (built):**
+  - Resources: `news-posts` (crud − `import`, extras `publish`, `author`, `readers`), `news-categories` (crud − `import`/trash), `news-mine` ("My posts", crud − `import`/`export`/trash, extra `publish`), `news-read` (page: `view`, plus **`list` and `show` for the API**). Grants: admin everything; editor `news-posts.{list,show,add,edit,publish}`, `news-categories.{list,show}`, `news-mine.*`, `news-read.*`; user and superadmin `news-read.*`.
+  - Back office: `backend/news` (reader, route `news-read`), `backend/news/read/{masked id}`, `POST backend/news/read/{masked id}/mark`, `backend/news/posts` (+ operations `publish`, `unpublish`, `readers`), `backend/news/mine`, `backend/news/categories`. Public: `news`, `news/{slug}`, `news/category/{slug}`, `news/feed.xml`. API: `api/v1/news` (resource name `news-read`).
+  - Settings: `News.perPage` (public list, 10) and `News.feedItems` (RSS, 20), group "Public site".
+- **Alternatives:** A) The API uses `news-read.view` for both operations through a resource-level resolver (no new names; a token needs the scope `news-read.*` or `*`, a token scoped `news-read.view` gets 403). B) The API on `news-posts` (authors only; ordinary users get nothing). C) A separate API resource `news-api.{list,show}`. D) "My posts" without its own resource (a filter of `news-posts`; editors without `news-posts.list` lose it).
+- **Status:** Applied
+- **Decision (2026-11-09):** «Recurs API separat». The News API gets its own resource `news-api` with the operations `list` and `show` (granted to every group, like the reader screen), instead of extra `list`/`show` operations on `news-read`; `news-read` keeps only `view`. The other names, URLs and settings stay as built (`news-posts`, `news-mine`, `news-categories`, `news-read.view`; `backend/news…`, `news…`, `api/v1/news`; `News.perPage`, `News.feedItems`). **Must change:** `modules/News/Config/Module.php` (resources, grants), `modules/News/Controllers/Api/Posts.php` (`setResource('news-api')`), tests (`NewsApiTest` scopes, `NewsModuleTest`), counting tests of earlier sessions, `docs/news.md`, `modules/News/CLAUDE.md`, specification "News"
+- **Applied in:** `modules/News/Config/Module.php` (resource `api`, grants), `modules/News/Controllers/Api/Posts.php` (`setResource('news-api')`), `modules/News/Language/{ca,es,en}/News.php`, `docs/specification.md` ("News", manifest example), `docs/news.md`, `modules/News/CLAUDE.md`; tests `NewsApiTest::testScopesNarrowTheToken` (`news-read.view` alone is refused), `NewsModuleTest::testManifestIsValid`, `ShieldMatrixTest`. Existing development databases: `php spark modules:sync --prune` removes `news-read.list`/`news-read.show`; the new grants apply on a fresh install (grants are applied once per module).
+
+## D-17-02 — Sanitising a translated body before kpcrudy reads the form
+
+- **Where:** specification "News" ("HTML sanitised with HTMLPurifier in a `before*` hook"), "Translations" (`setTranslations()`), D-00-35
+- **Problem:** The body is a translated field (`news_translations`); kpcrudy's `before*` hooks receive only the main table's data, and `postedTranslations()` is read-only, so a hook cannot change the stored body.
+- **Proposal:** The controller cleans `kp_tr[<locale>][body]` with `BodySanitizer` (HTMLPurifier: paragraphs, headings, lists, emphasis, links `http`/`https`/`mailto` with `rel="noopener noreferrer"`, images, quotes, code, tables; no scripts, handlers, styles, iframes or forms) **before** kpcrudy reads the form (`IncomingRequest::setGlobal('post', …)`); the reader screen, the public page and the API (`transform()`) clean it again on output; the CSV import stays disabled on `news-posts` and `news-mine` (a test enforces it). Library request: let `before*` hooks change translated values.
+- **Alternatives:** A) Body not translated (one body in the main table). B) Clean only on output.
+- **Status:** Accepted (proposal)
+
+## D-17-03 — Post statuses, publishing, scheduling and expiry
+
+- **Where:** specification "News" (status draft / published / scheduled, `published_at`, `expires_at`, "a task that expires notices", "publishing a private notice sends a notification")
+- **Problem:** The specification does not say how a post becomes scheduled, what expiry changes, nor whether the form can publish.
+- **Proposal:** Statuses `draft`, `scheduled`, `published` and `expired`. The form never sets the status (new posts are drafts); the operation `publish` (and its bulk action, permission `publish`) makes a post `published`, or `scheduled` when `published_at` is in the future; `unpublish` (same permission) turns it back into a draft. Readers only see posts whose status is `published`/`scheduled`, whose date has passed and whose `expires_at` has not, so nothing waits for the task. The task `ExpireNotices` (every 5 minutes) turns due scheduled posts into `published` and notices past `expires_at` into `expired` (unpinned), and writes one activity entry when it changes something. A `private`/`groups` notice notifies its audience once (`notified_at`), when published or released.
+- **Alternatives:** A) Status editable in the form, guarded by a record rule. B) Expired notices deleted.
+- **Status:** Accepted (proposal)
+
+## D-17-04 — Who reads what: visibility rules and the notice audience
+
+- **Where:** specification "News" (visibility public/private/groups; notices in the widget "of the users who can see them"; "private news only in the back office and the dashboard"), D-00-36, D-00-42
+- **Problem:** The specification does not say whether superadmins read every group's posts, what the public site shows to a signed-in user, nor who is notified.
+- **Proposal:** One rule (`NewsVisibility`) for the reader screen, the widgets, the public site, the feed and the API: guests and the public site see only `public`; signed-in users see `public`, `private` and `groups` posts linked to one of their groups (superadmins too: authors see everything in `news-posts`). The public site and the feed show only public posts, whoever is signed in; anything else is a 404. Audience: `private` → every user with `news-read.view` (`notifyPermission()`), `groups` → the members of those groups (`notifyGroup()`).
+- **Alternatives:** A) Superadmins read every post on the reader screen. B) Signed-in users see private posts on the public site.
+- **Status:** Accepted (proposal)
+
+## D-17-05 — The menu link type before the Menus module
+
+- **Where:** specification "Menus" (public menu items: "the link types offered by modules (`$menuLinks`: a news category…)"), "News" ("the menu link type news category")
+- **Problem:** The Menus module and its link-type contract arrive in session 21; there is no Core interface yet.
+- **Proposal:** `Modules\News\Menu\CategoryLink` with `key()` (`news.category`), `label()`, `options()` (slug → name of the active categories) and `url($value)` (null when the category is gone), declared in `$menuLinks`; session 21 turns these methods into a Core interface (or adapts the class).
+- **Alternatives:** A) Add a Core interface now (a Core change for one module).
+- **Status:** Accepted (proposal)
+
+## D-17-06 — The cover through a kpcrudy upload handler on the Storage service
+
+- **Where:** session 17 scope ("cover through the storage service… a simple upload field and leave a TODO"), `docs/cruds.md` ("never use kpcrudy's `image`/`upload` field types"), `docs/library-requests.md` (kpcrudy 1.1 `UploadHandler`)
+- **Problem:** The file picker arrives in session 23; kpcrudy upload fields used to write files outside the Storage service, but kpcrudy 1.1 delegates storage to an upload handler.
+- **Proposal:** The cover is kpcrudy's `image` field with a module handler (`Modules\News\Storage\CoverUploads`): every file goes through `service('storage')->store()` (public disk, folder `modules/news`, JPG/PNG/WebP, at most 5 MB, re-encoded), the column keeps the file key, refusals become field errors; a TODO points at session 23 (file picker). `docs/cruds.md` now names this exception.
+- **Alternatives:** A) No cover until session 23. B) A custom upload screen.
+- **Status:** Accepted (proposal)
+
+## D-17-07 — The API's visibility as a `where()` condition
+
+- **Where:** "JSON API (kpapy)", `CLAUDE.md` ("No raw SQL with interpolated values"; Query Builder only)
+- **Problem:** kpapy's `where()` takes a column and a value (equality or an operator in the key); the visibility rule is an `OR` of conditions with a group subquery, which cannot be written that way, and the Query Builder prefixes table aliases inconsistently in subqueries.
+- **Proposal:** `NewsVisibility::condition()` returns `[<news>.id, RawSql('(SELECT v.id FROM news v WHERE v.id = <news>.id AND <readable>)')]`: a correlated subquery compiled by the Query Builder (every value escaped by it; only table names, with the connection prefix, are written by hand; the alias carries the prefix so it is never prefixed twice). List, details, search and filters are all limited; an unreadable post is a 404. Library request: a `where()` that takes a closure over the builder — done in kpapy `main` (`where(Closure)`, for 1.2.0); once released, the resource uses `where(fn ($builder) => NewsVisibility::apply($builder, $user))` and the `RawSql` goes away.
+- **Alternatives:** A) A per-record `setPermission('show')` rule (403 instead of 404; lists still need a query). B) A database view.
+- **Status:** Applied
+- **Applied in:** kpapy 1.2.0 (`where(Closure)`, requested and added after the session 17 review; `composer.json` requires `^1.2`): `modules/News/Controllers/Api/Posts.php` uses `where(fn (BaseBuilder $builder) => NewsVisibility::apply($builder, $user))`; the `RawSql` subquery (`NewsVisibility::condition()`) was removed. Tests: `NewsApiTest`.
+
+## D-17-08 — Images inside the rich-text body (decide)
+
+- **Where:** specification "News" (body sanitised with HTMLPurifier), "Files" (file picker), "Front-end assets" (vendored rich-text editor); `deploy/20-pages.md` (editor, News switches to it), `deploy/23-files-picker.md` (picker, News cover); `modules/News/Services/BodySanitizer.php` (allows `img[src|alt|width|height]` with any `http`/`https` source)
+- **Problem:** Session 20 brings a WYSIWYG editor and session 23 the file picker, but no session says that authors can **insert images inside the text** (only the cover is planned). Authors who do not know HTML cannot add an image to a post today, and the sanitiser accepts images from any `https` site (external images leak the readers' IP addresses to that site and may disappear).
+- **Proposal:** In session 23 (file picker), add an "Insert image" button to the editor of session 20 that opens the file picker (upload or choose; images only: JPG, PNG, WebP, GIF; the Storage service's rules, re-encoding and limits; public disk, folder `modules/<module>` of the content, e.g. `modules/news`), and inserts `<img src="/uploads/…" alt="…">` with an alt text field. HTMLPurifier then keeps only images of the site itself (`URI.Host`/a custom URI filter: relative `/uploads/…` URLs or the site's own host); external images are removed. Pages (session 20) use the same component. Paste or drop of images in the editor goes through the same upload.
+- **Alternatives:** A) Allow external `https` images as today (no upload; authors paste URLs). B) Images only as attachments/gallery under the text, never inside it. C) Do it already in session 20 with a simple upload dialog, before the file picker exists.
+- **Status:** Applied
+- **Decision (2026-11-09):** «Botó a la sessió 23 (recomanada)». As proposed: session 23 adds an "Insert image" button to the editor of session 20 that opens the file picker (upload or choose; JPG, PNG, WebP, GIF; the Storage service's rules and re-encoding; an alt text), for News and Pages, pasted or dropped images go through the same upload, and HTMLPurifier then keeps only images of the site itself. **Must change:** `deploy/23-files-picker.md` (scope and tests), specification "Files" (file picker) and "News", `modules/News/Services/BodySanitizer.php` in session 23
+- **Applied in:** `deploy/23-files-picker.md` (scope and tests), `docs/specification.md` ("Files" › file picker, "News"), `modules/News/CLAUDE.md` (open tasks); the code changes are session 23's.
+
+## D-18-01 — HTTPS and the web installer
+
+- **Where:** spec "Installer and CLI" ("It warns when the page is not served over HTTPS"), "Security baseline" (`forceGlobalSecureRequests` in production)
+- **Problem:** Without `.env` the environment is production, so every HTTP request (the installer included) is redirected to HTTPS; the warning could never show there, and a server without TLS cannot reach the web installer.
+- **Proposal:** Keep the production default: the web installer is redirected to HTTPS like every page; the warning is shown when the page is served over HTTP (an environment set by the server, e.g. `CI_ENVIRONMENT=development`, or a proxy without the HTTPS header). A server without TLS installs from the console (`php spark app:install`), as the warning says.
+- **Alternatives:** A) Do not force HTTPS while unconfigured (passwords and the database credentials could travel in clear).
+- **Status:** Accepted (proposal)
+- **Applied in:** `app/Config/App.php`, `modules/Core/Views/install/form.php`, `docs/security.md` ("Installer"); test `WebInstallerTest::testFormIsShownBeforeInstallation`
+
+## D-18-02 — The site before installation: redirect, base URL and boot checks
+
+- **Where:** spec "Installer and CLI" (web installer "available only while the application has not been configured"); D-09-01 (production refuses web requests without `app.maskKey`)
+- **Problem:** Before installation there is no `.env`: the base URL is `http://localhost:8080/`, `app.maskKey` is empty (production refuses every web request), the database is not configured and global filters, settings and the debug toolbar's Shield collector query it.
+- **Proposal:** While neither `.env` nor `writable/install.lock` exists: a required before filter `installguard` (after `forcehttps`) redirects every page but `install` to it; `Config\App` takes the base URL from the request (well-formed host only); the `pre_system` mask-key check waits until the application is configured; `moduleenabled`, `cspmodules` and `authsession` skip `install`; the debug toolbar drops Shield's collector. The web installer is a standalone page (no theme or settings) with the tracked Bootstrap copy. Once configured, nothing of this applies and `install` answers 404 (also when the configured database has tables). `service('installstate')` counts the testing environment as configured.
+- **Alternatives:** A) A static HTML page outside CodeIgniter. B) No redirect: only `/install` works and other pages fail with database errors.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Filters/InstallGuard.php`, `modules/Core/Install/InstallState.php`, `modules/Core/Config/{Events,Services,Routes}.php`, `app/Config/{App,Filters}.php`; tests `WebInstallerTest`
+
+## D-18-03 — Passwords and the non-interactive installer
+
+- **Where:** spec "Installer and CLI" ("non-interactive with `--options`"), D-00-47 (passwords on the command line)
+- **Problem:** Options would put the database and superadmin passwords in the shell history and the process list.
+- **Proposal:** Every value is an option except the passwords: asked without echo, or read from `INSTALL_DB_PASSWORD` and `INSTALL_ADMIN_PASSWORD`. `--no-interaction` (or input that is not a terminal) never asks; a missing required value stops before anything is written. The superadmin password must pass Shield's password validators (length, composition, nothing personal, dictionary). Values with a line break or `${` are refused (DotEnv would change them); the others are written single-quoted and escaped.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Commands/AppInstall.php`, `modules/Core/Install/{InstallOptions,EnvWriter}.php`; tests `AppCommandsTest`, `EnvWriterTest`, `InstallerTest::testCommonPasswordsAreRefusedByShieldsRules`
+
+## D-18-04 — Demo data while installing
+
+- **Where:** spec "Demo data" ("Interactive install … `--demo` / `--demo=News,Events`", "refuse in production unless `Packages.allowDemoInProduction`"), session 17 note (News after Auth)
+- **Problem:** The installer writes production by default, where demo data is refused; and `--demo=News` alone would give News posts without the Auth demo users who write them.
+- **Proposal:** The installer validates demo data against the environment it installs (development, or production with `packages.allowDemoInProduction`); the interactive question is only asked then. `--demo` loads every module with demo data, `--demo=A,B` those modules plus the modules they require that have demo data, always in dependency order (`--demo=News` loads Auth, then News). The web form has one "load demo data" checkbox (every module).
+- **Alternatives:** A) Load only the listed modules.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Install/Installer.php`; tests `InstallerTest::testDemoDataIsRefusedInProduction`, `testDemoOfAModuleLoadsTheModulesItNeedsFirst`
+
+## D-18-05 — 2FA for the first superadmin without a Core → Auth dependency
+
+- **Where:** spec "Installer and CLI" ("creates the first superadmin (and offers to set up 2FA)"), `CLAUDE.md` ("Never hard-code a module in the Core")
+- **Problem:** The installer lives in the Core, 2FA in Auth.
+- **Proposal:** The installer fires `install.superadmin` with the user and an `InstallPrompt` (the console; none on the web). Auth listens (`InstallTwoFactor`): `--2fa=email|totp|none` or a question; `totp` shows the `otpauth://` URI and the secret and stores it only after a valid code (three tries); the recovery codes are shown once. The web installer's last page tells the superadmin to set up 2FA from the profile.
+- **Alternatives:** A) The Core calls Auth's `TwoFactor` directly. B) No 2FA offer (only the group policy).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Install/{Installer,InstallPrompt,CliPrompt}.php`, `modules/Auth/Services/InstallTwoFactor.php`, `modules/Auth/Config/Events.php`; test `InstallerTest::testTheSuperadminIsOfferedTwoFactor`
+
+## D-18-06 — `app:install` with an existing `.env`
+
+- **Where:** spec "Installer and CLI" (writes `.env`), plan risk (session 00 creates a local `.env`)
+- **Problem:** Developers already have a `.env`; overwriting it would lose their database settings and keys.
+- **Proposal:** Without a lock file and with a `.env`, the console asks to keep it (`--keep-env` without asking): its database settings are used, only a missing or empty `encryption.key` / `app.maskKey` is added, and the rest runs as usual. With `--no-interaction` and no `--keep-env` it stops. The web installer never runs with a `.env`.
+- **Alternatives:** A) Always refuse when `.env` exists.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Commands/AppInstall.php`, `modules/Core/Install/EnvWriter.php::complete()`; tests `AppCommandsTest::testAnExistingEnvIsNotOverwrittenWithoutKeepEnv`, `EnvWriterTest::testCompleteAddsOnlyMissingOrEmptyKeys`
+
+## D-18-07 — The `security:check` summary before session 30
+
+- **Where:** spec "Installer and CLI" ("at the end, runs `security:check` and prints its summary"); `deploy/18-installer.md` (out of scope: `security:check`)
+- **Problem:** `security:check` arrives in session 30.
+- **Proposal:** Until then the installer prints a reminder to run it; session 30 replaces the reminder with the call and its summary (noted in `docs/progress.md`).
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Commands/AppInstall.php` (`Install.cli.securityCheck`)
+
+## D-18-08 — Order of the steps, `.env` permissions and the lock file
+
+- **Where:** spec "Installer and CLI"
+- **Problem:** If `.env` were written first, a failed migration would leave the site "configured" (the web installer gone) and half installed.
+- **Proposal:** The installer validates, applies the new values to the running process (`RuntimeConfig`: environment variables, database, encryption key, mask key), checks the database is reachable and empty, runs `modules:sync`, creates the superadmin, loads demo data, logs `installed`/`superadmin_created`, and only then writes `.env` (atomically, `0640`) and `writable/install.lock` (JSON: date, Core version, environment; `0640`). A failure before the end leaves no `.env` and no lock: empty the database and run it again.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Install/{Installer,RuntimeConfig,InstallState,EnvWriter}.php`; tests `InstallerTest`
+
+## D-19-01 — Demo users' random passwords: shown once, how
+
+- **Where:** spec "Modules" › "Demo data" › "Safety" ("demo users get random passwords shown once (never fixed passwords)"); known issue of session 18
+- **Problem:** The Auth demo users shared the fixed password `Demo-kpskeletor-2026`; the spec does not say how "shown once" works for the console, the installer and the future Modules screen.
+- **Proposal:** Each demo user gets its own random password (`DemoData::randomPassword()`: 4 groups of 5 characters without look-alikes, about 99 bits). Seeders register it with `$demo->secret($label, $value)`; `DemoDataManager::takeSecrets()` returns them once, in memory only (never stored in clear, never in the activity log). `modules:demo`, `modules:sync --demo` and `app:install --demo` print them once; the web installer's last page shows them (as it shows the `.env`); the Modules screen (session 29) shows them once after loading.
+- **Alternatives:** A) One random password for every demo user (simpler to type, but one leak opens every demo account). B) Send them by email (no mail server in a fresh development install).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Demo/{DemoData,DemoDataManager}.php`, `modules/Auth/Database/Seeds/AuthDemoSeeder.php`, `modules/Core/Commands/{ModulesDemo,ModulesSync,AppInstall}.php`, `modules/Core/Views/install/done.php`; tests `InstallerTest::testDemoUsersGetRandomPasswordsShownOnce`, `DemoDataTest::testRandomPasswordsAreLongAndDifferent`
+
+## D-19-02 — Routes under `api/` outside `api/v1/`
+
+- **Where:** spec "RBAC" › "Enforcement on routes" (every `api/v1/` route has kpapy's filter); `app/Config/Filters.php` (no `csrf`/`authsession` on `api/*`)
+- **Problem:** The route audit only looked at `api/v1/`; a module route such as `api/internal/x` or `api/v2/x` would have neither CSRF, session hardening nor an auth filter, and pass `permissions:check`.
+- **Proposal:** `RouteSecurityAuditor` refuses any route under `api/` that is not under `api/v1/` ("API routes must live under api/v1/"). A future API version is a decision of its own.
+- **Alternatives:** A) Require kpapy on any `api/*` route (keeps the door open to `api/v2/` without a review).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Permissions/RouteSecurityAuditor.php`, `docs/rbac.md`; test `RoutesSecurityTest::testApiRoutesNeedKpapy`
+
+## D-19-03 — `make:module --api`
+
+- **Where:** spec "Modules" (`make:module` "With `--api`, it also generates the kpapy resource"), "API", `CLAUDE.md` ("`php spark make:module <Name> [--crud=<table>] [--api]`")
+- **Problem:** `make:module` only implements `--crud`; `--api` was never built (no session file names it explicitly). It is not part of acceptance criterion 2.
+- **Proposal:** Build it in session 26 (Core API endpoints, where the API catalogue checks are completed): with `--crud`, run `kpapy:make` for the same table, route it under `api/v1/<module>` with the `kpapy` filter, `setResource()` = the CRUD's resource, add the `$api` entry and an API scope test. Until then the manifest template shows the `$api` format and `docs/api.md` the manual steps.
+- **Alternatives:** A) Build it now (new feature, out of this session's scope). B) Remove `--api` from `CLAUDE.md` and the spec (changes a documented command; owner's call).
+- **Status:** Applied
+- **Applied in:** `docs/plan.md` (session 26 and 32 notes); built in session 26 (D-26-06: `modules/Core/Modules/ApiScaffold.php`, `make:module --crud=<table> --api`)
+
+## D-19-04 — Shared Core helpers extracted from News
+
+- **Where:** `deploy/19-mvp-review.md` ("Refactor duplication that later modules would copy")
+- **Problem:** Pages and Events need the slug generator and the HTML sanitiser of News; nine controllers had their own "current user" method; four test base classes repeated helpers.
+- **Proposal:** `Modules\Core\Text\Slugger` (scope and fallback word added, `rules()`), `Modules\Core\Security\HtmlSanitizer` (formerly `Modules\News\Services\BodySanitizer`, same allow-list), `BackendController::currentUser()` / `currentUserOrNobody()`, and `AuthTestCase::loginWith()` / `assertNotFound()` / `assertCrudRefused()`. No public convention changes (manifest keys, permission names, URLs). The translation fallback, the group audience and the publish workflow are extracted by session 20 when Pages shows what they share (recorded in `docs/plan.md`).
+- **Alternatives:** A) Extract everything now (guessing the needs of Pages and Events).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/{Text/Slugger,Security/HtmlSanitizer,Controllers/BackendController}.php`, `modules/Auth/Tests/AuthTestCase.php`, News, Users, Auth, Api, Dashboard controllers
+
+## D-19-05 — HTTP on `localhost` with `php spark serve`
+
+- **Where:** spec "Security baseline" (`forceGlobalSecureRequests` and `Secure` cookies in production), "Installer and CLI" (web installer); D-18-01
+- **Problem:** A fresh clone has no `.env`, so the environment is production: `php spark serve` and `http://localhost` redirect to `https://localhost`, which has no certificate, and the web installer cannot be opened on the developer's own computer (D-18-01 only offered the console installer or `CI_ENVIRONMENT=development` for that).
+- **Proposal:** Production keeps forcing HTTPS and `Secure` cookies except when PHP's built-in development server (`PHP_SAPI === 'cli-server'`: `php spark serve`, `php -S`) answers a client on a loopback address (`127.x`, `::1`) for a loopback host (`localhost`, `*.localhost`, `127.x`, `[::1]`): nothing crosses the network there. Checking the Host header alone is not enough (an nginx with the default `proxy_pass http://127.0.0.1:8080` sends `Host: 127.0.0.1` from a loopback address for every visitor), hence the server type. The installer still warns that the page is not served over HTTPS.
+- **Alternatives:** A) Exempt `localhost` hosts on any server (unsafe behind a local proxy). B) Keep D-18-01 as it was (console installer or `CI_ENVIRONMENT=development` only).
+- **Status:** Applied (decided)
+- **Decision (2026-11-11):** requested by the owner while testing a fresh clone locally ("si s'arrenca amb localhost no requereixi https"); applied with the narrow rule above.
+- **Applied in:** `app/Config/App.php` (`isLocalDevServer()`, constructor), `app/Config/Cookie.php`, `docs/security.md` ("Installer"), `README.md`; tests `tests/feature/Security/LocalDevServerTest.php`
+
+## D-20-01 — Pages permission names, URLs, the home page setting and the theme's page templates (decide)
+
+- **Where:** specification "Modules" › "Pages" (resource names and settings are not given; "the home page chosen in settings"; "template (from the theme's page templates)"), "Themes" (the theme manifest lists no page templates), D-00-18 (single-resource modules may name their resource)
+- **Problem:** The specification names no permission, URL or setting of the Pages module, and a theme has no way to declare page templates. The settings forms only offer fixed choices (`select` options are static), so the home page cannot be a list of pages without a Core change.
+- **Proposal (built):**
+  - One resource named `pages` (single-resource module): `pages.{list,show,add,edit,delete,export,trash,restore,purge}` + `pages.publish` (no `import`). The custom operations reuse CRUD permissions: preview and revisions `show`, restore a revision `edit`, duplicate `add`. Grants: admin `pages.*`; editor `pages.{list,show,add,edit,publish}`.
+  - URLs: back office `backend/pages` (kpcrudy; `preview/{id}`, `revisions/{id}`, `POST restorerevision/{id}`, `POST duplicate/{id}`, `POST publish|unpublish/{id}`); public `/{slug}` and nested `/{slug}/{slug}…` at the root of the site; `sitemap.xml`.
+  - Setting `Pages.homePage` (group "Public site"): the **path** of the home page (e.g. `inici`, `qui-som/equip`), empty = the theme's home.
+  - Theme manifest key `public array $pageTemplates = [key => label key]` (inherited and extended by child themes; `ThemeManager::pageTemplates()`); a template is the view `Modules\Pages\Views\templates\<key>`, overridden by themes in `Views/overrides/Pages/templates/<key>.php`. The default theme offers `default`, `wide` and `sidebar`.
+- **Alternatives:** A) `pages-pages.*` (the generated prefix, no `name`). B) Extra permissions `pages.revisions` (view and restore revisions) and `pages.preview`. C) `Pages.homePage` as a page id chosen from a list, which needs a Core extension for dynamic `select` options in manifests (e.g. `'options' => [Class::class, 'method']`). D) Page templates as files only (any `Views/pages/*.php` of the theme), without a manifest key and without translated labels.
+- **Status:** Applied
+- **Decision (2026-11-11):** «Inici triat d'una llista». Everything stays as built (permissions `pages.*` with `pages.publish`, operations on `show`/`edit`/`add`; `backend/pages`; pages at the site root and `sitemap.xml`; the theme key `$pageTemplates`), except the home page setting: `Pages.homePage` is chosen from a list of the pages and stores the page **id**, so renaming a slug does not break the home page. This needs a Core extension: dynamic options for `select` settings declared in manifests (a new manifest setting key). **Must change:** the Core settings registry/definition and the Settings form generator and validation (dynamic options, the value must be one of them), `docs/settings.md`, `modules/Pages/Config/Module.php` (setting type and options provider), `modules/Pages/Services/HomePageResolver.php`, Pages tests and docs, the specification ("Configuration and settings", "Pages").
+- **Applied in:** `modules/Core/Settings/{SettingOptionsProvider,SettingDefinition}.php` (manifest setting key `optionsProvider`), `modules/Core/Modules/ManifestValidator.php`, `modules/Settings/Forms/Field.php` and `Views/fields/select.php` (choices shown as they are, validated with `in_list`), `modules/Pages/Settings/HomePageOptions.php`, `modules/Pages/Config/Module.php` (`Pages.homePage` is a `select`), `modules/Pages/Services/HomePageResolver.php` (reads the id), `modules/Pages/Language/*/Pages.php`, `docs/specification.md` ("Configuration and settings", "Themes", "Pages"), `docs/settings.md`, `docs/pages.md`, `modules/Pages/CLAUDE.md`; tests `HomePageSettingTest`, `PublicPagesTest::testTheHomePageFromTheSettings` (renaming the slug keeps the home page), `ManifestValidatorTest` (`optionsProvider`). As built and kept: `modules/Pages/Config/{Module,Routes}.php`, `modules/Core/Theme/{ThemeManifest,ThemeManager,ThemeValidator}.php`, `themes/default/Theme.php`, `docs/themes.md`. Existing development databases: a stored path in `Pages.homePage` no longer matches (the theme's home is shown) until a page is chosen again.
+
+## D-20-02 — Private pages: login for guests, 404 for the wrong group
+
+- **Where:** specification "Pages" ("Private pages require login and the right group", "`noindex` for non-public pages")
+- **Problem:** The specification does not say what a guest or a signed-in user without the group sees.
+- **Proposal:** A guest who opens a `private` or `groups` page is sent to the login and comes back after it (Shield's `beforeLoginUrl`); a signed-in user who may not read it gets the theme's 404, like a page that does not exist (its existence is not revealed beyond the login prompt). Non-public pages are sent with `<meta name="robots" content="noindex, nofollow">` and `Cache-Control: private, no-store`, and never appear in the sitemap; superadmins follow the same rule (authors use the back office's preview, `noindex` and `X-Robots-Tag`). Drafts, future scheduled pages and trashed pages (and their children) are a 404 for everybody.
+- **Alternatives:** A) 404 for guests too (no login prompt; the specification asks for login). B) 403 for the wrong group (reveals that the page exists).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Pages/Controllers/PublicPages.php`, `modules/Pages/Services/{PageVisibility,PageRenderer}.php`; tests `PublicPagesTest::testPrivatePagesRequireLoginAndTheRightGroup`, `testDraftsTrashedAndFuturePagesAreNotFound`
+
+## D-20-03 — The rich-text editor: Quill 2 under the enforced CSP
+
+- **Where:** specification "Front-end assets" (vendored MIT editor that works without `unsafe-inline`), "Pages" (HTMLPurifier drops `style`, alignment mapped to classes), contradiction 25 of `docs/plan.md`, D-00-35 (News switches to the editor)
+- **Problem:** Most editors write `style` attributes (blocked by the CSP) or are GPL (TinyMCE 7); kpcrudy has no rich-text field and puts translated fields in tabs with its own template.
+- **Proposal:** Quill 2.0.3 (BSD-3-Clause, pre-approved as "MIT/BSD"), vendored in `public/assets/vendor/quill/` with `vendor.json`, loaded on demand by `core/forms/editor.js` (a `data-component` on the textarea; the textarea stays the form value and the fallback without JavaScript). Quill only uses the CSSOM (allowed); alignment is registered as the classes `text-center`/`text-right`/`text-justify` instead of `ql-align-*`. The Core's `HtmlSanitizer` maps any alignment (`style`, `align`, `ql-align-*`) to those classes, allows no other class and drops `style`. Toolbar: headings 2–4, bold, italic, underline, strike, lists, quote, code block, alignment, link, clear; UI texts from `Core.js.editor.*`; colours from Bootstrap variables (light and dark). kpcrudy: `fieldType('body', 'translation', ['attrs' => RichTextEditor::attrs()])` (the type of translated fields; another type would take the field out of the tabs; library request). Images inside the text: session 23 (D-17-08).
+- **Alternatives:** A) Trix (MIT; injects a `<style>` element, needs a nonce meta). B) A home-made `contenteditable` editor (`execCommand` is deprecated and writes `style`). C) Tiptap (MIT; needs a bundler).
+- **Status:** Accepted (proposal)
+- **Applied in:** `public/assets/vendor/quill/`, `public/assets/vendor/vendor.json`, `modules/Core/Assets/js/forms/editor.js`, `modules/Core/Assets/css/editor.css`, `modules/Core/Frontend/RichTextEditor.php`, `modules/Core/Security/{HtmlSanitizer,AlignmentToClass}.php`, `modules/Core/Language/*/Core.php` (`js.editor`), `themes/default/Assets/css/theme.css`, `modules/News/Controllers/Posts.php`; tests `HtmlSanitizerTest`, `PostsCrudTest::testTheBodyUsesTheRichTextEditorAndKeepsAlignmentAsClasses`, `PagesCrudTest::testTheBodyIsAnEditorInEveryLanguage`
+
+## D-20-04 — The catch-all page route, reserved slugs and the home page hook
+
+- **Where:** specification "Pages" (public routes `/{slug}` and nested slugs; the home page chosen in settings), `docs/plan.md` session 20 risks (a catch-all route shadows routes of modules loaded later), `CLAUDE.md` ("Never hard-code a module in the Core")
+- **Problem:** Module routes are discovered in namespace order, so a catch-all of Pages could hide the routes of later modules (Settings, Users…); a page slug could hide a route (`news`); `/` belongs to `app/Config/Routes.php` and discovered routes cannot replace it.
+- **Proposal:** `Config\Routing::$prioritize = true` and the page route `(:pagepath)` with `priority => 1` (matched after every other route); the placeholder only accepts valid slugs and never `backend/…` or `api/…` (those keep the router's 404 and their filters). A root page cannot take a reserved slug: the first static segment of every route plus `api`, `assets`, `backend`, `themes`, `uploads`, `vendor`, `writable` (a typed slug is refused, a generated one gets a suffix). `/`: `App\Controllers\Home` triggers the Core event `homePage` with a `Modules\Core\Frontend\HomePage`; Pages' listener (only while the module is enabled) answers with the page of `Pages.homePage` when the visitor may read it, otherwise the theme's home is shown; the page's own path redirects to `/`, its canonical URL is `/`.
+- **Alternatives:** A) Pages under a prefix (`/p/{slug}`; the specification asks for `/{slug}`). B) A list of reserved slugs only (forgets routes added later). C) The home page decided in the Core's `Home` controller (hard-codes a module).
+- **Status:** Accepted (proposal)
+- **Applied in:** `app/Config/Routing.php`, `app/Controllers/Home.php`, `modules/Core/Frontend/HomePage.php`, `modules/Pages/Config/{Routes,Events}.php`, `modules/Pages/Services/{PageSlugs,HomePageResolver}.php`; tests `PublicPagesTest::testOtherRoutesWinOverPages`, `testTheHomePageFromTheSettings`, `PagesCrudTest::testSlugsAreUniquePerParentAndLanguage`, `PagesModuleTest::testTheHomePageEventIsIgnoredWhileTheModuleIsDisabled`
+
+## D-20-05 — Slugs per language and the language of a page
+
+- **Where:** specification "Pages" (slug unique per parent and language; title, slug… translated with `setTranslations()`), "Languages" (Catalan default; guests see `en` until session 31)
+- **Problem:** With a slug per language, the specification does not say which language a URL shows, which URLs go into the sitemap, nor how slugs are made unique (kpcrudy's hooks cannot change translated values, D-17-02).
+- **Proposal:** Before kpcrudy reads the form, empty slugs are filled from each language's title (unique among the siblings in that language); a typed slug that clashes with a sibling in the same language (trashed pages included, they can be restored) is refused by `beforeInsert`/`beforeUpdate`. A path resolves segment by segment with the slugs of any language (current language first, then Catalan); the texts follow the visitor's language with the Catalan fallback, and the canonical URL is the path in that language (session 31 may make the path's language select the content language). The sitemap lists each distinct path of each public, published, indexable page (a language with its own canonical URL is left out) and `/`.
+- **Alternatives:** A) One slug per page (not translated; the specification translates it). B) A language prefix in URLs (`/es/…`; language negotiation is session 31's).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Pages/Services/{PageSlugs,PageResolver,PageTree,SitemapBuilder}.php`, `modules/Pages/Controllers/Pages.php` (`prepareForm()`, `beforeSave()`); tests `PagesCrudTest::testSlugsAreUniquePerParentAndLanguage`, `PublicPagesTest::testPublishedPublicPagesAtTheirNestedSlugs`, `testTheSitemapListsOnlyPublicIndexablePages`
+
+## D-20-06 — What a revision keeps and what a restore writes back
+
+- **Where:** specification "Pages" ("every save keeps a revision (who, when, diff); restore a revision as a custom operation")
+- **Problem:** The specification does not say what a revision contains, how the diff is shown nor what a restore changes (restoring the status would publish without `pages.publish`; restoring the parent could break the tree or clash with a sibling's slug).
+- **Proposal:** `page_revisions` keeps a JSON snapshot (the page's columns, its texts in every language and its groups), the user, the date, the action (`create`, `save`, `restore`, `duplicate`) and the list of changed fields; a save that changes nothing adds no revision. The revisions page lists them and shows the selected revision's changes field by field (before / after, rich text without tags). A restore (POST, `pages.edit`, a revision of that page only) writes back the texts, groups (still existing), template, visibility, `noindex` and featured image (if the file still exists), sanitises the body again, suffixes a slug taken meanwhile, and records a new revision; the parent, the order, the status and the publication date are kept. Revisions are deleted with the page (purge).
+- **Alternatives:** A) Restore everything (could publish a draft or move the page). B) Line-by-line text diff (heavier; the field view is enough for pages).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Pages/Services/Revisions.php`, `modules/Pages/Views/revisions.php`, `modules/Pages/Database/Migrations/2026-11-11-100004_CreatePageRevisions.php`; tests `PagesCrudTest::testEverySaveKeepsARevisionAndARevisionCanBeRestored`, `PagesModuleTest::testRevisionsSkipUnchangedSaves`
+
+## D-20-07 — Content helpers extracted from News into the Core
+
+- **Where:** D-19-04, `docs/plan.md` session 20 ("extract to the Core what Pages shares with News")
+- **Problem:** Pages needs News' translation lookup, audience rule, publish workflow and upload handler.
+- **Proposal:** `Modules\Core\Content\ContentTranslations` (languages, Catalan fallback, `texts()`, `pick()`), `Modules\Core\Content\Audience` (public / private / groups with a junction table, `groupIds()`), `Modules\Core\Content\PublishWorkflow` (`statusFor()`, `applyPublished()`, `releaseScheduled()`) and `Modules\Core\Storage\CrudUploadHandler` (kpcrudy upload handler on the Storage service, `fieldOptions()`). News keeps its public names (`NewsVisibility`, `NewsRepository::FALLBACK_LOCALE`, `Posts::LOCALES`, `CoverUploads`) on top of them. No public convention changes.
+- **Alternatives:** A) Copy the code into Pages (two copies of a security rule).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Content/`, `modules/Core/Storage/CrudUploadHandler.php`, `modules/News/Services/{NewsVisibility,NewsRepository,Publisher}.php`, `modules/News/Storage/CoverUploads.php`, `modules/News/Controllers/Posts.php`
+
+## D-21-01 — Menus permission names, URLs and the Core contracts for menus (decide)
+
+- **Where:** specification "Modules" › "Menus" (`menus-public.*` list/add/edit/delete, `menus-backend.*` view/customise/links/reset), "Menus", `docs/plan.md` session 21 (routes `backend/menus/public`, `backend/menus/backend`, helper `menu('primary')`), D-17-05 (link type contract)
+- **Problem:** Permission names, URLs, manifest keys and the Core extension points are public conventions. The specification names the permissions and the helper but not the URLs of the items editor, the link type contract, nor how a module (not the Core) plugs into the generated back-office menu and the theme's menu locations.
+- **Proposal:** Resources `public` (crud − show, export, import, trash, restore, purge) and `backend` (page + extras `customise`, `links`, `reset`): exactly `menus-public.{list,add,edit,delete}` and `menus-backend.{view,customise,links,reset}`; admin gets both, editor `menus-public.{list,edit}`. URLs: `backend/menus/public` (kpcrudy CRUD of menus), `backend/menus/items/<menu>[/new|/edit/<item>|/save|/order|/delete/<item>]` (`menus-public.edit`), `backend/menus/backend[/order|/entry|/group/new|/link/new|/custom/<id>|/custom/save|/custom/<id>/delete|/reset|/orphans]`, scope `?group=<name>`. Core contracts: `Modules\Core\Menus\MenuLinkType` (`key()`, `label()`, `options()`, `url()`; `ManifestValidator` checks `$menuLinks` against it; Pages' `PageLink` and News' `CategoryLink` implement it); event `backendMenu` with `BackendMenuLayer` (definitions may add `kind` `group`/`link`, `href`, `target`, `permissions`, `anyPermissions`, `groups`, `labels`, `hidden`), applied by `MenuBuilder` before the permission filter; event `publicMenu` with `PublicMenu` and the helper `menu('<location>')` returning `PublicMenuItem`s, rendered by the theme partial `partials/public_menu` in the `primary` and `footer` locations; `DemoSeeder::AFTER` (D-21-06).
+- **Alternatives:** A) Items as a second kpcrudy CRUD (`backend/menus/public/items`, see D-21-02). B) `menus-backend.edit` instead of `customise` (the specification says `customise`). C) The Core reads the Menus tables directly (hard-codes a module in the Core).
+- **Status:** Applied (decided)
+- **Decision (2026-11-11):** «Tal com està» — the permission names, URLs and Core contracts stay as built and proposed (the recommended option).
+- **Specification updated:** built by session 21 as proposed (no code change); `docs/specification.md` ("Modules" › "Menus": the link type interface, the events, the partial, `DemoSeeder::AFTER`, the URLs)
+- **Applied in:** `modules/Menus/Config/{Module,Routes,Events}.php`, `modules/Core/Menus/{MenuLinkType,BackendMenuLayer,PublicMenuItem,MenuBuilder,MenuEntry}.php`, `modules/Core/Frontend/PublicMenu.php`, `modules/Core/Helpers/menu_helper.php`, `modules/Core/Modules/ManifestValidator.php`, `themes/default/Views/partials/public_menu.php`, `themes/default/Views/layouts/public.php`; tests `MenusModuleTest::testPermissionNamesAndGrants`, `testTheLinkTypesOfTheOtherModules`, `BackendMenuTest::testEveryRouteNeedsItsPermissionAndForgedPostsAreRefused`, `PublicMenusTest::testEveryRouteNeedsItsPermissionAndForgedPostsAreRefused`
+
+## D-21-02 — Menu items edited in a tree editor and a form of their own
+
+- **Where:** `CLAUDE.md` (every back-office CRUD screen with kpcrudy), specification "Modules" › "Menus" (tree editor: drag and drop, keyboard)
+- **Problem:** Items belong to one menu, nest, change their target field with their type (URL, route or one of a module's choices) and are ordered by dragging: kpcrudy has a tree list but no drag-and-drop ordering nor fields that depend on the type.
+- **Proposal:** The menus themselves are a kpcrudy CRUD (name, location; an "Items" operation). The items are edited in a screen of the module: a tree editor (`menus/tree-editor`: drag and drop with pointer events, arrow keys on the handle, up/down/indent/outdent buttons that also work without JavaScript, one move per request) and an item form (labels per language, type and target, parent, icon, window, CSS class, visibility, groups). Writes are logged with `activity_log()`. The same tree editor serves the back-office customisation.
+- **Alternatives:** A) A second kpcrudy CRUD with a `where(menu_id)` and order fields (no tree editing).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Menus/Controllers/{PublicMenus,MenuItems}.php`, `modules/Menus/Views/{items,items_tree,item_form,tree_buttons,target_fields}.php`, `modules/Menus/Assets/js/{tree-editor,link-form}.js`
+
+## D-21-03 — The customisation layer: differences, field-by-field scopes, hidden subtrees
+
+- **Where:** specification "Modules" › "Menus" (stable keys, permissions always win, new entries in their default place, orphans, cycles impossible, reset, per group "the most specific one wins")
+- **Problem:** The specification does not say what is stored when the tree is saved, how two scopes combine, which group wins for a user in several groups, nor what hiding a parent does.
+- **Proposal:** One row per entry key and scope (`group_name` null = everyone) with nullable `parent` (`''` = root), `zone`, `position`, `labels`, `icon`, `hidden`; the editor stores only differences from its base (the generated menu for everyone; the menu of everyone for a group), so untouched entries follow their module. Scopes merge field by field: everyone, then the user's groups from the last to the first in the order of Users › Groups (reserved groups first), so the group listed first wins. Only place, label, icon, order and hidden change — never the route or the permission, which `MenuBuilder` checks after the layer. Hiding hides the entry with its children (a group scope may show it again). A relocation under the entry's own descendants is refused by the editor and ignored if stored. Customisations of unknown keys are kept, inactive, listed as orphans and deleted only on request; reset per entry, per scope or everything (custom groups and links are kept). Custom groups and links are entries `custom.<id>`, created for everyone (their place can be customised per group).
+- **Alternatives:** A) Store the whole tree per scope (new modules would need to be placed by hand). B) Whole-row precedence (a group would have to repeat everyone's changes).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Menus/Services/{Customisations,CustomisationApplier,BackendLayout,TreeMoves}.php`, `modules/Menus/Controllers/{BackendMenu,CustomLinks}.php`; tests in `modules/Menus/Tests/BackendMenuTest.php`
+
+## D-21-04 — Custom links and menu items: addresses and the 403 rule
+
+- **Where:** specification "Modules" › "Menus" (only `https://`, `http://`, internal paths and routes; never `javascript:`, `data:` or `//`; "a link to an internal route takes that route's `can:` permission by default; the editor cannot make a link visible to users who would get a 403")
+- **Problem:** How to validate and how to enforce the 403 rule when a path or route changes after the link is saved.
+- **Proposal:** `UrlValidator`: `https://`/`http://` with a host and no credentials, or a path starting with one `/`; anything with spaces, control characters or backslashes is refused (browsers strip them, so `java\tscript:` would run). An internal path or a route name must be answered by a GET route (routes with parameters are refused). The `can:` filters of that route are read when the menu is built (not stored), so the link (back office) or item (public menus) is shown only to users who pass them; a custom link may add one permission from the catalogue and groups. Stored values are validated again when the menu is built: an invalid or gone target is never shown. External links opening in a new tab get `rel="noopener noreferrer"`. Public paths answered by the Pages catch-all are accepted (the page itself decides who reads it).
+- **Alternatives:** A) Store the route's permission when saving (stale after a route change). B) Also allow `mailto:`/`tel:` (not in the specification).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Menus/Services/{UrlValidator,RouteAccess,LinkTarget}.php`, `modules/Core/Menus/MenuBuilder.php` (`linkVisible()`); tests `UrlValidatorTest`, `BackendMenuTest::testCustomLinksFollowTheRouteThePermissionAndTheGroups`, `testCustomLinkAddressesAreValidated`, `PublicMenusTest::testItemAddressesAreValidated`
+
+## D-21-05 — Public menus: visibility, depth, cache and the active item
+
+- **Where:** specification "Modules" › "Menus" (visibility everyone/guests/logged-in/groups; `menu('primary')` cached per menu, language and group set, marks the active item)
+- **Problem:** Page link types depend on the pages' publication, which changes with time (scheduled pages); the nesting depth and the active rule are not specified.
+- **Proposal:** One menu per theme location (`menus.location` unique, empty = not placed). Items nest up to three levels (the default theme shows the third level indented in the dropdown). The tree for a visitor is cached in the `menus` scope per menu, language and group set for five minutes (invalidated on every change of the module's data); labels fall back to Catalan. An item whose target is gone is hidden, or kept as a heading when it has visible children. The active item is the one whose URL is the current URL, else the longest item URL that is a parent path of it; its ancestors are marked open.
+- **Alternatives:** A) Cache for a day and invalidate from Pages (the Pages module would need to know about Menus). B) Unlimited depth.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Menus/Services/{MenuRenderer,MenuRepository}.php`, `themes/default/Views/partials/public_menu.php`; tests `PublicMenusTest`
+
+## D-21-06 — Demo data that depends on another module's demo
+
+- **Where:** `CLAUDE.md` (demo data only in `<Name>DemoSeeder`), `app:install --demo` (loads every module's demo in name order)
+- **Problem:** The Menus demo links to the Pages and News demo data, but `Menus` comes before `Pages` in name order.
+- **Proposal:** `DemoSeeder::AFTER` (a constant, default `[]`) names the modules whose demo data a seeder uses; `DemoDataManager::modulesWithDemo()` orders the modules so those come first (name order otherwise; a cycle keeps the name order). The Menus seeder also falls back to addresses when the pages do not exist.
+- **Alternatives:** A) The Menus seeder loads the Pages demo itself (the installer would not list it). B) Only addresses in the demo menus.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Demo/{DemoSeeder,DemoDataManager}.php`, `modules/Menus/Database/Seeds/MenusDemoSeeder.php`; test `MenusModuleTest::testDemoDataLoadsAfterPagesAndIsRemovedCompletely`
+
+## D-22-01 — Files permission names, URLs, settings and space paths (decide)
+
+- **Where:** specification "Modules" › "Files" (permissions `files.list`, `files.upload`, `files.edit`, `files.delete`, `files.folders`, `files.acl`, `files.all`, `files.private`; setting `Files.personalSpaceGroups`; spaces "personal", "modules", "shared"; quotas per user); `docs/plan.md` session 22 (routes `backend/files`, `backend/files/api/*`)
+- **Problem:** The specification names the permissions but does not say what `files.private` allows, how the shared space is laid out, how the personal quota is set, the setting's type or the default grants.
+- **Proposal:** One resource named `files` (D-00-18) of type `crud` without `show`, `add`, `export`, `import`, `trash`, `restore`, `purge` plus the extras `upload`, `folders`, `acl`, `all`, `private`: exactly the eight names of the specification. `files.private` = using the **shared folders of the private disk** in the file manager (public shared folders and the personal space do not need it; serving a private file by URL never needs it). Spaces by path prefix: `users/{user_id}` (private disk), `modules/<module>`, and **`shared/…`** on each disk (two roots, created on first use with an empty ACL: only `files.all` until an administrator shares them); other paths are refused. Settings: `Files.personalSpaceGroups` (`list` of group names, default `admin`, `editor`) and **`Files.personalQuota`** (int, MB, default 100, 0 = none), group `files` of the Files tab. Grants: `admin` `files.*`; `editor` `files.list`, `files.upload`, `files.edit`, `files.delete`, `files.folders`, `files.private` (not `files.acl`, `files.all`). URLs: `backend/files` (page) and `backend/files/api/{tree,list,trash,upload,file/{id}[/download|preview|thumbnail|update|move|delete|restore|purge],folder[/rename|/delete],acl}`.
+- **Alternatives:** A) `files.private` = also needed to read private files in the manager (personal spaces included): a user of `Files.personalSpaceGroups` without it could not open their own space. B) Shared folders anywhere at the disk root (no `shared/` prefix): more freedom, but module and personal paths could be shadowed. C) The personal quota per group instead of one setting. D) `editor` without `files.folders`.
+- **Status:** Applied (decided)
+- **Decision (2026-11-12):** «Com està fet (recomanada)». As proposed and built: the eight names of the specification on the resource `files`; `files.private` = the shared folders of the private disk in the file manager; shared space under `shared/` on each disk; settings `Files.personalSpaceGroups` and `Files.personalQuota` (MB, default 100); editor grants `files.list`, `files.upload`, `files.edit`, `files.delete`, `files.folders`, `files.private`; URLs `backend/files` and `backend/files/api/*`. **Must change:** specification "Files" (what `files.private` means, the `shared/` space, `Files.personalQuota`).
+- **Applied in:** `modules/Files/Config/{Module,Routes}.php`, `modules/Files/Services/{Spaces,FolderAcl,QuotaService}.php`, `modules/Files/Language/*/Files.php`, `docs/files.md`, `docs/specification.md` ("Files": `files.private`, `shared/…`, `Files.personalQuota`); tests `FilesModuleTest`, `FolderAclTest`
+
+## D-22-02 — The file manager is a screen of its own over JSON endpoints
+
+- **Where:** `CLAUDE.md` (every back-office CRUD screen with kpcrudy), specification "Files" (browse folders, drag and drop with progress, list and grid views, preview, move, trash, folder permissions)
+- **Problem:** A file manager is a folder tree with uploads, previews and per-folder rights, not a table CRUD; kpcrudy has no tree browsing, drag-and-drop uploads with progress or ACL editing.
+- **Proposal:** `backend/files` renders a shell (`Views/manager.php`); the ES module `files/file-manager` talks to JSON endpoints (`Controllers/FileApi.php`) that check the RBAC permission (route filters) and the folder ACL (every request). No kpcrudy CRUD in this module; the manifest resource is still `crud`-typed so the catalogue has `files.list`/`edit`/`delete` with the specification's names. Writes are logged with `activity_log()` (ACL changes with `security_log()`).
+- **Alternatives:** A) kpcrudy CRUDs for `files` and `folders` (flat lists filtered by folder; no tree, no uploads with progress).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Files/Controllers/{FileManager,FileApi}.php`, `modules/Files/Views/manager.php`, `modules/Files/Assets/js/file-manager.js`, `modules/Files/Assets/css/file-manager.css`
+
+## D-22-03 — Virtual folders: `files.folder`, files referencing `stored_files`
+
+- **Where:** specification "Files" ("the folder tree is virtual (paths)", `files` metadata), D-13-03 (`stored_files` written only by the Storage service; `files` references it)
+- **Problem:** Moving a file or renaming a folder would have to move files on disk and rewrite `stored_files.path`, which only the Storage service writes.
+- **Proposal:** `files` has `stored_file_id` (unique, cascade), `disk`, `folder` (virtual), `name` (display/download name, keeps the stored extension), `visibility`, `alt`, `tags`, `thumbnail`, `deleted_at`/`deleted_by`. Uploads are stored physically under the folder's path, but moving a file or renaming a folder only changes `files.folder` (and `folders.path`). Folders are rows of `folders`; there is no implicit folder. Files that other modules store (no `files` row) are not listed, except read-only in a module folder whose policy says `readonly`.
+- **Alternatives:** A) Physical moves through a new Core `Storage::move()` (Core change; renaming a folder moves every file).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Files/Database/Migrations/*`, `modules/Files/Services/{FileRepository,FolderRepository}.php`
+
+## D-22-04 — Who reads a private file, and the folder ACL details (decide)
+
+- **Where:** specification "Files" ("Serving private files", "RBAC is the ceiling, the ACL decides where", predefined spaces, `FileAccessPolicy`), D-13-01 (`Config\Storage::$accessRule`)
+- **Problem:** The specification does not say what happens to private files outside the managed folders (stored by other modules), to trashed files, who edits a personal space's ACL, how a module registers its policy or what `files.all` means for module folders.
+- **Proposal:** The Files module sets `Config\Storage::$accessRule` to `FolderAccessRule` through its registrar (no Core change; the rule behaves like `OwnerAccess` while Files is disabled). Order: a module policy for the file's folder decides (superadmins always pass; guests possible: the record's visibility); guests otherwise get nothing; a trashed file only for users with `delete` in its folder; a folder governed by the ACL → its `view` right; anything else → `OwnerAccess` (uploader and superadmins). Always a 404 when refused. ACL: an own ACL with no entries hides the folder; entries add up; `files.all` and superadmins have every right everywhere **except module folders** (only `view`, and only when the policy says `readonly`); the owner of a personal space always has every right in it; only `files.all` edits the ACL of a personal space (its owner cannot share it in this session). Policies register through the event `filesAccessPolicies` (`PolicyRegistry`), only for folders inside `modules/` and only for enabled modules; the longest folder wins.
+- **Alternatives:** A) Files outside managed folders are denied to everyone but superadmins (breaks private uploads of modules without a policy). B) `files.all` overrides module policies. C) Owners may share their personal space with other users.
+- **Status:** Applied (decided)
+- **Decision (2026-11-12):** «Només superadmin + registre (recomanada)». The rule order stays as proposed, but `files.all` no longer reaches other users' personal spaces: it gives every right in the shared folders only. Only superadmins enter another user's personal space (and set its quota and its subfolders' permissions); every time a superadmin reads (downloads, previews, opens through `files/private/{key}`) a file of someone else's personal space, a `security` entry is written to the activity log. For anything else administrators use impersonation (already re-authenticated and logged). Reason (owner): private files belong to their owner; in case of need an administrator can impersonate the user; superadmins keep access to ease the management of the platform. **Must change:** `FolderAcl`, `Browser` ("Personal spaces" node for superadmins), `FolderAccessRule` and the file manager's download/preview (security log), `PrivateFilesTest` (an admin is "another user" again), Files tests, `docs/files.md`, specification "Files" (personal space: "nobody else except superadmins").
+- **Applied in:** `modules/Files/Services/{FolderAcl,Browser,FolderAccessRule,Spaces}.php` (`files.all` stops at other users' personal spaces; `FolderAcl::logForeignRead()`), `modules/Files/Controllers/FileApi.php` (download/preview logged), `modules/Files/Language/*/Files.php` (`activity.personal_file_read`), `modules/Core/Tests/PrivateFilesTest.php` (admin as "another user" again), `docs/files.md`, `docs/specification.md` ("Files"), `modules/Files/CLAUDE.md`, `deploy-status/22-files-manager/`; tests `FolderAclTest::testFilesAllGetsEveryRightInSharedFoldersButNotInOtherPersonalSpaces`, `PrivateFileRuleTest::testPersonalSpacesAreTheOwnersAndSuperadminReadsAreLogged`, `FileApiTest::testOnlySuperadminsSeeOtherPersonalSpacesInTheTree`
+
+## D-22-05 — Quotas, trash and thumbnails
+
+- **Where:** specification "Files" (quotas per user and per shared folder, trash with restore, thumbnails generated on upload)
+- **Problem:** Whether trashed files count, which quota applies to nested folders, where thumbnails live and how they are served.
+- **Proposal:** Every quota of the folder's chain must hold (the nearest is shown); the trash counts until files are deleted for good; the quota is checked before storing and again with the stored (re-encoded) size. Only `files.all` sets a folder quota (in the permissions dialog). No automatic purge of the trash in this session. Thumbnails: 320 px WebP (JPEG without WebP support), private disk `modules/files/thumbnails/<key>.webp`, served by the file manager after the `view` right, deleted with the file. Only empty folders (trash included) can be deleted.
+- **Alternatives:** A) The trash does not count. B) A scheduled task purging old trash (could come with session 27 or 35).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Files/Services/{QuotaService,ThumbnailService,Trash,Uploader}.php`; tests `QuotaTrashTest`
+
+## D-22-06 — Upload progress without inline styles
+
+- **Where:** `docs/plan.md` session 22 risks ("upload progress bars without `style=""`", contradiction 25), strict CSP (`CLAUDE.md`)
+- **Problem:** Bootstrap progress bars set their width with an inline style, which the CSP forbids.
+- **Proposal:** Each file is uploaded in its own request (`XMLHttpRequest`, `upload.onprogress`) and shown with a native `<progress>` element (its `value` attribute is not a style), styled from `Assets/css/file-manager.css` (`accent-color`). The CSRF header and its regenerated token are handled like `core/http.js`. One request per file also means each file counts against `ratelimit:uploads`.
+- **Alternatives:** A) CSS classes per 5 % step (`.w-pct-35`). B) A single request for every file (one progress bar).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Files/Assets/js/file-manager.js`, `modules/Files/Assets/css/file-manager.css`
+
+## D-23-01 — File picker URLs, the avatar URL and the picker contract (decide)
+
+- **Where:** specification "Files" (file picker: "signed upload token for each field"; avatars "versioned URL"), "Auth" (avatar), `docs/plan.md` session 23 ("routes `files/picker/*`, `files/avatar/(:segment)`"), D-13-01 (`files/private/{key}`)
+- **Problem:** The plan names the route prefixes but not the URLs, their parameters, who may call them or what the avatar's segment is; these are public conventions (URLs) and security (who uploads where).
+- **Proposal:** `POST files/picker/upload` (`token`, `file`; CSRF, `ratelimit:uploads`; 201 with the file as JSON, 401 for guests, 403 for a missing/tampered/expired/foreign token with a `security` entry `upload_token_refused`, 422 for a refused file) and `GET files/picker/browse?token=…&path=…` (404 outside the token's roots), both outside `backend/` and with **no permission**: the signed token is the authorisation ("the field grants the upload"). Avatars at `GET files/avatar/{key}` (the file key; signed-in users, or `?expires=…&signature=…` signed URLs valid one hour for API clients; only keys that are a current avatar; `Cache-Control: private, max-age=31536000, immutable`, versioned by the key). Field API: `PickerField::make()->mode()->disk()->folder('…{user_id}…')->types()->maxSize()->maxFiles()->browseRoot()`, `render()`, `accepts()`; value = comma-separated file keys; `Config\Storage::$pickerBackend` and `$pickerTokenTtl` (4 hours).
+- **Alternatives:** A) Put the endpoints under `backend/files/picker/*` with a new permission granted to every group (e.g. `files.picker`): one more permission for nothing the token does not already decide, and Auth (avatars) would depend on the Files module. B) Avatars at `files/avatar/{user_id}?v=<version>` (exposes user ids and needs a version column). C) No signed avatar URLs: `me.avatar_url` would need the API token on an image request.
+- **Status:** Applied (decided)
+- **Decision (2026-11-12):** «Com està fet (recomanada)». As proposed and built: `POST files/picker/upload` and `GET files/picker/browse` outside `backend/` and without a permission (the field's signed upload token is the authorisation), avatars at `GET files/avatar/{key}` for signed-in users or with a signed URL (API), cached for a year and versioned by the file key; the `PickerField` API and `Config\Storage::$pickerBackend` / `$pickerTokenTtl`. **Must change:** specification "Files" (file picker endpoints, avatar URL) and "API" (`me.avatar_url` signed for an hour); no code change.
+- **Applied in:** `modules/Core/Config/Routes.php`, `modules/Core/Controllers/FilePicker.php`, `modules/Core/Storage/Picker/*`, `app/Config/Storage.php`, `modules/Auth/Config/Routes.php`, `modules/Auth/Controllers/AvatarController.php`, `modules/Auth/Services/Avatars.php`, `modules/Api/Controllers/Me.php`, `docs/files.md` (session 23, as built); `docs/specification.md` ("Files" › file picker and avatars, "API" › `me`); tests `FilePickerTest`, `PickerBackendTest`, `AvatarTest`
+
+## D-23-02 — The file picker lives in the Core with a pluggable backend
+
+- **Where:** specification "Files" (file picker component `core/forms/file-picker`, "used by any module field"), "Auth" (avatar with the picker), `docs/plan.md` session 23 (`modules/Files/Services/UploadToken.php`, `Controllers/PickerController.php`), `CLAUDE.md` ("Never hard-code a module in the Core")
+- **Problem:** The Files module requires Auth, so Auth's avatar cannot require Files; News and Pages would stop working with Files disabled; the component is the Core's.
+- **Proposal:** Token, field, endpoints and component in the Core (`Modules\Core\Storage\Picker`); what an upload or a browse does is a `PickerBackend` chosen by `Config\Storage::$pickerBackend` (like `$accessRule`). The Core's `StorageBackend` stores into the token's folder and lets users choose only their own uploads there; the Files module's registrar sets its `PickerBackend` (folders on demand with the space's rights, quotas, `files` rows and thumbnails, browsing through the folder ACL), which falls back to the Core's while Files is disabled. `CrudUploadHandler` gains `pickerField()` / `renderPicker()` / `accepts()` for kpcrudy fields (`callbackField()` + hooks); keys are checked on save.
+- **Alternatives:** A) Everything in Files as the plan says (Auth → Files cycle; fields break with Files disabled).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Storage/Picker/*`, `modules/Core/Storage/CrudUploadHandler.php`, `modules/Files/Services/PickerBackend.php`, `modules/Files/Config/Registrar.php`; tests `FilePickerTest`, `PickerBackendTest`
+
+## D-23-03 — What a picker field may browse and choose
+
+- **Where:** specification "Files" ("In browse / both mode, what the user can see and upload is limited by `browseRoot` **and** the folder ACL (e.g. editors choose a news cover from `news/` and their personal space)")
+- **Problem:** The example mixes disks (covers are public, the personal space is private: a private file as a public cover would break or leak it); module folders are hidden by the ACL, so nobody could choose the images already uploaded to `modules/news`; the file manager's RBAC ceiling (`files.list`) would exclude users who only use fields.
+- **Proposal:** Only the field's disk; only inside the token's roots; the field's own folder is always browsable (the module chose it), any other folder needs the folder ACL's `view` right (ACL alone, no `files.*` permission); trashed files never. News covers, Pages featured images and rich-text images browse their `modules/<module>` folder and the public `shared/` folders the user may view. A posted key is accepted when unchanged, or when the backend says the user may choose it (Core backend: their own upload in the field's folder).
+- **Alternatives:** A) Copy a private file to the public disk when chosen (a private document could become public by mistake). B) Require `files.list` to browse.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Files/Services/PickerBackend.php`, `modules/Core/Storage/Picker/{PickerField,StorageBackend}.php`, `modules/Core/Frontend/RichTextEditor.php`; tests `PickerBackendTest::testBrowsingAndChoosingFollowTheRootsAndTheAcl`, `FilePickerTest::testTheValueMustComeThroughTheField`
+
+## D-23-04 — Avatars: saving, replacing and serving
+
+- **Where:** specification "Auth" (avatar on the private disk in the personal space), "Files" (avatars: logged-in users only, long cache headers, versioned URL), "API" (`me`: avatar URL, signed, private)
+- **Problem:** When the avatar is saved, what happens to the old file, and how a private file can be cached.
+- **Proposal:** The picker uploads the image (upload only, `users/{user_id}/avatar`, JPG/PNG/WebP, 2 MB, re-encoded); the profile form saves the key (refused unless it came through the field), the replaced avatar is deleted, an empty value removes it; changes are in the `profile_updated` entry. The avatar folder is created with its own ACL (`view` for every signed-in user). `files/avatar/{key}` serves only current avatars, to signed-in users or with a signed URL, with `private, max-age=31536000, immutable`: a new avatar is a new key and a new URL. The theme's user menu keeps the initials for now.
+- **Alternatives:** A) Upload saves the avatar immediately (no form submit). B) Serve avatars through `files/private/{key}` (no caching).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Auth/{Services/Avatars.php,Controllers/AvatarController.php,Controllers/ProfileController.php,Views/profile.php}`, `modules/Api/Controllers/Me.php`; tests `AvatarTest`
+
+## D-23-05 — "Images of the site itself" in rich text
+
+- **Where:** D-17-08 ("HTMLPurifier then keeps only images of the site itself"), specification "Files" (internal `/uploads/…` URLs or the site's hosts)
+- **Problem:** Whether only `/uploads/…` or any URL of the site counts, and how the hosts are known.
+- **Proposal:** An HTMLPurifier URI filter (`SiteImagesOnly`) for embedded URIs: relative URLs (no scheme, no host) or `http`/`https` URLs whose host is `app.baseURL`'s or one of `app.allowedHostnames`; scheme-relative, external and `data:` images are removed (the `img` loses its required `src`). Links are not affected. It applies to every rich text (News, Pages, later Events); existing bodies lose external images when shown.
+- **Alternatives:** A) Only paths under `/uploads/` (would refuse the site's own private images and theme images).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Security/{SiteImagesOnly,HtmlSanitizer}.php`; tests `HtmlSanitizerTest::testOnlyImagesOfTheSiteItselfAreKept`, `NewsPickerTest::testAnImageInsertedInTheBodyIsStoredThroughTheStorageService`
+
+## D-24-01 — Events permission names, URLs and configuration (decide)
+
+- **Where:** specification "Modules" › "Events (calendar)" (`events-events.all`), `docs/plan.md` session 24 (routes `backend/events`, `backend/events/categories`, `backend/calendar`, public `calendar`, JSON feed `calendar/feed`), D-00-04
+- **Problem:** The specification only names `events-events.all`; the other permission names, the URLs of the event details, feeds and reminders, and where the configuration lives are public conventions.
+- **Proposal:** Resources `events` (crud with every operation, CSV import included, and the extras `all` and `duplicate`), `categories` (crud without import or trash) and `calendar` (page: `events-calendar.view`, every group). Grants: admin `events-events.*`, `events-categories.*`; editor events list/show/add/edit/delete/duplicate/export/import and categories list/show; every group `events-calendar.*`. URLs: `backend/events` (kpcrudy, with `duplicate/{code}`), `backend/events/categories`, `backend/calendar`, `backend/calendar/feed?start=&end=[&category=]`, `backend/calendar/event/{code}[?date=]`, `POST backend/calendar/event/{code}/reminder`; public `calendar[?category=<slug>]`, `calendar/feed` (`ratelimit:feeds`, public events only) and `calendar/event/{code}`; `{code}` is the masked id (context `events`, the same as the CRUD). Configuration `Modules\Events\Config\Calendar` (`publicCalendar`, `defaultView`, `maxRangeDays` 400, `reminderOptions` 60/15/1440/10080 minutes, `upcomingDays` 30, `maxOccurrences` 1000); widget `events.upcoming`, task `SendReminders`, notification `EventReminder`, menu link `events.calendar`. Built so names and URLs can still be renamed.
+- **Alternatives:** A) The calendar under `backend/events/calendar` (one prefix for the module; the plan says `backend/calendar`). B) Reminders as a separate resource with its own permission (`events-reminders.*`): one more permission that every group would get anyway.
+- **Status:** Applied (decided)
+- **Decision (2026-11-12):** «Com està fet (recomanada)». As proposed and built: resources `events-events` (crud with import, extras `all` and `duplicate`), `events-categories` (crud without import or trash) and `events-calendar.view` (every group); URLs `backend/events`, `backend/events/categories`, `backend/calendar` (+ `feed`, `event/{code}`, `POST event/{code}/reminder`), public `calendar`, `calendar/feed`, `calendar/event/{code}`; configuration in `Modules\Events\Config\Calendar`, no manifest settings. **Must change:** specification "Events" (names, URLs, configuration); no code change.
+- **Applied in:** `modules/Events/Config/{Module,Routes,Calendar}.php` (session 24, as built); `docs/specification.md` ("Events": permissions and URLs, configuration)
+
+## D-24-02 — Groups a user may target with a restricted event (decide)
+
+- **Where:** specification "Events" ("The groups offered are only those the user may assign (an editor cannot create an event only for superadmins), validated server-side too"), acceptance tests ("an editor cannot target groups they may not assign")
+- **Problem:** "The groups the user may assign" is not defined for events (nobody is added to a group here), and it is a security rule.
+- **Proposal:** Superadmins may target any group; nobody else may target `superadmin`; any other group is allowed when the user belongs to it **or** holds every permission the group grants (the Core's `EscalationGuard` rule for adding someone to a group). With the default grants an editor may target `editor` and `user` (not `admin` nor `superadmin`). The form only offers those groups; a forged or forbidden group id is refused with an error and a `security` entry `forbidden_audience` (not silently dropped); links to groups the user cannot assign that someone else set are kept when they edit the event. Users may be added to the audience freely (any active user).
+- **Alternatives:** A) Only the groups the user belongs to (an editor could not make an event for the `user` group). B) A permission per group (`events-audience.<group>`), managed in the permission matrix.
+- **Status:** Applied (decided)
+- **Decision (2026-11-12):** «Com està fet (recomanada)». As proposed and built: superadmins may target any group; nobody else may target `superadmin`; any other group when the user belongs to it or holds every permission it grants (the Core's escalation rule); forged or forbidden groups are refused with an error and a `security` entry; groups set by someone else are kept; individual users may be added freely. **Must change:** specification "Events" (the assignable-groups rule); no code change.
+- **Applied in:** `modules/Events/Services/AssignableGroups.php`, `modules/Events/Controllers/Events.php`; tests `EventsCrudTest::testAnEditorCannotTargetGroupsTheyMayNotAssign`, `testAGroupSetByAnAdminIsKeptWhenAnEditorEditsTheEvent` (session 24, as built); `docs/specification.md` ("Events" › form)
+
+## D-24-03 — `event_audience` with a `group_id` and a `user_id` column
+
+- **Where:** specification "Events" (`event_audience` (event, type group|user, id)), kpcrudy `setRelationNN()`
+- **Problem:** With one `type` + `id` pair, kpcrudy's N-N relation (which rewrites the junction rows `WHERE event_id = ? AND <otherKey> IN (offered options)`) would delete the user rows whose id equals an offered group id, and could not have foreign keys.
+- **Proposal:** Each row has either `group_id` (`groups.id`) or `user_id` (`users.id`), the other column null, both with `ON DELETE CASCADE`; two `setRelationNN()` fields (`groups`, `users`) on the same table never touch each other's rows. The rows of an event that is not `restricted` are deleted after saving.
+- **Alternatives:** A) Two junction tables (`event_groups`, `event_users`). B) The `type`/`id` pair with a custom field instead of kpcrudy's N-N.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Database/Migrations/2026-11-12-100005_CreateEventAudience.php`, `modules/Events/Controllers/Events.php`
+
+## D-24-04 — The audience's users field is a multiple select (no AJAX search)
+
+- **Where:** specification "Events" ("a users field (searchable, AJAX)"), kpcrudy 1.3 (`ajax` exists only for `setRelation()`, not `setRelationNN()`)
+- **Problem:** The searchable AJAX users field needs a feature kpcrudy does not have for N-N relations.
+- **Proposal:** Use kpcrudy's standard multiple select of active users (`setRelationNN('users', …)`) for now and record the library request "`ajax` for `setRelationNN()`" in `docs/library-requests.md`; switch to it when kpcrudy has it. No custom component in the module.
+- **Alternatives:** A) A `callbackField()` with a Core component and a permission-checked lookup endpoint (code that the library request would make obsolete).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Controllers/Events.php`, `docs/library-requests.md`
+
+## D-24-05 — No manifest settings for Events: configuration in `Config\Calendar`
+
+- **Where:** D-00-04, specification "Events" (configuration in `Config/Calendar.php`), Core settings (manifest settings are named `<Module>.<key>`)
+- **Problem:** A manifest setting of the Events module would be read as `setting('Events.x')`; codeigniter4/settings resolves `Events` with `config('Events')`, which autoloads `app/Config/Events.php` (CodeIgniter's event-listener script) a second time.
+- **Proposal:** The module declares no `$settings`; its options live in `Modules\Events\Config\Calendar` (`config(Calendar::class)`), overridable from `.env` (`calendar.maxRangeDays = 200`). If administrators must edit them from Settings later, the Core gains a settings namespace per module (a future decision).
+- **Alternatives:** A) Rename the settings namespace in the Core for this module now (a Core change outside this session).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Config/{Module,Calendar}.php`
+
+## D-24-06 — CSV import of translated fields with kpcrudy's own columns
+
+- **Where:** D-00-40 ("for Events import, `callbackImport()` writes the Catalan translation"), `deploy/24-events-core.md`, kpcrudy ≥ 1.1 (translated columns in CSV import and `exportTranslations()`)
+- **Problem:** D-00-40 was written for kpcrudy 1.0; since 1.1 the import reads one column per language (`title:ca`, `Títol (Català)`) and validates the required language like the form.
+- **Proposal:** Use kpcrudy's translated import and export (`exportTranslations()`); no `callbackImport()` for the title. The rich-text description is **not** importable: kpcrudy writes imported translations as they come (neither `callbackImport()` nor the form's request clean-up reaches them), and rich text must be sanitised before it is stored (fixed after session 24's review; test `EventsCrudTest::testTheCsvImportNeverWritesTheRichTextDescription`). Groups and users import by id or name and only offered (assignable) groups are accepted.
+- **Alternatives:** A) A `callbackImport()` writing the Catalan row by hand (duplicates the library).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Controllers/Events.php`
+
+## D-24-07 — Administration scope without `events-events.all`
+
+- **Where:** specification "Events" ("without it, the list is limited to their audience with kpcrudy's `where()`")
+- **Problem:** An editor who creates a restricted event for a group they are not in (e.g. `user`) could not see it afterwards, and kpcrudy rolls back a save that leaves the record outside the scope.
+- **Proposal:** The scope is the calendar's visibility rule (`EventVisibility`) **or** `created_by` = the user (`where(Closure)`, kpcrudy 1.3). An edit that would leave the event outside the scope (e.g. the editor removes their only group) is refused by kpcrudy. With `events-events.all`, every event, with a filter "visible to me / all". The calendar, the widget and the details always follow the audience only, administrators included.
+- **Alternatives:** A) Audience only (editors lose sight of their own events).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/EventVisibility.php`, `modules/Events/Controllers/Events.php`; tests `EventsCrudTest::testTheListIsLimitedToTheUsersAudienceWithoutTheAllPermission`, `testTheAllPermissionShowsEveryEventWithAVisibleToMeFilter`
+
+## D-24-08 — Calendar library and time zones in the calendar view
+
+- **Where:** specification "Events" (vendored MIT calendar library, `data-component`), D-00-25 (no inline styles), `docs/frontend.md`
+- **Problem:** Which library works under the strict CSP, and which time zone the views use.
+- **Proposal:** FullCalendar 7.1.3 (MIT), vendored in `public/assets/vendor/fullcalendar/` (global build, classic theme, `ca`/`es` locales; checksums in `vendor.json`): version 7 ships its CSS as files and only uses the CSSOM (v6 injected a `<style>` element). `events/calendar` loads it on demand; colours come from Bootstrap's variables (light and dark). The feed sends the site's wall-clock times without an offset and the calendar runs in UTC mode, so every browser shows the site's times; the feed's range is read as dates in the site's time zone (at most `maxRangeDays`). Phones start with the list view.
+- **Alternatives:** A) FullCalendar 6 with a nonce meta tag (the style nonce would have to be exposed to scripts). B) A calendar written in the module.
+- **Status:** Accepted (proposal)
+- **Applied in:** `public/assets/vendor/fullcalendar/`, `modules/Events/Assets/{js/calendar.js,css/calendar.css}`, `modules/Events/Services/{CalendarComponent,EventRepository}.php`
+
+## D-24-09 — Recurrence storage, exceptions and counts
+
+- **Where:** specification "Events" (recurrence "expanded when queried, not stored"; exceptions), `docs/plan.md` (`event_exceptions` or a JSON column)
+- **Problem:** Where exceptions live and how counts, missing month days and daylight saving behave.
+- **Proposal:** Columns `recur_freq`, `recur_interval`, `recur_days` (`mo,tu,…`), `recur_until` (inclusive local date) or `recur_count`, and `recur_exceptions` (text, one `YYYY-MM-DD` per line, normalised on save). Expansion in the site's time zone (the local time is kept across daylight saving); the count includes skipped dates (iCal `COUNT` + `EXDATE`, so session 25 can write `RRULE`/`EXDATE` as stored); monthly series skip months without the day, yearly 29 February only in leap years; a safety cap of `maxOccurrences`.
+- **Alternatives:** A) An `event_exceptions` table (one more table and CRUD for a list of dates).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/Recurrence.php`; tests `RecurrenceTest`
+
+## D-24-10 — Reminders: offsets, occurrences and access
+
+- **Where:** specification "Events" ("users can ask for a reminder; a scheduled task sends the notifications")
+- **Problem:** When reminders are sent, how often, and what happens when the user loses access.
+- **Proposal:** One reminder per user and event (`event_reminders`), chosen in the event's details among `Config\Calendar::$reminderOptions`; the `SendReminders` task (every 5 minutes) sends the `EventReminder` notification for each occurrence starting within the offset, once (`last_sent_for`), never for cancelled events, and only if the user can still see the event (checked when sending).
+- **Alternatives:** A) Reminders set by the event's author for its whole audience.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/Reminders.php`, `modules/Events/Tasks/SendReminders.php`; tests `RemindersAndWidgetTest`
+
+## D-25-01 — iCal URLs, the calendar API names and the subscription screen (decide)
+
+- **Where:** specification "Events" › "iCal", "Calendar API for other modules"; `docs/plan.md` session 25 (routes `ical/public/(:segment).ics`, `ical/user/(:segment).ics`, `events/(:segment)/export.ics`)
+- **Problem:** URLs, manifest keys and class names are public conventions; the plan's export URL `events/{code}/export.ics` does not match the URLs decided in D-24-01, and the specification does not say where the subscription screen lives nor how a module declares an access policy or a calendar source.
+- **Proposal:** Feeds `ical/user/<secret>.ics` (personal) and `ical/public/all.ics` / `ical/public/<category slug>.ics` (public; `ratelimit:feeds` per IP, and per secret for the personal one); one-off exports next to the details pages: `backend/calendar/event/{code}/export.ics` and `calendar/event/{code}/export.ics`; screen "Calendar subscription" at `backend/calendar/subscription` (user menu, `events-calendar.view`) with `POST …/generate` (`reauth`), `…/revoke`, `…/filters`; calendar toggles `POST backend/calendar/calendars`. API: `service('calendar')` returns a `Modules\Core\Calendar\CalendarPublisher` (`publish()`/`unpublish()`; `NullCalendar` without Events, set by Events' registrar on `Config\Calendars::$publisher`); contracts `CalendarEvent`, `CalendarProvider`, `EventAccessPolicy`, `CalendarSource` in `Modules\Core\Calendar`; manifest `$calendars[key] = [label, color, permission?, policy?, source?]` (id `<module lower case>.<key>`; events created by hand form the calendar `events`); `$calendarProviders` must implement `CalendarProvider`; command `calendar:resync <Module>`; CodeIgniter events `calendar.created|updated|deleted` (`['id', 'module', 'key']`). Configuration in `Config\Calendar`: `icalPastDays` 90, `icalFutureDays` 365, `icalGraceDays` 30, `icalRefresh` `PT1H`, `icalCacheSeconds` 300, `providerCacheSeconds` 300, `publicFeeds` true. Built so all of it can still be renamed.
+- **Alternatives:** A) The export at `events/{code}/export.ics` as in the plan (a third URL prefix for the module). B) The subscription inside Auth's profile page (Auth would depend on Events). C) The secret in the query string (`ical/user.ics?token=…`): ends up in more logs and some clients drop query strings.
+- **Status:** Applied (decided)
+- **Decision (2026-11-15):** «Com està fet (recomanada)». As proposed and built: feeds `ical/user/<secret>.ics` and `ical/public/all.ics` / `ical/public/<category slug>.ics`; one-off exports `backend/calendar/event/{code}/export.ics` and `calendar/event/{code}/export.ics`; the "Calendar subscription" screen at `backend/calendar/subscription` (user menu; `generate` with `reauth`, `revoke`, `filters`); calendar toggles `POST backend/calendar/calendars`; `service('calendar')` with the contracts of `Modules\Core\Calendar`, manifest `$calendars` with optional `permission`, `policy`, `source`, `$calendarProviders`, command `calendar:resync`, CodeIgniter events `calendar.created|updated|deleted`, and the `Config\Calendar` iCal options. **Must change:** specification "Events" (iCal URLs, the subscription screen, the export URL, the manifest keys) and `docs/plan.md` session 25 (export URL); no code change.
+- **Applied in:** `modules/Events/Config/{Module,Routes,Calendar}.php`, `modules/Core/Calendar/`, `modules/Core/Config/{Calendars,Services}.php` (session 25, as built); `docs/specification.md` ("Events" › iCal, calendars; manifest example), `docs/plan.md` (session 25)
+
+## D-25-02 — The personal feed's secret: shown once, hashed, re-authentication
+
+- **Where:** specification "Events" › "iCal" ("random secret token (stored hashed), which the user can copy, regenerate or revoke"; "Copy URL" in the profile)
+- **Problem:** A hashed secret cannot be shown again, so "Copy URL" cannot be offered at any time.
+- **Proposal:** 32 random bytes (base64url, 43 characters), SHA-256 in `ical_tokens.token_hash`; the URL (with "Copy" and a `webcal://` link) is shown only in the response that creates or regenerates it, like API personal tokens; afterwards the screen shows the state, creation date and last access, and "Regenerate". Creating or regenerating needs re-authentication (`reauth`, like personal API tokens); revoking does not. Wrong, revoked or old secrets, banned or inactive users and users without `events-calendar.view` get the same 404. Accesses update `last_access_at`/`last_access_ip` and are logged (`ical_accessed`) on the first access, a new IP address or once a day; creation, regeneration, revocation and filter changes are logged.
+- **Alternatives:** A) Store the secret encrypted so it can be shown again (contradicts "stored hashed"). B) No re-authentication (a stolen session could mint a long-lived read credential silently).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/IcalFeeds.php`, `Controllers/{Subscription,IcalFeed}.php`; tests `IcalTest`
+
+## D-25-03 — Deterministic feeds: DTSTAMP, ETag and the cache
+
+- **Where:** specification "Events" › "iCal" (ETag/Last-Modified/304, a short cache per feed)
+- **Problem:** With `DTSTAMP` = now every document differs and the ETag would never match.
+- **Proposal:** `DTSTAMP` and `LAST-MODIFIED` = the event's `updated_at` (provided events: their start), so the same data gives the same bytes; ETag = SHA-1 of the document, Last-Modified = the newest change; `If-None-Match` (or `If-Modified-Since`) answers 304. Documents are cached in the `calendar` scope for `icalCacheSeconds` and every change through the CRUD or the API clears the scope; permission changes reach a cached feed within that time. Deleting or restoring an event in the administration bumps `sequence`, so clients accept the cancellation.
+- **Alternatives:** A) ETag from the newest `updated_at` only (misses permission and audience changes).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Ical/IcalWriter.php`, `Services/IcalFeeds.php`, `Controllers/IcalFeed.php`; `IcalTest::testEtagAndLastModifiedAnswerNotModified`
+
+## D-25-04 — Calendars of disabled modules, permissions and access policies
+
+- **Where:** specification "Calendar API" ("events and providers of a disabled module are hidden", calendar `permission` optional, `EventAccessPolicy`), D-00-41
+- **Proposal:** `EventVisibility::apply()` also keeps only events without a calendar or of calendars declared by enabled modules whose `permission` (if any) the user holds; an `EventAccessPolicy` (`canSee(User, key)`) is applied after the query on the calendar view, details, widget, reminders and feeds; it only narrows and guests never pass it. Providers run only for signed-in users (never the public site or public feeds), only for their own module's calendars, results cached per user and range. The administration list keeps showing every event to users with `events-events.all`.
+- **Alternatives:** A) Delete the events of a disabled module (they could not come back on enabling it).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/{EventVisibility,EventRepository,Calendars,ProvidedEvents}.php`; `CalendarApiTest`
+
+## D-25-05 — Publishing contract: idempotency, unpublish as soft delete, purge on uninstall
+
+- **Where:** specification "Calendar API" (idempotent per module + key, locked events, uninstall deletes, `calendar:resync`)
+- **Proposal:** `publish()` compares every stored column, the texts and the audience: equal data returns false and keeps `sequence`; otherwise it updates, bumps `sequence` and revives an unpublished event. `unpublish()` soft-deletes (feeds publish it as cancelled for `icalGraceDays`). A module may only publish to its own calendars (`<module>.*`); unknown group names are an error, unknown user ids are dropped; descriptions are sanitised with HTMLPurifier. `CalendarService::purgeModule()` deletes a module's events for good; the uninstaller of session 29 must call it. `calendar:resync` publishes what the module's `CalendarSource`s return and unpublishes the rest of those calendars.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/CalendarService.php`, `Commands/CalendarResync.php`; `CalendarApiTest`
+
+## D-25-06 — New columns `events.allow_reminders` and the notice's event date
+
+- **Where:** specification "Calendar API" (`reminders: true`), "News (push)" ("a notice may have an optional event date")
+- **Proposal:** Migration `AddAllowRemindersToEvents` (`allow_reminders`, default 1; the API's `reminders` flag) and News' `AddEventDateToNews` (`event_starts_at`, `event_ends_at`, `event_all_day`); released migrations are not edited. A notice is in the `news.notices` calendar only while it is published, readable (not scheduled nor expired) and has a date; its audience maps `public`/`private`/`groups` → `public`/`private`/`restricted` (D-00-41) and links back to the reader page.
+- **Status:** Accepted (proposal)
+- **Applied in:** the two migrations, `modules/News/Services/NoticeCalendar.php`, `Controllers/Posts.php`, `Services/Publisher.php`; `NoticeCalendarTest`
+
+## D-25-07 — The birthdays calendar: off by default, day and month only
+
+- **Where:** specification "Users (pull)" ("enabled by a setting, only the day and month, only to logged-in users")
+- **Proposal:** Setting `Users.birthdaysCalendar` (bool, default **off**: birthdays are personal data), group "Calendar"; calendar `users.birthdays` without a permission; active, non-banned users with `user_profiles.birth_date`; title "<name>'s birthday" (never the year or age); 29 February shown on 28 February in common years.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Users/Calendar/BirthdaysProvider.php`, `modules/Users/Config/Module.php`; `BirthdaysProviderTest`
+
+## D-25-08 — Who sees whose birthday: consent, permission, group table and an administrative calendar (decide)
+
+- **Where:** specification "Users (pull)" (birthdays provider), D-25-07; owner's request after session 25 (an educational centre: teachers share with teachers and the management; students see no birthday; only management, heads of studies and the office see the students').
+- **Problem:** When the birthdays calendar is on, every signed-in user sees the birthday of everybody who entered a date of birth: no consent, no control per group. Management may also need the dates for administrative tasks even without consent.
+- **Proposal:** A) a permission that bypasses consent in the same calendar; B) the social calendar always respects consent, the management sees the date of birth in the user's record; C) B plus an internal administrative calendar.
+- **Alternatives:** see the proposal (options A, B, C); earlier: only one permission, or each user choosing the audience.
+- **Status:** Applied (decided)
+- **Decision (2026-11-15):** «C». (1) **Consent:** each user decides in their profile whether they share their birthday (off by default). (2) **Social calendar "Birthdays"** (`users.birthdays`): only users with the new permission `users-birthdays.view` see it; a setting table says, for each group, whose groups' birthdays its members see (e.g. teachers → teachers; management/office → every group); only shared birthdays appear, for everybody, management included. (3) **Administrative data:** a new permission `users-users.birthdate` shows the full date of birth in the user's record (Users), regardless of consent. The record also shows the age (completed years) as a tooltip of an icon next to the date (owner's follow-up: the office needs it for paperwork). (4) **Administrative calendar "Birthdays (administration)"** (`users.birthdaysadmin`), declared with `permission => users-users.birthdate`: every birthday of active users, regardless of consent, only for holders of that permission. **Must change:** Auth (profile field and column for consent), Users (provider(s), permissions, settings, record), specification "Users", docs, tests. The owner also asked for a simpler calendar view with many calendars: switches with the calendar's colour, "only this one" and "Show all", and calendars declared `'hidden' => true` that start hidden (used by the administrative calendar).
+- **Applied in:** `modules/Auth/Database/Migrations/2026-11-15-000001_AddShareBirthdayToUserProfiles.php`, `modules/Auth/{Controllers/ProfileController,Models/UserProfileModel,Views/profile}.php`; `modules/Users/Database/Migrations/2026-11-15-100001_CreateGroupBirthdayAudiences.php` (with defaults), `modules/Users/Calendar/{Birthdays,BirthdaysProvider,AdminBirthdaysProvider}.php`, `modules/Users/Controllers/{Users,Groups}.php`, `modules/Users/Config/Module.php` (permissions `users-birthdays.view`, `users-users.birthdate`); `modules/Events/Services/Calendars.php`, `Controllers/CalendarView.php`, `Views/calendar/index.php`, `Assets/js/calendar.js`, `Assets/css/calendar.css`; `modules/Core/Modules/ManifestValidator.php` (`hidden`); tests `BirthdaysProviderTest`, `ProfileTest::testSharingTheBirthdayIsAnExplicitChoice`, `CalendarApiTest::testCalendarsDeclaredHiddenStartHiddenAndOnlyOrAllSwitchQuickly`, counting tests (129 permissions); `docs/users.md`, `docs/auth.md`, `docs/events.md`, `docs/calendar-api.md`, `docs/specification.md`.
+
+## D-25-09 — Birthday greetings as notifications (decide)
+
+- **Where:** owner's request after D-25-08 (greet users on their birthday with a configurable message, only the groups the administrator chooses, e.g. only teachers).
+- **Problem:** Which module, how the groups and the message are configured, and whether greeting needs the user's consent to share the birthday.
+- **Proposal:** A) Users module: a daily task sends a `BirthdayGreeting` notification (bell, and email if the user enabled it; each user can turn it off in their notification preferences) only on the day, once a year (29 February → 28 February in common years); a switch "Greet the members on their birthday" in Users › Groups; the message per language with `{name}` in Settings › Users; the greeting only reaches the person, so it does not depend on sharing.
+- **Alternatives:** B) The groups as a list in Settings. C) Only users who share their birthday.
+- **Status:** Applied (decided)
+- **Decision (2026-11-15):** «A, amb opció de felicitar només els qui comparteixen l'aniversari». As proposal A, plus: a setting "Greet only users who share their birthday" (on by default, to respect privacy), and the time of the task as a setting (default 08:00) so it can be changed later without code. **Must change:** Users (task, notification type, settings, tables for the groups to greet and the greetings sent, Groups form), docs, tests.
+- **Applied in:** `modules/Users/Database/Migrations/2026-11-15-100002_CreateGroupBirthdayGreetings.php`, `…100003_CreateBirthdayGreetingsSent.php`, `modules/Users/Services/BirthdayGreetings.php`, `Notifications/BirthdayGreeting.php`, `Tasks/SendBirthdayGreetings.php`, `Controllers/Groups.php` (switch), `Config/Module.php` (settings `birthdayGreetingSharedOnly`, `birthdayGreetingTime`, `birthdayGreetingCa|Es|En`, group `greetings`); tests `BirthdayGreetingsTest`, `RegistrySyncTest`; `docs/users.md`.
+
+## D-25-10 — Per-language settings that follow the site's languages (decide)
+
+- **Where:** D-25-09 (the birthday greeting is three settings, `Users.birthdayGreetingCa|Es|En`); session 31 (internationalisation, the locale restriction setting).
+- **Problem:** Per-language settings are fixed in the manifest: restricting the site's languages leaves an unused field, and a new language has no field.
+- **Proposal:** A) Now: a setting type "translated text" in the Settings module (one setting stored as JSON, one input per active locale, default from the language file, Catalan fallback), used by the greetings. B) The same in session 31, where the site's active locales are defined.
+- **Status:** Decided
+- **Decision (2026-11-15):** «B: ho deixem per a la sessió 31, i així si apareixen més coses ja ho tocarem». Session 31 adds the "translated text" setting type (the texts are still written and edited in the UI; the language file only gives the default) and moves the birthday greetings to one setting `Users.birthdayGreeting`, with a migration of the stored values. Until then the three fixed settings stay. **Must change:** `deploy/31-i18n.md` (scope; done), `docs/plan.md` session 31 (done); the code in session 31.
+
+## D-26-01 — Core API permission names and URLs (decide)
+
+- **Where:** specification "JSON API (kpapy)" › "Core endpoints" (`news` with `POST news/{id}/read` and the user's notices, `events` by range and calendars, `notifications` list/unread/mark read, `public/news`, `public/events`); plan session 26; D-17-01 (`news-api`), D-24-01, D-25-01.
+- **Problem:** The specification names the endpoints but not their permissions nor the exact paths of the notices, the occurrences and the unread count. kpapy checks token scopes against `<resource>.<operation>`: if marking as read used `list`, a token limited to listing could write (acceptance criterion 10: "403 on any write"). The calendar is a page resource (`events-calendar.view`), which kpapy cannot ask `list`/`show`.
+- **Proposal (built):**
+  - Permissions (every group; `news-api.*` and `core-notifications.*` are already wildcards, so existing sites get the new ones): `news-api.read` (mark a post as read), `core-notifications.read` (mark notifications as read), and a new resource `events-api` (`list`, `show`, like `news-api`). 133 permissions.
+  - URLs: `GET api/v1/news/notices[?unread=1&limit=]`, `POST api/v1/news/{id}/read`; `GET api/v1/events[/{id}]`, `GET api/v1/events/occurrences?start=&end=[&calendars=a,b][&category=<slug>]`, `GET api/v1/events/calendars`; `GET api/v1/notifications[/{id}]`, `GET api/v1/notifications/unread`, `POST api/v1/notifications/{id}/read`, `POST api/v1/notifications/read-all`; `GET api/v1/public/news[/{id}]`, `GET api/v1/public/events[/{id}|/occurrences]`. Public endpoints have no catalogue resource (D-26-02).
+  - Existing installations: default grants are applied once per module (D-02-04), so grant `events-api.*` to the groups in the permission matrix after updating (fresh installs get it).
+- **Alternatives:** A) Mark as read with `list` (no new names; a list-only token can write). B) Extra `list`/`show` operations on `events-calendar` (the page would carry API operations, what D-17-01 rejected for News). C) Catalogue resources for the public endpoints (`news-public.*`, `events-public.*`) granted to guests (guests have no groups; names that grant nothing). D) Other paths (`api/v1/news/{id}/mark`, `api/v1/calendar/…`, `api/v1/notifications/count`).
+- **Status:** Applied (decided)
+- **Decision (2026-11-16):** «Com està fet (recomanada)». The Core API keeps the names and URLs as built: permissions `news-api.read`, `core-notifications.read` and the resource `events-api` (`list`, `show`), granted to every group; the URLs listed in the proposal; public endpoints without a catalogue resource. A token limited to listing cannot mark anything as read. **Must change:** `docs/specification.md` ("JSON API" › "Core endpoints", "News", "Events"); nothing in the code.
+- **Applied in:** `modules/News/Config/Module.php`, `modules/Events/Config/Module.php`, `modules/Core/Config/Module.php` (resources, `$api`), the controllers in `modules/*/Controllers/Api/`, `modules/Events/Services/EventsApi.php`; tests `NewsApiTest`, `PublicNewsApiTest`, `EventsApiTest`, `NotificationsApiTest`, counting tests (`PermissionsCommandsTest` 133, `ShieldMatrixTest`, `CatalogueBuilderTest`); decided as built (Decisions 26): `docs/specification.md` ("JSON API" › "Core endpoints", "News", "Events").
+
+## D-26-02 — Public API endpoints: GET only, no permission resolver, public records only
+
+- **Where:** specification "Core endpoints" (`public/news` and `public/events`: "public read-only endpoints without a token (rate-limited)"); D-19-02 (`kpapy:public` only for GET).
+- **Problem:** kpapy's `Resource::routes()` registers every method, which the route audit refuses for `kpapy:public`; the shared resolver denies every guest (no user), so a public resource cannot use it.
+- **Proposal:** Only `GET` routes (`<path>` and `<path>/(:any)`, plus `OPTIONS` for CORS), marked with the `kpapy` route option so kpapy's OpenAPI generator and `permissions:check` see them; the resource has no resolver (`setPermissionResolver(null)`), allows `list` and `show` with `setPermission()` and `readOnly()`; its `where()` is the public-site rule (`NewsVisibility`/`EventVisibility` with `publicOnly`), so a token never widens it; rate limit `Core.rateLimitApiIp` per IP (kpapy's `rateLimitPublic`); `public/events` answers 404 while `Config\Calendar::$publicCalendar` is off. Ids are the same masked codes as everywhere else.
+- **Alternatives:** A) `kpapy:optional` on the user endpoints (one endpoint, public results without a token: harder to reason about, and a token would change the answer).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/News/Controllers/Api/PublicNews.php`, `modules/Events/Controllers/Api/PublicEvents.php`, the modules' `Config/Routes.php`; tests `PublicNewsApiTest`, `EventsApiTest::testPublicEvents*`.
+
+## D-26-03 — Read markers in the API are not written to the activity log
+
+- **Where:** specification "Cross-cutting" ("every write and every login in the activity log"); the back office does not log "mark as read" (News reader, notifications bell).
+- **Problem:** Marking a post or a notification as read is personal state, not content: logging every read would flood the log and record what each person reads.
+- **Proposal:** Read markers (`POST news/{id}/read`, `POST notifications/{id}/read`, `POST notifications/read-all`) are not logged, the same as in the back office. Content writes through the API (none in the Core yet; modules' resources made with `make:module --api`) follow the activity rules of their module. `ActivityLabelsTest` no longer scans kpapy resources (`AuditedCrud` only audits kpcrudy CRUDs).
+- **Alternatives:** A) Log them as `read` entries (labels `<Module>.activity.read`).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/News/Controllers/Api/Posts.php`, `modules/Core/Controllers/Api/Notifications.php`, `tests/feature/Crud/ActivityLabelsTest.php`.
+
+## D-26-04 — The OpenAPI document written by `modules:sync`
+
+- **Where:** session 26 scope ("OpenAPI generation on `modules:sync`"); plan risk: "keep it in `writable/`".
+- **Problem:** Where the document goes, whether the web serves it, and how to keep a second sync from rewriting it.
+- **Proposal:** Step 10 of `modules:sync` (`Modules\Core\Registry\OpenApiDocument`) builds the `api/v1` document with kpapy's generator and writes `writable/api/openapi.json` (0640) only when it changed, without `servers` (the CLI's base URL is not the site's). `writable/` is never served; the live document stays at `backend/api/docs/openapi.json` (`api.docs`) and `api/v1/openapi.json` (`Api.publicSpec`). Resources kpapy cannot describe are reported as sync lines. `GET me` is described with the `openapi` route option.
+- **Alternatives:** A) Serve the file instead of generating it live (stale after a code change without sync). B) Write it to `public/` (public by default, against the specification).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Registry/OpenApiDocument.php`, `modules/Core/Modules/{ModuleSynchronizer,SyncReport}.php`, `modules/Api/Config/Routes.php`; test `ModulesSyncTest::testFirstSyncInstallsSecondSyncChangesNothing`.
+
+## D-26-05 — Calendar access policies and providers in the events API
+
+- **Where:** specification "Core endpoints" (`events`: "published and provider events, with `restricted` audiences respected"); D-25-04 (policies).
+- **Problem:** `EventAccessPolicy` decides per row in PHP, but kpapy's list, counts and pages need SQL conditions; provider events are computed per user and are not rows.
+- **Proposal:** The resource's `where()` applies `EventVisibility::apply()` and excludes the ids of policy calendars' events the policy refuses (`EventsApi::refusedByPolicy()`; guests: all of them). Stored events are listed with the recurrence as a rule; `occurrences` expands recurrences in a range (`Config\Calendar::$maxRangeDays`) and adds the providers' events for the token's user (never on the public endpoint). `calendars` lists the calendars the user may see with their own "hidden" choice; the API shows every visible calendar unless `?calendars=` narrows it.
+- **Alternatives:** A) Only `occurrences` (no list/show resource). B) Apply the user's hidden calendars to the API too (an app has its own switches).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Events/Services/EventsApi.php`; tests `EventsApiTest`.
+
+## D-26-06 — `make:module --api` needs `--crud`
+
+- **Where:** D-19-03; `CLAUDE.md`, specification "Modules" (`make:module` with `--api`).
+- **Problem:** Without a table there is nothing for `kpapy:make` to describe.
+- **Proposal:** `--api` requires `--crud=<table>`. `kpapy:make` writes `Controllers/Api/<Key>.php` (rewritten to strict types and a final class) and the route `api/v1/<module>/<key>` with the `kpapy` filter; `setResource()` is the CRUD's resource; the manifest declares it in `$api`; `Tests/<Name>ApiTest.php` checks the token (401), the scopes (200/403) and a user without the permission (403). Checked by hand: the generated module syncs, passes `permissions:check`, its 8 tests and PHPStan.
+- **Alternatives:** A) `--api` alone generates an empty resource (nothing to list).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Modules/{ApiScaffold,ModuleGenerator}.php`, `Templates/{Module.php.tpl,ApiTest.php.tpl}`, `modules/Core/Commands/MakeModule.php`; test `CrudScaffoldTest::testWithApiTheTemplatesDeclareTheResourceAndItsScopeTest`. D-19-03 is now built.
+
+## D-27-01 — Backup permission names, URLs, settings and default grants (decide)
+
+- **Where:** specification "Backup" (permissions `backup.list`, `backup.create`, `backup.download`, `backup.delete`, `backup.restore`; "a back-office page"; retention "keep the last N daily/weekly/monthly"), plan session 27 (`backend/backups`).
+- **Problem:** The specification names the permissions but not the URLs, the settings, the extra `show` permission of the list's detail view, who verifies or uploads, nor the default grants.
+- **Proposal:** One resource `backups` named `backup` (single-resource module): `backup.list` (list and **verify**), `backup.show` (detail view, from kpcrudy), `backup.delete`, extras `backup.create`, `backup.download` (+ `reauth`) and `backup.restore` (+ `reauth`; also **upload a backup file**, which is only useful to restore). URLs: `backend/backups` (list, kpcrudy), `backend/backups/create`, `verify/<id>`, `download/<id>`, `recover/<id>` (restore; `restore/<id>` is kpcrudy's own trash URL), `upload`, `jobs/<job>` (result of a restore) and `progress/backup/<job>` (JSON progress, D-27-02). Settings: `Backup.scheduled` (bool, off), `Backup.scheduledType` (`full`/`db`), `Backup.keepDaily` 7, `Backup.keepWeekly` 4, `Backup.keepMonthly` 6 (0 in the three keeps everything). Default grants: admin `backup.list`, `backup.show`, `backup.create`; download, delete and restore only for the superadmin (a downloaded backup holds every secret of `.env`; an administrator who could create *and* download would get the encryption key with a password of their own).
+- **Alternatives:** A) Admin also gets `backup.download` (an admin then holds every secret). B) Verify under `backup.download` (verifying reveals nothing but the manifest). C) A separate `backup.upload` permission.
+- **Status:** Applied (decided)
+- **Decision (2026-11-16):** «Com s'ha construït (recomanada)». The permission names, URLs, settings and default grants stay as built: admin `backup.list`, `backup.show`, `backup.create`; download, delete and restore only for the superadmin; verify under `backup.list`, upload under `backup.restore`; restore URL `backend/backups/recover/<id>`.
+- **Applied in:** `docs/specification.md` ("Backup": URLs, permissions, grants, settings), `modules/Backup/Config/{Module,Routes}.php`, `modules/Backup/Controllers/Backups.php`; tests `BackupScreensTest`, `BackupModuleTest::testManifestAndGrants`.
+
+## D-27-02 — Maintenance mode now, as a file and a global filter, and the `progress/*` paths (decide)
+
+- **Where:** specification "Backup" › "Restore" (enters maintenance mode), "Settings" (maintenance mode, session 28), D-14-03 (maintenance mode in session 28), D-07-01 (the `backend` chain).
+- **Problem:** A restore must enter maintenance mode, which session 28 was to build with its setting. A setting lives in the database, which the restore replaces; the restore's progress must stay reachable while every other page answers 503, and its endpoint cannot use the session or the database.
+- **Proposal:** `Modules\Core\Maintenance\MaintenanceMode` keeps the state in `writable/maintenance.json` (reason, since, allowed paths), and the global filter `maintenance` (first global filter) answers 503 + `Retry-After: 60` with a plain page that reads nothing from the database (JSON for API and JSON requests), except the paths given when it was turned on. `schedule:run` and the poor man's cron do nothing meanwhile; the console works. New convention: `progress/*` paths serve the JSON progress of long jobs; `moduleenabled`, `cspmodules`, `authsession` and `csrftoken` skip them (they read the database or the session). Session 28 adds the setting/screen (turning it on by hand, a superadmin bypass) on top of this class.
+- **Alternatives:** A) Store the state as a setting (lost while the database is replaced). B) Wait for session 28 and restore without maintenance mode (users write to a database being replaced). C) Exempt the restore's own back-office page instead of a `progress/*` endpoint (needs the session and the database).
+- **Status:** Applied (decided)
+- **Decision (2026-11-16):** «Com s'ha construït (recomanada)». Maintenance mode stays in the Core as a file (`writable/maintenance.json`) and the global `maintenance` filter, built now; `progress/*` paths are a convention (JSON progress read from files, no session/database filters, never secrets). Session 28 adds the setting, the screen and the superadmin bypass on top of `MaintenanceMode`.
+- **Applied in:** `docs/specification.md` ("RBAC" backend chain, "Settings", "Backup"), `CLAUDE.md`, `deploy/28-updates.md`, `deploy/30-security-check.md`, `docs/security.md`, `modules/Core/Maintenance/MaintenanceMode.php`, `modules/Core/Filters/Maintenance.php`, `app/Config/Filters.php`; test `MaintenanceModeTest`.
+
+## D-27-03 — The database dump: Query Builder only, schema from the backup's own migrations
+
+- **Where:** specification "Backup" ("portable dump generated with the Query Builder in chunks, or `mysqldump` when available"); plan risk "`mysqldump` output is not portable to SQLite".
+- **Problem:** A `mysqldump` file cannot be restored on SQLite (nor read safely without running SQL from the archive); a data-only dump needs a schema to load into, and the installed code's schema may be newer than the backup's.
+- **Proposal:** Only the Query Builder dump: one `database/<table>.jsonl` per table with the prefix removed (columns, then one JSON array per row; non-UTF-8 strings as base64), read in chunks of `Config\Backup::$dumpChunk` rows. A restore never runs SQL from the archive: it checks that every migration listed in the backup's own `migrations` table exists in the installed code (otherwise "newer or different version"), drops the application's tables, runs those migrations in their original order, empties every table and inserts the rows (foreign keys off), then `modules:sync` runs the migrations added since. Works across drivers and prefixes (SQLite in tests and development, MariaDB in production).
+- **Alternatives:** A) `mysqldump` when available (not portable, runs SQL from a file). B) Store the schema read from the database (`getFieldData()` loses indexes, keys and defaults).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Backup/Services/DatabaseDumper.php`; tests `BackupServiceTest`.
+
+## D-27-04 — Restores from the back office: a job after the response, progress in files
+
+- **Where:** specification "Backup" ("long restores from the UI run as a background job with progress"); plan session 27 (a `background_jobs` table).
+- **Problem:** There is no queue worker; a job run later (cron) would need the password stored somewhere; a `background_jobs` table would be replaced by the restore itself.
+- **Proposal:** The restore runs in the same PHP process after the response is sent (`fastcgi_finish_request()`/LiteSpeed; inside the request otherwise or with `Config\Backup::$jobsAfterResponse = false`): the password only lives in that process's memory. Before the job starts, a quick check derives the key and authenticates the first chunk, so a wrong password is a form error. Progress is a file `writable/backups/jobs/<id>.json` (0600, id = 128 random bits), read by `progress/backup/<id>` (status, step, percentage only) and polled by `backup/restore-progress.js`; the result page needs `backup.restore` and the job's own user. No `background_jobs` table.
+- **Alternatives:** A) A `background_jobs` table and `schedule:run` (password on disk, table replaced by the restore). B) A detached `spark` process (`exec` is often disabled; password in the process list or a file).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Backup/Services/{RestoreJob,JobStore}.php`, `modules/Backup/Controllers/{Backups,Jobs}.php`, `modules/Backup/Assets/js/restore-progress.js`; tests `BackupScreensTest::testRestoreFromTheBackOffice`, `BackupModuleTest::testJobFilesArePrivateAndPurged`.
+
+## D-27-05 — Uploaded backup files are not stored through the Storage service (decide)
+
+- **Where:** `CLAUDE.md` ("Uploads through the Storage service only"), specification "Backup" ("upload a backup file").
+- **Problem:** The Storage service stores into its disks with a `stored_files` row; backups live in `writable/backups` (outside both disks, never served, not backed up themselves) and a restore replaces `stored_files`.
+- **Proposal:** "Upload a backup" (`backup.restore` + `reauth` + `ratelimit:uploads`) accepts only a file that starts with a valid backup header (`ArchiveCrypto::isBackup()`) and is at most `Config\Backup::$maxUploadBytes`, moves it into `writable/backups` with a generated name (`backup-<date>-upload-<random>.kpbackup`, 0640) and records it; nothing in it is used before it is decrypted and authenticated with its password. Refusals are security entries.
+- **Alternatives:** A) A third Storage disk `backups` (its rows would be lost by every restore; the backup would have to exclude it). B) Only the console can bring backups from elsewhere (copy the file into `writable/backups`).
+- **Status:** Applied (decided)
+- **Decision (2026-11-16):** «Com s'ha construït (recomanada)». Uploaded backup files are a documented exception to "uploads through the Storage service only": header check, size limit, generated name, `writable/backups` (0640), never served, nothing used before decryption and authentication; refusals are security entries.
+- **Applied in:** `docs/specification.md` ("Backup"), `CLAUDE.md`, `docs/storage.md`, `deploy/30-security-check.md`, `modules/Backup/Controllers/Backups.php` (`upload()`).
+
+## D-27-06 — The safety backup, a failed restore and the `.env`
+
+- **Where:** specification "Backup" › "Restore", D-00-45, D-00-33 (the web server cannot write the project root).
+- **Problem:** The safety backup needs a password; a restore can fail half way; the back office must not write `.env`.
+- **Proposal:** The safety backup (type `full`, kind `safety` in its file name) is encrypted with the password typed for the restore. A restore refused before any change (password, checksums, versions, migrations) leaves no safety backup and no maintenance mode; a failure after maintenance mode started keeps it on and names the safety backup to restore from the console. The restore never writes `.env`: it reports the secrets (`encryption.key`, `app.maskKey`, `backup.password`) whose values differ and the merged content; the console writes it after a confirmation (`--with-env` replaces it whole), the back office shows it once on the result page (kept 0600 in the job's `.env` file until then; old job files are purged by `PruneBackups`).
+- **Alternatives:** A) A separate password for the safety backup (one more secret to type under pressure). B) Leave maintenance mode on any failure.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Backup/Services/{RestoreService,EnvFile}.php`, `modules/Backup/Commands/BackupRestore.php`, `modules/Backup/Views/job.php`; tests `BackupServiceTest`, `BackupScreensTest`.
+
+## D-27-07 — `SafeZip` in the Core; what a restore never writes
+
+- **Where:** specification "Backup" ("restoring extracts with the same zip-slip and zip-bomb checks as module packages"), session 29 (packages).
+- **Problem:** The checks must be shared with module packages, which arrive in session 29; a backup made elsewhere could carry server code for `public/uploads`.
+- **Proposal:** `Modules\Core\Archive\SafeZip` (zip-slip names checked on the stored bytes, symbolic links, allowed prefixes, entry count, total size, compression ratio, sizes enforced while copying, own extraction with permissions) is used by backups now and by packages in session 29. A restore never writes server code or server configuration (`php`, `phtml`, `.htaccess`, `.user.ini`… `Config\Backup::$neverRestorePublic`) into a public disk, and never backs up nor replaces the top-level `index.html`/`.htaccess`/`web.config` of a storage folder (they belong to the installation).
+- **Alternatives:** A) `ZipArchive::extractTo()` after a name check (no size enforcement).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Archive/{SafeZip,ArchiveRefused}.php`, `modules/Backup/Services/{BackupService,RestoreService}.php`; tests `SafeZipTest`, `BackupServiceTest::testServerCodeIsNeverRestoredIntoThePublicDisk`.
+
+## D-27-08 — What the modules' `$backup` declarations mean
+
+- **Where:** manifest `$backup` (`files`: "paths relative to storage", `tables`), specification "Backup" ("the extra paths declared by modules").
+- **Problem:** Both storage disks are backed up whole and every table is dumped, so the declared paths add nothing to the archive.
+- **Proposal:** Keep the key: the declared paths are listed in the backup's manifest (`modulePaths`) to document what each module keeps in the disks; `tables` needs nothing (every table with the prefix is dumped). A future disk outside the two would use these paths.
+- **Alternatives:** A) Back up only the declared paths (a module that forgets one loses files).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Backup/Services/BackupService.php`.
+
+## D-27-09 — `AuthSession` with a session row started on the fly
+
+- **Where:** `modules/Auth/Filters/AuthSession.php` (session 05).
+- **Problem:** When the tracking row of a signed-in session is missing (e.g. after a database restore), `SessionTracker::start()` returns a row without `ended_at` and the filter failed with an undefined index (500).
+- **Proposal:** Treat a missing `ended_at` as an open session (as the database default). Found while testing restores from the back office.
+- **Alternatives:** —
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Auth/Filters/AuthSession.php`; test `BackupScreensTest::testRestoreFromTheBackOffice`.
+
+## D-28-01 — Updates URLs, default grants, configuration keys and where the check result lives (decide)
+
+- **Where:** specification "Updates" (`updates.view`, `updates.check`, "a page with the installed version, the latest version and its release notes", `Config\Updates`, token in `.env`), plan session 28 (`backend/updates`; "results cached; optional `update_checks`").
+- **Problem:** The specification names the permissions but not the URLs, the default grants, the `.env` keys, nor where the result of a check is kept.
+- **Proposal:** One resource `updates` named `updates` (single-resource module, type page): `updates.view` (page, widget `updates.version`, notification) and the extra `updates.check`. URLs: `backend/updates` (GET) and `backend/updates/check` (POST, `ratelimit:forms`); menu "Updates" in the settings zone. Default grants: admin `updates.view` and `updates.check`. `Config\Updates` keys, overridable from `.env`: `updates.repository` (default empty: no check until it is set), `updates.token`, `updates.publicKeys` (comma separated), `updates.prereleases`, `updates.method` (`auto`/`archive`/`git`), `updates.gitRemote`, `updates.maxArchiveBytes`, `updates.downloadTimeout`, binaries. The check result is a file, `writable/updates/status.json` (0640, not the database nor the cache: it survives "clear caches" and is readable during an update). Daily task at 05:17. The module requires Backup (the update makes a backup).
+- **Alternatives:** A) Only superadmins get `updates.check` (admins see but cannot trigger outbound requests). B) Default repository `github:SIENSIS/kpskeletor` (every site built on the skeleton would check the skeleton's releases). C) A table `update_checks` (history of checks).
+- **Status:** Applied (decided)
+- **Decision (2026-11-16):** «Com s'ha construït (recomanada)». The URLs (`backend/updates`, `POST backend/updates/check`), the default grants (admin `updates.view` and `updates.check`), the `.env` keys `updates.*` with an empty default repository and the check result in `writable/updates/status.json` stay as built.
+- **Applied in:** `docs/specification.md` ("Updates": URLs, grants, configuration); code unchanged (`modules/Updates/Config/{Module,Routes,Updates}.php`).
+
+## D-28-02 — Maintenance mode by hand: where, who, the message and the superadmin bypass (decide)
+
+- **Where:** specification "Settings" (site-wide: "maintenance mode (the setting and screen on top of the Core's `MaintenanceMode`)"), D-27-02 (state in a file; session 28 adds "turning it on by hand, a superadmin bypass"), `deploy/28-updates.md`.
+- **Problem:** The state cannot be a stored setting (a restore replaces the database), the filter must not read the database during a restore or an update, and a bypass needs to know who is signed in.
+- **Proposal:** No stored setting: a card in **Settings › Actions** (`POST backend/settings/actions/maintenance`, `settings.security` + re-authentication) and the command `php spark app:maintenance on|off|status [--message="…"]` turn it on by hand (`MaintenanceMode::enableByHand()`). The file then holds a plain-text message (one line, at most 500 characters, escaped on the 503 page and in the JSON answer), the login paths (`login`, `login/*`, `logout`, `auth/*`, so a superadmin can sign in) and `bypass: true`. Only then the `maintenance` filter reads the session, and only when the request carries a session cookie: a signed-in **superadmin** passes with a banner in the back office; administrators do not (the confirmation says so; `app:maintenance off` or a superadmin turns it off). Restores and updates never set the bypass, and the screen does not turn off a mode they turned on. Turning it on/off is a security log entry.
+- **Alternatives:** A) Every holder of `settings.security` bypasses it (administrators keep working, but then "maintenance" only stops visitors and plain users). B) A secret bypass URL/cookie instead of the session (works without the database, but is a shared secret). C) Put it in a "General" settings field (a setting would be lost by a restore, D-27-02).
+- **Status:** Applied (decided)
+- **Decision (2026-11-16):** «Que estigui associat a un permís que per defecte sigui només als superadmins, però si cal es pugui assignar als admins o a qui calgui» and, as a follow-up, «Mateix permís (recomanada)». One new Core permission, `maintenance.manage` (outside `settings.*`, so administrators do not get it through their `settings.*` grant): it turns maintenance mode on and off by hand (Settings › Actions, with re-authentication) **and** lets its holders keep using the site while the mode is on. No default grant (superadmins always pass); the owner assigns it to administrators or other groups in the permission matrix when needed. The rest stays as proposed (message, login paths, no bypass during restores and updates). **Must change:** a Core resource `maintenance` (permission `maintenance.manage`), the `maintenance` filter (bypass by permission instead of the superadmin group), the Settings action route (`can:maintenance.manage` + `reauth`), the screen, tests, `docs/security.md`, `docs/settings.md`, `docs/updates.md`, specification "Settings".
+- **Applied in:** `modules/Core/Config/Module.php` (resource `maintenance`, `maintenance.manage`), `modules/Core/Maintenance/MaintenanceMode.php` (`PERMISSION`), `modules/Core/Filters/Maintenance.php` (bypass by permission), `modules/Settings/{Config/Routes,Controllers/Actions,Views/actions}.php`, Core and Settings language files, `docs/{specification,security,settings,updates,commands}.md`, `CLAUDE.md`; tests `MaintenanceScreenTest::testTurningItOnNeedsMaintenanceManage`, `testASuperadminTurnsItOnAndOnlyHoldersOfThePermissionBypassIt`, `PermissionsCommandsTest` (143 permissions).
+
+## D-28-03 — The release archive: assets, minisign format, keys and rotation
+
+- **Where:** specification "Updates" (SHA-256 **and** Ed25519 signature, minisign-compatible, public key in `Config\Updates`), D-00-48.
+- **Problem:** The specification does not say how the archive, its checksum and its signature are published, which minisign variant is accepted, nor how keys rotate.
+- **Proposal:** A release publishes `<name>.zip` (one top-level folder with the application), `<name>.zip.sha256` (`sha256sum` output) and `<name>.zip.minisig`. Both minisign algorithms are accepted (`ED`, pre-hashed with BLAKE2b-512, minisign's default, and legacy `Ed`); the key id must be one of `updates.publicKeys` and both the file signature and the global signature over the trusted comment must verify. Several keys may be trusted at once (rotation); no key = every archive update refused. The archive is extracted only after both checks, through `SafeZip`. Git installs use `git verify-tag` (GPG/SSH keys trusted by git).
+- **Alternatives:** A) Only `ED`. B) A `SHA256SUMS` file for every asset (one more file to parse).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Updates/Services/{SignatureVerifier,Release,Updater}.php`, `docs/updates.md`; tests `SignatureVerifierTest`, `AppUpdateTest`.
+
+## D-28-04 — `app:update`: verify before maintenance, protected paths, local changes, recovery
+
+- **Where:** specification "Updates" (order: local changes, maintenance, backup, code, verify before applying, composer, sync, caches; on failure keep maintenance and explain the restore).
+- **Problem:** Downloading during maintenance mode lengthens the downtime; an archive update must not overwrite what belongs to the installation; "local changes" has no meaning for an archive install that was never updated by the tool.
+- **Proposal:** The archive is downloaded and verified (or the tag fetched and verified) **before** maintenance mode, so a refused release changes nothing; then maintenance, a full backup (origin `update`), the code, `composer install --no-dev`, `modules:sync` and `app:cache-clear` in new processes, maintenance off. An archive update never writes or deletes `.env`, `.git/`, `writable/`, `vendor/`, `public/uploads/`, `public/assets/modules/`, `node_modules/`; replaced and removed files are kept in `writable/updates/previous/<old version>/`; the files written are recorded with their SHA-256 in `writable/updates/files.json`, and the next update refuses when any of them changed. Before the first archive update the check is impossible and only a warning is shown. The git method uses `git merge --ff-only refs/tags/<tag>` (a diverged checkout is refused by git). A failure after maintenance mode started keeps it on (security entry `update_failed`) and names the backup and the folder of replaced files.
+- **Alternatives:** A) Download inside maintenance mode (the spec's literal order). B) Refuse the first archive update without a file list (every first update would need a manual step). C) Roll the files back automatically on failure (the database may already be migrated).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Updates/Services/Updater.php`, `modules/Updates/Commands/AppUpdate.php`, `modules/Backup/Services/BackupRepository.php` (`update` source); tests `AppUpdateTest`.
+
+## D-28-05 — Versions: the installed version, tags, pre-releases and modules' repositories
+
+- **Where:** specification "Updates" ("tags following semantic versioning"; "modules may declare their own `$repository`").
+- **Problem:** Which version is "installed", how tags compare, and what happens with modules' repositories.
+- **Proposal:** The application's installed version is `Modules\Core\Config\Version::CORE`; the newest release is the highest semantic version among the tags (`v` prefix optional, semver precedence, build metadata ignored); drafts, GitLab upcoming releases, other tags and pre-releases (unless `updates.prereleases`) are ignored. Modules that declare `$repository` are checked against their manifest version and shown (page, widget, notification); installing them is `modules:install` (session 29). Each new version is notified once.
+- **Alternatives:** A) Use GitHub's "latest release" endpoint (it ignores semver and pre-release rules).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Updates/Services/{VersionComparator,ReleaseSource,ReleaseChecker}.php`; tests `VersionComparatorTest`, `ReleaseSourceTest`, `UpdatesScreensTest`.
+
+## D-28-06 — `OutboundClient` drops credentials on cross-origin redirects
+
+- **Where:** `modules/Core/Http/OutboundClient.php` (session 08), specification "Outbound requests".
+- **Problem:** Redirects were followed with every header, so a token sent to `api.github.com` would also reach the storage host a release download redirects to. Found while building authenticated downloads (earlier gap, blocks this session).
+- **Proposal:** On a redirect to another origin (scheme, host or port) `Authorization`, `Proxy-Authorization`, `Cookie`, `PRIVATE-TOKEN` and `JOB-TOKEN` are removed. The archive download uses a copy of `Config\Outbound` with a larger size limit and timeout (`updates.maxArchiveBytes`, `updates.downloadTimeout`); every other check is unchanged.
+- **Alternatives:** A) Never follow redirects for authenticated requests (GitHub asset downloads always redirect).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Http/OutboundClient.php`, `docs/outbound-requests.md`; tests `OutboundClientTest::testCredentialsAreNotSentToAnotherOrigin`, `ReleaseSourceTest::testPrivateRepositoriesUseTheTokenAndTheApiForDownloads`.
+
+## D-28-07 — The maintenance page drawn by the theme without the database
+
+- **Where:** D-27-02 (the 503 page "reads no database": a plain HTML page), specification "Themes" (error pages through the theme); owner's request (2026-11-16): the maintenance page should look like the 404/500 pages and follow the theme.
+- **Problem:** The theme, the site name and the theme options are settings stored in the database, which a restore may be replacing while the page is shown.
+- **Proposal:** The page is the standard view `errors/maintenance` (Core default in the `blank` layout: icon, 503, title, the administrator's message, "Try again"), overridable by a theme in `themes/<slug>/Views/errors/maintenance.php`. `MaintenancePage::render()` swaps the request's settings service for one without handlers before rendering, so every `setting()` answers the file configuration only (`Config\Theme::$public`, default options and colours, default site name) and nothing reads the database; any failure falls back to the plain page. A theme chosen in Settings (stored in the database) is therefore not used for this page: set it in `Config\Theme`/`.env` (`theme.public`) to see it there too.
+- **Alternatives:** A) Read the stored theme when the mode was turned on by hand (the database is intact then), file configuration only during restores and updates (two looks for the same page). B) Copy the active theme's slug into `maintenance.json` when the mode is turned on.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Maintenance/MaintenancePage.php`, `modules/Core/Filters/Maintenance.php`, `modules/Core/Views/errors/maintenance.php`, `themes/default/Assets/css/theme.css`, `docs/themes.md`, `docs/security.md`; tests `MaintenanceModeTest`, `MaintenanceScreenTest::testThePageIsThemedWithoutReadingStoredSettings`.
+
+## D-29-01 — Modules screen URLs, manifest `description`/`author`, `Config\Packages` keys, command options and Core events (decide)
+
+- **Where:** specification "Modules screen (back office)", "Installing and uninstalling modules and themes" (package validation, staged installs, signatures "listed in `Modules\Core\Config\Packages`"), D-02-05 (`modules.*`), D-00-05, plan session 29.
+- **Problem:** The specification names the permissions but not the URLs, which permission each action needs, how a module describes itself (the list shows a "description", a package its "author", and a package may not replace a module "from another vendor"), the configuration keys of packages, nor the options of the commands.
+- **Proposal:** URLs under `backend/modules`: `/` (list, `modules.list`), `POST enable/<Name>`, `POST disable/<Name>` (`modules.toggle`), `POST demo/<Name>` (`modules.demo`, field `action` = load/reload/remove), `POST sync` (`modules.sync`), `packages` (list, `modules.list`), `packages/upload` (GET/POST, `modules.upload` + `reauth`, `ratelimit:uploads`), `packages/<id>` (details, `modules.list`), `POST packages/<id>/approve` (`modules.upload` + `reauth`), `POST packages/<id>/discard` (`modules.upload` for installs, `modules.uninstall` for uninstalls), `uninstall/<Name>` (GET/POST, `modules.uninstall` + `reauth`), `themes` (`modules.list`), `POST themes/activate` (`modules.toggle`), `themes/uninstall/<slug>` (GET/POST, `modules.uninstall` + `reauth`); menu "Modules" in the settings zone. Two new optional manifest keys: `$description` (language key or text) and `$author` (plain text; a package can only replace an installed module with the same author). `Config\Packages` (and `.env` `packages.*`): `autoEnable` (D-29-02), `publicKeys`, `requireSignature`, `maxPackageBytes` (20 MB), `maxUncompressedBytes` (100 MB), `maxFiles` (5000), `maxRatio` (100), `extensions`, `pendingDays` (7), `lintTimeout`, `phpBinary`. Commands: `modules:install <zip|url> [--enable] [--force] [--demo] [--yes] [--no-backup] [--password] [--signature=<file>]`, `modules:install --pending` (runs the approved installs **and** the uninstall requests), `modules:uninstall <Name> [--keep-data] [--yes] [--no-backup] [--password]`, `themes:install` and `themes:uninstall` with the same options. Core events `packageBackup`, `moduleUninstalling`, `moduleVersions` (D-29-06); backup origin `package`.
+- **Alternatives:** A) Separate permissions for approving (`modules.approve`) and for themes (`modules.themes`). B) A `vendor` key instead of `author`. C) `modules:uninstall --pending` for the uninstall requests.
+- **Status:** Applied (decided)
+- **Decision (2026-11-17):** «Com s'ha construït (recomanada)». The URLs under `backend/modules`, the permission of each action (upload and approve: `modules.upload` + re-authentication; theme switching: `modules.toggle`; uninstall requests: `modules.uninstall` + re-authentication), the optional manifest keys `$description` and `$author`, the `packages.*` configuration keys, the command options (`--pending` also runs uninstall requests) and the Core events `packageBackup`, `moduleUninstalling`, `moduleVersions` stay as built. **Must change:** specification ("Modules screen", "Installing and uninstalling", "The module contract"); no code.
+- **Applied in:** `docs/specification.md` ("The module contract": `$description`, `$author`; "Modules screen": permissions per action and URLs; "Installing and uninstalling": command options, `--pending`, author check, `Config\Packages` keys, Core events); code unchanged.
+
+## D-29-02 — Modules found by `modules:sync`: enabled automatically only outside production (decide)
+
+- **Where:** specification "Installing and uninstalling modules and themes" ("New modules are detected and listed as *installed, disabled* until an admin enables them (setting: enable automatically)"), acceptance criterion 2 (`make:module` + `modules:sync` shows the new module's menu), `modules:install [--enable]`.
+- **Problem:** Until now `modules:sync` enabled every new module. The specification wants new modules disabled until an administrator enables them, but then `make:module` + `modules:sync` would no longer show the new module during development, and a fresh installation would start with every module disabled.
+- **Proposal:** A module registered for the first time is **enabled** when it is the first sync of the installation (empty registry: `app:install`), when the environment is not production (development, testing: `make:module` keeps working), or when `Packages.autoEnable` is true (`.env` `packages.autoEnable`, default false). In production a copied folder or a package installed without `--enable` is listed as *installed, disabled*. `modules:install --enable` (and the Modules screen) enable it with its disabled dependencies.
+- **Alternatives:** A) Keep enabling every new module (`autoEnable` default true). B) Disabled in every environment (developers run `modules:enable` after `make:module`; acceptance criterion 2 changes).
+- **Status:** Applied (decided)
+- **Decision (2026-11-17):** «Desactivat només en producció (recomanada)». A module registered for the first time is enabled on the first sync of an installation and in every environment but production; in production it stays *installed, disabled* unless `packages.autoEnable = true` or `modules:install --enable`. Stays as built. **Must change:** specification ("Installing and uninstalling", "Module lifecycle"); no code.
+- **Applied in:** `docs/specification.md` ("Module lifecycle" step 3, "Installing and uninstalling" way 1); code unchanged (`ModuleSynchronizer::enablesNewModules()`, `Config\Packages::$autoEnable`; test `PackagesTest::testNewModulesStayDisabledInProductionUnlessAutoEnabled`).
+
+## D-29-03 — Packages are read without running their code; `modules:sync` in a new process
+
+- **Where:** specification "Package validation" ("a valid manifest… whose name matches the folder"), staged installs (the screen shows the manifest before approval).
+- **Problem:** Loading `Config/Module.php` of an uploaded package runs its code (with the web server's user before the approval); and the console process of an upgrade has usually loaded the installed version's manifest class, which PHP cannot unload.
+- **Proposal:** `ManifestReader` tokenises the manifest and evaluates only literal property values (strings, numbers, booleans, arrays, `X::class`); the class must be `Modules\<Name>\Config\Module` extending `ModuleManifest` (themes: `Themes\<Studly>\Theme`), the name must match the folder and the version must be a literal semantic version. What it adds (permissions through `CatalogueBuilder`, menus, widgets, tasks) is computed from a shadow manifest of those literals. The full validation (`ManifestValidator`, dependencies, routes) is `modules:sync`, which the installer runs in a **new PHP process** (`SparkSync`) after moving the folder; when it fails the previous folder is put back and sync runs again.
+- **Status:** Accepted (proposal)
+
+## D-29-04 — One table `module_packages` for staged installs and uninstall requests
+
+- **Where:** plan session 29 (tables `module_packages` and `pending_uninstalls`).
+- **Proposal:** One table with `action` (`install`/`uninstall`), `type` (`module`/`theme`), name, version, stored file (random name in `writable/packages/`, 0640) and SHA-256, the validated manifest (JSON), `keep_data`, status (`uploaded` → `pending` → `installing` → `installed`/`failed`; `discarded`; `expired`), who uploaded/approved and when, `expires_at` (`Packages.pendingDays`) and the log of the run. The file is checked against its SHA-256 again when approved and when installed. The approver is notified (`PackageProcessed`) when the console ran it.
+- **Status:** Accepted (proposal)
+
+## D-29-05 — What the web server does with packages: validation, `php -l`, no code folders
+
+- **Where:** specification "Installing and uninstalling modules and themes", D-00-33.
+- **Proposal:** The web server validates an uploaded ZIP (SafeZip, extensions, manifest) and, when `proc_open` is available, extracts it to a private temporary folder under `writable/packages/` and runs `php -l` on its PHP files (syntax only, no code is run); otherwise the check happens at install time. It never writes `modules/`, `themes/` nor `app/Config/`: approving makes the package pending, uninstalling creates a request, and the "Sync" button stops with a message to run `php spark modules:sync` when the generated namespaces file is not writable. Enabling a module still publishes its assets (D-00-33).
+- **Status:** Accepted (proposal)
+
+## D-29-06 — Backups, uninstall clean-up and latest versions through Core events
+
+- **Where:** specification ("makes a backup (Backup module)", "removes … menu customisations, widgets", "the latest available version, if Updates knows it"), D-25 (`CalendarService::purgeModule()`), `CLAUDE.md` ("never hard-code a module in the Core").
+- **Proposal:** The Core triggers `packageBackup` (`PackageBackup`: the Backup module makes a full backup with the operator's password or `backup.password`, origin `package`), `moduleUninstalling` (`ModuleUninstalling`: Menus removes the customisations of its entries and the public items of its link types, Dashboard its widgets in the group layouts) and `moduleVersions` (Updates fills the latest versions from its last check, no outbound request). Without an answer to `packageBackup` an install or uninstall stops unless `--no-backup`.
+- The calendar entries are deleted through the Core's calendar contract (`CalendarPublisher::purgeModule()`, added; `NullCalendar` returns 0): the Events module cannot ship a `Config/Events.php` listener file (D-00-04).
+- **Status:** Accepted (proposal)
+
+## D-29-07 — Themes tab: preview image and colours, switching with `modules.toggle`
+
+- **Where:** specification "Modules screen" ("Themes tab… switch with one click, with a preview, and the theme options").
+- **Proposal:** Each theme card shows the theme's `Assets/img/screenshot.(png|webp|jpg)` when it ships one and its colour options (disabled colour inputs: no inline styles), the areas it is active for, and buttons to use it for the back office or the public site (`modules.toggle`; the same `Theme.backend`/`Theme.public` settings as Settings › Theme, logged as `theme_activated`). The options stay in Settings › Theme (link shown with `settings.core`). The theme preview pages (`theme-preview`) stay a development tool.
+- **Status:** Accepted (proposal)
+
+## D-29-08 — What an uninstall removes, and `--keep-data`
+
+- **Where:** specification "Uninstalling".
+- **Proposal:** Always: the module is disabled, its permissions, the group and user grants naming them (or their wildcards), its settings (class `<Name>` or `Modules\<Name>\…`), scheduled tasks, notification preferences, declarations, registry row, folder and published assets (through `modules:sync`), plus what the `moduleUninstalling` listeners remove. Unless `--keep-data`: its migrations are rolled back, and its notifications and demo records are deleted. With `--keep-data` the migrations stay applied, so a later install does not create the tables again (its seeder runs again as on any first install). Core modules and modules that another installed module requires cannot be uninstalled; a theme cannot be uninstalled while it is active, the fallback or a parent.
+- **Status:** Accepted (proposal)
+
+## D-29-09 — Package signatures (minisign) and the allowed files
+
+- **Where:** specification "Package validation" ("optional signature check… required when a setting asks for it"), D-28-03.
+- **Proposal:** The same minisign format as releases: `<package>.zip.minisig` next to the file (or `--signature`, or downloaded from `<url>.minisig`, or uploaded with the package), checked by `Modules\Core\Packages\SignatureCheck` against `Packages.publicKeys`; refused when `Packages.requireSignature` is on and there is none. (The Core cannot use the Updates module's verifier: the two copies are merged in session 35.) Allowed files: the extensions of `Packages.extensions` (no `phtml`, `phar`, `htaccess`, `env`…), plus `LICENSE`, `README`, `CHANGELOG`, `NOTICE`, `AUTHORS`, `COPYING` and `.gitkeep`.
+- **Status:** Accepted (proposal)
+
+## D-30-01 — Security status URLs, the `securityChecks` event, `Config\ProductionCheck` keys and `security:audit` (decide)
+
+- **Where:** specification "Security status page and `security:check`" (permission `security.check` given; URLs, configuration keys, how modules add checks and where `composer audit` is stored are not), `CLAUDE.md` ("never hard-code a module in the Core"; the Core asks modules through events).
+- **Problem:** The page, its actions and the extension point for modules are new public conventions. Some checks belong to modules (`backup.password`, 2FA of superadmins, password length, CORS of the API, personal tokens), and the Core may not name them.
+- **Proposal:** Core resource `security` (name `security`, no CRUD operations, extra `check`): permission `security.check`, default grant admin (superadmin always). URLs: `backend/security` (page, `security-status`), `POST backend/security/refresh` ("Check again", `ratelimit:forms`), `GET|POST backend/security/probe` ("Run external probe", `reauth` + `ratelimit:forms`; always the configured base URL, never a URL from the request). Menu "Security status" in the settings zone (order 84). Core event `securityChecks` (`Modules\Core\Security\Check\SecurityChecks`): modules add `SecurityCheck` objects (Auth: `accounts.*`; Api: `configuration.cors`, `accounts.personalTokens`; Backup: `secrets.backupPassword`, `installation.backups`; Updates: `dependencies.updates`). Config `Config\ProductionCheck` (`.env` `productioncheck.*`: `path`, `webUser`, `writablePaths`, `readOnlyPaths`, `composer`, `auditMaxAgeDays` 7, `maxScannedFiles`, `probeTimeout`, `probeLoginPath`, `probeLoginAttempts`). New command `security:audit [--from=<file>]` (runs or imports `composer audit`). Widget `core.security-status`, task `SecurityCheckTask` (daily 04:43), notification `SecurityCheckFailed`. Results in `writable/security/`.
+- **Alternatives:** A) A `$securityChecks` manifest key instead of the event (a new manifest key, validated by `modules:sync`). B) The page under Settings (`backend/settings/security-status`, `settings.security`) instead of its own permission. C) `composer audit` only in CI, with no server-side command (the check would always say "never checked" on a server).
+- **Status:** Applied (decided)
+- **Decision (2026-11-17):** «Com s'ha construït (recomanada)». Everything stays as built: the page `backend/security` (`refresh`, `probe` with re-authentication), permission `security.check` granted to admin, the Core event `securityChecks` for module checks, `Config\ProductionCheck` (`productioncheck.*` in `.env`), the command `security:audit [--from=<file>]` and the results in `writable/security/`. **Must change:** `docs/specification.md` ("Security status page and `security:check`") to name them; no code change.
+- **Applied in:** `docs/specification.md` ("Security status page and `security:check`": names; "Installer and CLI": `security:audit`); code and tests as built in session 30 (`SecurityStatusScreenTest`, `SecurityCheckTest`).
+
+## D-30-02 — What is an error, a warning or information in `security:check`
+
+- **Where:** specification "Security status page and `security:check`" (the levels of the accounts checks are given; the others are not), acceptance criterion 12 ("a fresh production install passes with no errors").
+- **Proposal:** Errors: anything that exposes data or code on a production site (environment, debug output, HTTPS, cookies, an `http://` base URL, CSP disabled/report-only/unsafe, missing keys, a readable `.env`, secrets in tracked files, the web installer open, demo data, the web server able to write code, scripts in `public/`, readable `maintenance.json` or backups, `composer audit` advisories, changed vendored files, CORS `*`, no `backup.password` with scheduled backups). Warnings: what a fresh install cannot fix by itself or what is a hardening step (`writable/` modes from a git checkout, the web user unknown from the console, HSTS disabled, a local/example base URL, no `.env` file, superadmins without 2FA, password length below 12, audit never run/stale/failed, unsigned packages accepted, `public/uploads/.htaccess` missing, an update repository without signing keys). Information: optional-2FA groups, tokens without expiry, the outbound allow-list, not a git checkout, PHP's local development server (HTTPS and `Secure` cookies are not forced there, D-19-05). A check that throws is an error. Checked by hand: a fresh `app:install --env=production --db=sqlite` reports 0 errors; the same with `CI_ENVIRONMENT=development` reports 4 errors and exit code 1.
+- **Status:** Accepted (proposal)
+
+## D-30-03 — What `--probe` sends, and the login throttling probe
+
+- **Where:** specification ("requests to the site itself, never to third parties, through a dedicated client limited to the configured base URL host and the site's own `allowedHostnames`… the login is throttled").
+- **Proposal:** `Modules\Core\Security\Check\Probe\ProbeClient` (curl, no proxy, no redirects followed, timeout, 1 MB): only `https://` URLs of the base URL host or `allowedHostnames` (plain `http://` only for the redirect check), never credentials in the URL. Paths that must not be served: `.env`, `writable/install.lock`, `writable/logs/`, `writable/packages/`, `writable/backups/`, `modules/Core/Config/Module.php`, `app/Config/App.php`, `vendor/autoload.php`, `composer.json`, `.git/config` (an answer 200 is an error). The uploads probe writes `public/uploads/kp-security-probe-<random>.php` printing a random marker (built with `strrev`, so the file itself does not contain it) and always removes it. Open redirect: `?return=https://kp-security-probe.invalid/` on `/`, `login` and `backend` (no request ever goes to that host). Login: up to `probeLoginAttempts` (12) wrong passwords for `security-check-<random>@example.invalid`, each with a fresh CSRF token; a 429 passes. `progress/*`: each GET route with a random id; keys containing pass/secret/token/key/hash/email/path/file are an error (D-27-02).
+- **Alternatives:** A) Skip the login probe (it adds a few failed attempts to the server's own address). B) Probe the login through the API's `auth/token` instead.
+- **Status:** Accepted (proposal)
+
+## D-30-04 — "The web server writes only …" checked from the console and from the page
+
+- **Where:** specification ("the web server user can write only `writable/`, `public/assets/modules`, `public/assets/core`, `public/themes` and `public/uploads`").
+- **Problem:** The console usually runs as the deploy user (or root), not as the web server user, so `is_writable()` there says nothing about the web server.
+- **Proposal:** `FileAccess`: with `productioncheck.webUser` the console computes it from the owner, group (and supplementary groups) and mode of each path (POSIX); on a web request (the page) the process is the web user, so `is_writable()`; otherwise only a world-writable path is known (error) and the check is a warning asking for `webUser`. Checked paths: the project root, `.env`, `app`, `modules`, `themes`, `vendor`, `public`, `public/index.php`, `public/.htaccess` (`readOnlyPaths`).
+- **Status:** Accepted (proposal)
+
+## D-30-05 — Stored results, the daily task and the notification to superadmins
+
+- **Where:** specification ("Results are cached and refreshed daily by a scheduled task, which notifies superadmins when a check turns red"; "the last `composer audit` result… stores the result with its date").
+- **Proposal:** Files, not the cache nor the database (they survive "clear caches" and a restore): `writable/security/status.json` (full runs: the daily task, `security:check` without `--only`, "Check again", `app:install`, the first visit of the page), `probe.json` (last probe), `composer-audit.json`. The dashboard widget only reads them. A check "turns red" when its id is in error and was not in the previous stored run; the superadmins (group `superadmin`) get one `SecurityCheckFailed` notification per such run. `app:install` stores without notifying. The task succeeds even with errors (its output lists them): otherwise the scheduler's own "task failed" notification would repeat every day.
+- **Status:** Accepted (proposal)
+
+## D-31-01 — Settings `Core.defaultLocale` and `Core.locales` (decide)
+
+- **Where:** specification "Technical baseline" › "Languages" ("the site can restrict the available ones (setting)") and "Settings" › "Site-wide settings" ("default locale, available locales"); plan session 31.
+- **Problem:** The specification asks for the two settings but does not name them nor say how they relate to `Config\App::$defaultLocale` / `$supportedLocales`. Setting names are a public convention.
+- **Proposal (built):** `Core.defaultLocale` (type `select`: empty = "As configured", the value of `Config\App::$defaultLocale`, Catalan; or `ca`/`es`/`en`) and `Core.locales` (type `list`, one code per line, rule `supported_locales`; empty = every supported locale), both in Settings › General (`settings.core`). The default is always one of the available locales (else the first available). Read only through `Modules\Core\I18n\Locales`. Not security settings (no re-authentication).
+- **Alternatives:** A) One `json` setting `Core.locales` with the default as its first entry. B) Checkboxes (a new `multiselect` setting type) instead of a list of codes.
+- **Decision (2026-11-17):** «B) Caselles en lloc de codis». Keep the two settings `Core.defaultLocale` and `Core.locales`, but "Available languages" is edited with checkboxes: the Settings module gets a new setting type `multiselect` (fixed `options` or an `optionsProvider`, stored as a list of the chosen values). **Must change:** the Settings module (type, form view, validation), `ManifestValidator`, the Core manifest (`Core.locales` as `multiselect`, default every supported locale, at least one), tests, `docs/settings.md`, `docs/i18n.md`, the specification.
+- **Status:** Applied (decided)
+- **Applied in:** `modules/Core/Modules/ManifestValidator.php`, `modules/Core/Settings/SettingCaster.php`, `modules/Settings/Forms/{Field,FormGenerator}.php`, `modules/Settings/Views/fields/multiselect.php`, `modules/Core/Config/Module.php` (`Core.locales`: `multiselect`, default `ca`/`es`/`en`, `required|supported_locales`), `Core.settings.localesHelp`; tests `TranslatedSettingsTest::testTheGeneralTabSavesTheLanguagesAndRefusesUnsupportedOnes`, `SettingsScreensTest`, `ManifestValidatorTest`; `docs/settings.md`, `docs/i18n.md`, `docs/specification.md` ("Languages", "Site-wide settings"), `modules/Settings/CLAUDE.md`.
+
+## D-31-02 — The tests run with English as the configured default locale
+
+- **Where:** specification "Languages" (`defaultLocale = 'ca'`); the existing suite (sessions 00–30) asserts English texts.
+- **Problem:** With Catalan as the default, about every feature test asserting a text would fail or would need rewriting into Catalan.
+- **Proposal:** `Config\App::$defaultLocale = 'ca'` in the file; `phpunit.xml.dist` sets `app.defaultLocale=en` for the tests. The I18n tests set the locales they check (`I18nTest` changes `Config\App::$defaultLocale` to `ca` and restores it) and check the file's value.
+- **Status:** Accepted (proposal)
+
+## D-31-03 — Catalan copies only of the system files users see; Shield's Catalan texts in `app/Language/ca`
+
+- **Where:** specification "Languages" ("validation messages (CodeIgniter's own through `codeigniter4/translations`, plus a Catalan file where that package has none)"); plan risk "every system file needs a Catalan copy".
+- **Proposal:** Catalan copies in `app/Language/ca/` of the system files users can see: `Validation`, `Pager`, `Errors`, `Security`, `Number` (and `Time`, since session 05). The others (developer exceptions: Database, Cache, Router…) follow the chain to Spanish. Shield has no Catalan: `app/Language/ca/Auth.php` holds its keys that the Auth module does not define itself (so the two never compete for a key). `LanguageKeysTest` checks both.
+- **Alternatives:** A) Catalan copies of every system file (31 files of developer messages).
+- **Status:** Accepted (proposal)
+
+## D-31-04 — Semantics of the `translated` setting type
+
+- **Where:** D-25-10 ("one setting stored as JSON (`locale => text`), one input per active locale, default from the language file, Catalan fallback").
+- **Proposal:** The manifest `default` is a language key (its text in every supported locale whose files define it) or a map. Stored as a map (codeigniter4/settings serialises the array); empty texts are dropped. The form shows one input per available locale with the stored text, else the default; the declared rules apply to every input; texts stored for locales the site no longer offers are kept on save; a non-array post is refused by the rules (`required`) or stores nothing. Reading (`TranslatedText::get()`): the locale's stored text → the base locale's → the Catalan stored text → the locale's default → the Catalan default. Saving the defaults stores nothing. Migration `MergeBirthdayGreetingSettings` moves stored `Users.birthdayGreetingCa|Es|En` into `Users.birthdayGreeting` (and back in `down()`).
+- **Status:** Accepted (proposal)
+
+## D-31-05 — Guests get the browser's language; no language switcher
+
+- **Where:** specification "Languages" ("negotiated from the user's profile, then the browser, then the default").
+- **Proposal:** A global `locale` filter negotiates for every request (browser, then default) and `authsession` applies the profile; there is no language selector for guests and no language prefix in URLs (D-20-05 kept one URL per page). A theme may add a selector later (it would need a cookie read by the filter).
+- **Status:** Accepted (proposal)
+
+## D-31-06 — File names of the language service and the key test
+
+- **Where:** plan session 31 (`modules/Core/Language/Language.php`, `tests/unit/I18n/LanguageKeysTest.php`).
+- **Proposal:** The service is `modules/Core/I18n/Language.php` next to `Locales`, `LocaleNegotiator` and `LocaleRules` (`modules/Core/Language/` only holds language folders, which the discovery and the key checks glob). The key test is `tests/unit/I18n/LanguageKeysTest.php` and replaces `modules/Core/Tests/LanguageFilesTest.php` (Core and themes only). No `lang:check` command: the test is the check.
+- **Status:** Accepted (proposal)
+
+## D-32-01 — Manifest key `$enabledByDefault` for modules installed disabled (decide)
+
+- **Where:** specification "Tutorials" ("the module is disabled by default and enabled from the Modules screen"); `deploy/32-tasks-module.md` ("`Tasks` module (disabled by default)"); D-29-02 (new modules enabled on the first sync and outside production).
+- **Problem:** Nothing in the manifest or in `modules:sync` could install a module disabled: the first sync of an installation (and every sync outside production) enables every new module, so `Tasks` would be on in every fresh install. A new manifest key is a public convention.
+- **Proposal (built):** `ModuleManifest::$enabledByDefault` (bool, default `true`). `ModuleSynchronizer` inserts a module found for the first time with `enabled = 0` when its manifest says `false`, also on the first sync (Core is always enabled). Once enabled by hand (Modules screen, `modules:enable`), later syncs keep it. `modules:install --enable` still enables it. `Tasks` sets it to `false`; the tests enable every module as before.
+- **Alternatives:** A) A list in `Config\Modules` / a setting (`Modules.disabledOnInstall = ['Tasks']`): no new manifest key, but the Core config names a module. B) Leave `Tasks` enabled and say "disable it" in the docs (contradicts the specification).
+- **Decision (2026-11-17):** «A) Clau del manifest (recomanada)». Keep the manifest key `ModuleManifest::$enabledByDefault` as built (default `true`; `false` installs the module disabled, also on the first sync; once enabled by hand it stays enabled). **Must change:** nothing in the code; the specification's manifest example, `CLAUDE.md` and the docs mention the key.
+- **Status:** Applied (decided)
+- **Applied in:** `modules/Core/Config/ModuleManifest.php`, `modules/Core/Modules/ModuleSynchronizer.php`, `modules/Tasks/Config/Module.php`; tests `PackagesTest::testAModuleDisabledByDefaultIsInstalledDisabledEvenOnTheFirstSync`, `TasksModuleTest::testManifestIsValidAndTheModuleIsInstalledDisabled`; `docs/specification.md` ("The module contract", modules table), `CLAUDE.md`, `docs/creating-a-module.md`, `docs/tasks.md`, `modules/Tasks/CLAUDE.md`.
+- **Note (session 52):** the tutorial module is now `Tutorial` (D-52-01); `$enabledByDefault = false` unchanged.
+
+## D-32-02 — Tasks API reuses the CRUD resources; paths `tasks/tasks` and `tasks/projects`
+
+- **Where:** specification "Tutorials" 11 ("the same permissions as the CRUD"); D-17-01 (News has a separate `news-api` resource because its readers are not its editors).
+- **Problem:** Whether the to-do task API gets its own resource (like News) or the CRUD's, and its paths (`api/v1/tasks` would collide with `api/v1/tasks/{id}` for the projects).
+- **Proposal:** `setResource('tasks-tasks')` and `setResource('tasks-projects')` (the tutorial's point: one permission set for the back office and the API, narrowed by the token's scopes); paths `api/v1/tasks/tasks` and `api/v1/tasks/projects`, the `make:module --api` convention `<module>/<key>`. The estimate is hidden without `tasks-tasks.estimates` in both. Attachments are read-only in the API (`files`, signed private URLs).
+- **Alternatives:** A) A `tasks-api` resource as in News. B) `api/v1/tasks` for the to-do tasks and `api/v1/task-projects`.
+- **Status:** Accepted (proposal)
+
+## D-32-03 — The public request form always asks for a captcha (its own image URL)
+
+- **Where:** specification "Tutorials" 12 ("a public form … with captcha"), "Pitfalls" ("captchas skipped in development"); Auth's captcha answers 404 while `Auth.captcha` (login captcha) is off.
+- **Problem:** Reusing Auth's captcha image ties the public form to the login setting; with it off the form would have no captcha.
+- **Proposal:** the form always checks Auth's local captcha (`Modules\Auth\Services\Captcha::verify()`, single use), with its image served by the module at `GET tasks/request/captcha` while the form is on; the route `POST tasks/request` has `ratelimit:forms`; the whole form is a 404 while `Tasks.publicRequests` is off. The confirmation email to the visitor (not a user) goes through the Core's `MailQueue` in the visitor's language; reviewers get the `TaskRequested` notification.
+- **Alternatives:** A) Follow `Auth.captcha` (no captcha by default). B) A captcha service in the Core (later, if more modules need one).
+- **Status:** Accepted (proposal)
+
+## D-32-04 — Attachments of to-do tasks: a picker field with up to 5 keys + a `task_attachments` index
+
+- **Where:** specification "Tutorials" 10 (file picker, private disk, `FileAccessPolicy` following the task's visibility); plan table list (`task_attachments`).
+- **Problem:** The Core's picker stores keys in one column (comma separated); the policy needs to find the to-do task of a file quickly.
+- **Proposal:** `tasks.attachments` (the picker's value, up to 5 keys, private disk, folder `modules/tasks`) mirrored after every write into `task_attachments` (`task_id`, `file_key`). `AttachmentPolicy` (first real `FileAccessPolicy`): public to-do task not in the trash → anyone; private → `tasks-tasks.show`, its creator or an assignee; not attached yet → its uploader; else 404. Registered in `modules/Tasks/Config/Events.php`; Files is in `$requires`.
+- **Alternatives:** A) Only the junction table, with a custom upload screen. B) Files on the public disk for public to-do tasks.
+- **Status:** Accepted (proposal)
+
+## D-32-05 — Generator templates stay in `modules/Core/Modules/Templates`; no packager option for `CLAUDE.md` yet
+
+- **Where:** plan session 32 (`modules/Core/Commands/Generators/Views/module/CLAUDE.md.tpl`); specification "AI-assisted module development" ("excluded from module ZIP packages only if the author chooses so (option of the packager)").
+- **Problem:** The existing templates live in `modules/Core/Modules/Templates`; there is no packaging command yet (tutorial 13, session 34).
+- **Proposal:** `CLAUDE.md.tpl` and the `--standalone` templates (`standalone/{composer.json,README.md,CLAUDE.md}.tpl`) next to the other templates. Packages keep `CLAUDE.md` (`.md` is an allowed extension); the "exclude `CLAUDE.md`" option belongs to the packager when it is written (session 34, tutorial 13).
+- **Alternatives:** Move every template to the plan's path.
+- **Status:** Accepted (proposal)
+
+## D-33-01 — Documents renamed to the specification's names (`permissions.md`, `calendar.md`, `installing-modules.md`)
+
+- **Where:** specification "Documentation (English)" (`docs/permissions.md`, `docs/calendar.md`, `docs/installing-modules.md`); earlier sessions wrote `docs/rbac.md`, `docs/calendar-api.md` and `docs/packages.md` with the same content, and `CLAUDE.md`, code comments, language files and module `CLAUDE.md` files point at them.
+- **Problem:** Two names for one document invite drift; the specification's list is what acceptance criterion 13 checks.
+- **Proposal:** Rename the three files (`git mv`) to the specification's names, update every reference (code comments, language lines, tests, `CLAUDE.md` files, docs), and leave a three-line stub at each old path ("moved to …") so the historical records (`docs/decisions.md`, `docs/progress.md`, `deploy/`, `deploy-status/`, released migrations) keep working links. `tests/unit/Docs/DocumentationTest.php` checks that every `docs/….md` named in the docs exists.
+- **Alternatives:** A) Keep the old files and add the specification's names as short index pages. B) Keep the old names and record the difference.
+- **Status:** Accepted (proposal)
+
+## D-33-02 — The JavaScript and widget tutorials describe the Tasks code as built
+
+- **Where:** specification "Documentation (English)" (`docs/frontend.md` tutorial "A new view with JavaScript", `docs/widgets.md` tutorial "A new widget"); `CLAUDE.md` ("Front end": bare specifiers, never relative paths); `modules/Tasks` (session 32).
+- **Problem:** The specification's tutorials name things the Tasks module does not do: a relative import (`./board/card.js`, which `CLAUDE.md` and `FrontendAssetsTest` forbid), `core/ui/confirm.js`/`core/ui/toast.js` imports in `board.js`, a `<script type="application/json">` block and a `data-i18n` block on the board, a module CSS file loaded through a `head` section (the layouts have none; components add their `<link>` from `data-options`, like the editor and the calendar), a JavaScript unit test (no JS test runner), and an async widget with its own ES module (`tasks/activity-chart`) that refreshes (the chart is drawn on the server and shown by the Core's `core/ui/widget`, `refreshSeconds()` 0).
+- **Proposal:** The documents describe the real code, quote it, and say where the specification differs: bare specifiers (`tasks/<path>.js`) instead of relative paths (the owner's rule in `CLAUDE.md` wins); the Dashboard's JSON block as the example of larger data; texts and the stylesheet URL through `data-options`. Session 34 (tutorials) may extend the Tasks module where a tutorial needs it (confirm/toast on the board, a refreshing chart module); a `head` section in the layouts would be a Core/theme convention change and needs the owner.
+- **Alternatives:** A) Change the Tasks module now (session 34's scope). B) Add a `head` section to every layout (theme convention change).
+- **Status:** Accepted (proposal)
+
+## D-33-03 — Extra operation names in lower case only (manifest validation)
+
+- **Where:** specification "RBAC" (permission names in lower case); `modules/Core/Modules/ManifestValidator.php` (accepted `extra` names such as `markRead`); `Authorization::holds()` lower-cases the asked name and compares it with the catalogue as stored.
+- **Problem:** Found while documenting permissions: a camel-case extra operation passed validation, but its permission was refused to everyone, superadmins included (fails closed, no module uses one).
+- **Proposal:** The validator accepts only `^[a-z][a-z0-9]*$` for extra operations, so the mistake stops `modules:sync` with a clear error (`ManifestValidatorTest`, case "extra operation in camel case"). `docs/permissions.md` and `docs/creating-a-module.md` say so.
+- **Alternatives:** Lower-case the names when building the catalogue (two spellings for one permission).
+- **Status:** Accepted (proposal)
+
+## D-34-01 — Tutorial 13's release: Tasks 0.2.0 adds `tasks.started_at`
+
+- **Where:** specification "Tutorials" (13: "a schema-change migration, bumping the version, building (and signing) the ZIP, installing it with `modules:install`, and how the update notice appears"); `modules/Tasks`.
+- **Problem:** Tutorial 13 needs a real new version of the tutorial module, and the specification does not say what changes.
+- **Proposal:** Tasks 0.2.0 adds a nullable `tasks.started_at` (when a to-do task left "To do") in a new migration `AddStartedAtToTasks` that also fills it in for to-do tasks already started (`COALESCE(updated_at, created_at)`), with `down()` dropping it. The rule lives in `TaskRepository::statusDates()` (also `completed_at`), shared by the CRUD, `setStatus()` (board, `complete`, bulk action) and the API; read-only in the CRUD details and export and in the API. A module `CHANGELOG.md`. The ZIP is built by hand (no packager command, D-32-05); the module declares no `$repository`, so the update notice is described, not triggered. Checked: a site installed at 0.1.0 with demo data upgraded with `modules:install Tasks-0.2.0.zip` (session 34 report).
+- **Alternatives:** A) A schema change without code (an index): shows less of a real release. B) A `modules:package` command (a new command and convention: needs the owner).
+- **Status:** Accepted (proposal)
+
+## D-34-02 — Tutorials 3 and 4 summarise and link the tutorials of `frontend.md` and `widgets.md`
+
+- **Where:** specification "Tutorials" (3 and 4: "see `docs/frontend.md`/`docs/widgets.md`, linked from here"); D-33-02.
+- **Problem:** The full walk-throughs already exist (session 33); copying them would make two texts to keep in step.
+- **Proposal:** `docs/tutorials/03-…` and `04-…` give the files, a summary of each step linked to its section, how to follow it on a fresh install and the tests; the code excerpts stay in `frontend.md` and `widgets.md`. The board was not extended with confirm/toast or a refreshing chart (D-33-02 allowed it, nothing in the tutorials needs it).
+- **Alternatives:** Move the walk-throughs into `docs/tutorials/` and leave links in the area documents.
+- **Status:** Accepted (proposal)
+
+## D-34-03 — Tutorials 1 and 11 are followed in a scratch module `Tasks2`
+
+- **Where:** specification "Tutorials" (1: `make:module Tasks`; 11: `make:module --api`); `docs/plan.md` session 34 (risk).
+- **Problem:** `modules/Tasks` exists, so its tutorials cannot start with `make:module Tasks`; `--api` works only together with `--crud` on a new module; `make:module --crud` migrates its example table at once.
+- **Proposal:** Tutorial 1 builds `Tasks2` (`make:module Tasks2 --crud=tasks2_tasks`, then `migrate:rollback -f` of the example table, three migrations, a project `setRelation()`; the finished module uses a select of translated names, tutorial 2). Tutorial 11 shows `make:module … --api` for a new module and, for an existing one, `kpapy:make` with the options the generator passes (the route is appended to the module's `Routes.php`; the controller is then made `final` with `strict_types`). Both were followed on a fresh SQLite install (scratch module tests, `permissions:check`, the API with tokens and curl).
+- **Alternatives:** A `--api` option for existing modules in `make:module` (a Core change: needs the owner).
+- **Status:** Accepted (proposal)
+
+## D-35-01 — End-to-end tests against a demo site installed beforehand; axe fails the test
+
+- **Where:** specification "Quality, tests and delivery" and "Themes" (Playwright screenshots at phone, tablet and desktop widths in both modes, failing on horizontal overflow; WCAG AA checked by an automated accessibility test); `docs/plan.md` session 35.
+- **Problem:** The specification does not say how the e2e tests get a site, a user and data, nor how strict the accessibility check is.
+- **Proposal:** `npm run e2e` (Playwright, `playwright.config.mjs`) runs against a demo site installed beforehand (`app:install --demo`, SQLite, `--url=http://localhost:8089/`, Tasks enabled with its demo data), started with `php spark serve` or given by `E2E_BASE_URL`; the administrator logs in once in a global setup (the login is rate limited) and each test keeps the refreshed session cookie (the application rotates session ids). Six projects (phone 390, tablet 820, desktop 1440 × light, dark), the public site as a guest and 21 back-office screens; every page fails on a status ≥ 400, a redirect to the login, horizontal overflow, a CSP violation or **any** axe violation of `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` (no allow-list); axe runs through the DevTools protocol so the CSP stays strict. Screens behind `reauth` are left out. One more test follows every link of the generated menus at desktop width; a keyboard test checks the skip links. CI runs them in a job of its own and keeps the screenshots as an artifact.
+- **Alternatives:** A) Install the site inside the global setup (rewrites `.env` of the developer's checkout). B) Report axe violations without failing (they come back unnoticed).
+- **Status:** Accepted (proposal)
+
+## D-35-02 — Secret scanning with the gitleaks release binary
+
+- **Where:** specification "Quality, tests and delivery" ("secret scanning (e.g. gitleaks)").
+- **Problem:** The gitleaks GitHub Action needs a paid licence for repositories of organisations.
+- **Proposal:** The CI job `secrets` downloads the gitleaks release (MIT) of a fixed version, checks it against the release's checksum file and scans the whole history with `.gitleaks.toml` (default rules + an allow-list of test folders with fixture passwords, the CI throwaway passwords `Ci-<what>-Tramuntana-2026`, lock files, vendored libraries and placeholder words; the e2e job generates its password per run). A real secret is never allow-listed: it is removed and rotated.
+- **Alternatives:** The action with a licence; GitHub's own secret scanning (a repository setting, not in the CI).
+- **Status:** Accepted (proposal)
+
+## D-35-03 — One minisign verifier in the Core
+
+- **Where:** D-29-01 ("the two copies are merged in session 35"); `Modules\Core\Packages\SignatureCheck`, `Modules\Updates\Services\SignatureVerifier`.
+- **Problem:** Two copies of the same minisign code (packages in the Core, releases in Updates).
+- **Proposal:** `Modules\Core\Security\Minisign` holds the format and the checks and throws `MinisignRefused` with a reason (`noKey`, `format`, `unknownKey` + key id, `signature`, `unreadable`); `SignatureCheck` and `SignatureVerifier` keep their public methods and only translate the reason into their own messages (`PackageRefused`, `UpdateException`). The test signer moved to `tests/_support/Security/TestSigner.php`. Tests: `MinisignTest`, `SignatureVerifierTest`, `PackagesTest`.
+- **Alternatives:** Updates uses the Core's `SignatureCheck` directly (its messages would talk about packages).
+- **Status:** Accepted (proposal)
+
+## D-35-04 — WCAG AA colours of the default theme
+
+- **Where:** specification "Themes" (accessible contrast, WCAG AA in both modes, checked by axe).
+- **Problem:** axe found Bootstrap's mid-tone colours below 4.5:1: `#0d6efd` links and outline buttons on the back office's `#f8f9fa` (4.26), grey/green/red outline buttons and red text on the dark body (3.3–3.4), the calendar's selected tab and event texts on category colours (2.6), the labels of disabled checkboxes (3.9), inline code (4.3).
+- **Proposal:** Keep the palette and the `primaryColor` option, and let the theme CSS use darker (light mode) or `*-text-emphasis` (dark mode) shades for **text** only: `--kp-primary-text` (primary mixed with 15 % black), the next Bootstrap shades for outline buttons, 75 % opacity for disabled labels; FullCalendar events get `contrastColor` (black or white, whichever contrasts more) from the server. Also fixed: ARIA names of the editor's pickers, `role="img"` on labelled icons, `role="button"` on the dashboard's toggle link, keyboard access to scrolled tables (`core/ui/scroll-regions.js`). Documented in `docs/themes.md`.
+- **Alternatives:** A) A darker default primary colour (changes every site's look). B) White back-office background (loses the card contrast).
+- **Status:** Accepted (proposal)
+
+## D-38-01 — Settings zone of the back-office menu grouped in five containers (decide)
+
+- **Where:** owner's review of 2026-11-19 (point 5); specification "Menus" (back-office menu); `docs/menus.md`; every manifest with entries in the `settings` zone.
+- **Problem:** The `settings` zone lists fifteen entries side by side (users, groups, permissions, settings, security settings, security status, activity log, API tokens, API documentation, modules, back-office menu, dashboard widgets, backups, updates, scheduled tasks), which is hard to scan.
+- **Proposal:** The Core declares five group entries in the `settings` zone (no route or permission; shown only while a child is visible) and module entries point to them with `parent`: **Usuaris i accés** (users, groups, permissions), **Seguretat** (security settings, security status, activity log), **API** (tokens, documentation), **Personalització** (modules, back-office menu, dashboard widgets), **Sistema** (general settings, backups, updates, scheduled tasks). Entry keys do not change, so saved customisations keep applying; the group keys become a documented convention for third-party modules.
+- **Alternatives:** A) Leave it flat and let each site group entries with the Menus module's back-office menu editor (already possible, no code). B) Three groups as first suggested by the owner (Security with users and the log, APIs, Customisation), leaving backups and updates loose.
+- **Status:** Decided
+- **Decision (2026-11-19):** «endavant, crea un prompt per reorganitzar-ho». The owner accepted grouping the settings zone in generic containers; session 38 builds the five groups of the proposal. **Must change:** `deploy/38-settings-menu.md` (created), the manifests' `settings` entries, `docs/menus.md`, `docs/creating-a-module.md`, specification "Menus".
+- **Applied in:** session 38: `modules/Core/Config/Module.php` (the five groups), `modules/Core/Menus/MenuDefinitions.php` (`GROUP_*`), `modules/Core/Modules/ManifestValidator.php`, the `settings` entries of Users, Settings, Core, Activity, Api, Menus, Dashboard, Backup and Updates (`parent`), `docs/menus.md`, `docs/creating-a-module.md`, specification "Menus" and the example manifest; tests `modules/Menus/Tests/SettingsGroupsTest.php`. How the groups are declared: D-38-02.
+
+## D-38-02 — Menu group entries declared with a `group` key in `$menu` (keys `group.<name>`) (decide)
+
+- **Where:** D-38-01 ("the Core declares five group entries, no route, no permission"); `docs/menus.md`; `ManifestValidator::MENU_KEYS`.
+- **Problem:** Until now every manifest menu entry had a route and a permission, and its key was the resource key or the route name. A group heading has neither, so it needs another way to be declared and a stable key that modules can name as `parent` (a public convention for third-party modules) and the Menus module can store customisations for.
+- **Proposal:** A new optional manifest key `group`: `['group' => 'group.system', 'label' => …, 'icon' => …, 'order' => …, 'zone' => 'settings']` declares a heading of kind `group` whose key is the given value; it must match `group.<name>` (lower case) and cannot be combined with `resource`, `route` or `permission` (the validator refuses it). The Core's keys are `group.access`, `group.security`, `group.api`, `group.customisation`, `group.system` (constants `MenuDefinitions::GROUP_*`); any module may declare its own group the same way. Built so the names can still change (one constant per key, one place in the Core manifest).
+- **Alternatives:** A) Groups only in the Core, as a constant list in `MenuDefinitions` (no new manifest key; modules cannot add groups). B) Keys like `Core.settings-access` following `<Module>.<resource>` (could collide with a future Core resource).
+- **Status:** Applied (decided)
+- **Decision (2026-11-19):** «Clau 'group' (recomanada)». As proposed: the optional manifest key `group` declares a heading with the key `group.<name>`; the Core's five keys are a public convention, and any module may declare its own group.
+- **Applied in:** session 38 (built as proposed): `modules/Core/Menus/MenuDefinitions.php`, `modules/Core/Modules/ManifestValidator.php`, `modules/Core/Config/Module.php`, `docs/menus.md`, `docs/creating-a-module.md`, `CLAUDE.md`, specification "Menus"; tests `modules/Menus/Tests/SettingsGroupsTest.php`.
+
+## D-38-03 — Who sees "Administració" on the public site, and where it links
+
+- **Where:** `deploy/38-settings-menu.md` ("Administració for signed-in users who can open the back office (their profile otherwise); build the URLs from route names, not from the `backend` string").
+- **Problem:** "Can open the back office" is not one permission (the dashboard is a module), and the Core must not name a module.
+- **Proposal:** `Modules\Core\Frontend\AccountLink`: guests get "Entra" → the route `login`; a signed-in user whose generated back-office menu (already filtered by permission) has an entry in the `sidebar` or `settings` zone gets "Administració" → the first such entry (the dashboard in the skeleton); otherwise "El meu compte" → the first entry of their `user` zone (the profile); nothing when there is none. The theme option `showAccountLink` (default on) shows it; the partial `account_link` sits at the end of the collapsible navbar.
+- **Alternatives:** A) Check `dashboard.view` and link the route `dashboard` (names a module in the Core). B) Always link `backend` (breaks with session 40's configurable path).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Frontend/AccountLink.php`, `themes/default/Views/partials/account_link.php`, `themes/default/Views/layouts/public.php`, `themes/default/Theme.php`; test `modules/Core/Tests/AccountLinkTest.php`; `docs/themes.md` ("Account link").
+
+## D-38-04 — The web installer's password fields get the button in session 39
+
+- **Where:** `deploy/38-settings-menu.md` ("Today's fields: … the web installer"; "pages that do not load the Core's JavaScript get it the same way").
+- **Problem:** The web installer's pages are standalone (no theme, no database) and load no JavaScript; the Core's ES modules are published to `public/assets/` by `assets:publish`, which runs during the installation, so before installing they may not exist. Loading them would need new routes that serve module files before installation.
+- **Proposal:** Leave the installer without the button in session 38 (it works as before: a plain password field). Session 39 adds JavaScript to the installer (`core/install/progress.js`); when it loads the Core's scripts, `core/app.js` (or its own entry calling `initPasswordReveal()`) gives its password fields the button with no change to the fields.
+- **Alternatives:** A) Serve `password-reveal.js` and `config.js` from a controller route under `install/` before installation (new URLs, more code for one page). B) Publish the Core's assets from the installer's GET (the web server writing to `public/` before installation).
+- **Status:** Accepted (proposal)
+- **Applied in:** `docs/frontend.md` ("Password fields"), `docs/progress.md` (notes for session 39).
+
+## D-39-01 — The web installer publishes the Core's assets before installing, so its pages can load the Core's scripts
+
+- **Where:** `deploy/39-installer-progress.md` (front end: `core/install/progress.js`); D-38-04 (alternative B).
+- **Problem:** The progress page and the form's switch to it need the Core's ES modules (`core/install/progress.js`, `core/app.js` and the modules they import, with the import map), but `public/assets/core/` is ignored by git and only exists after `assets:publish` / `modules:sync`, which run during the installation.
+- **Proposal:** The installer's pages (`install` and a running job's result page) publish the Core's assets (`AssetPublisher::publish('core')`, the Core's own files only) when the manifest lacks `core::js/install/progress.js`. The web installer already writes `public/assets/` during the installation (step 7 of `modules:sync`), so this adds no new write. When it cannot write (or fails), the pages load no script and everything works as before: the form posts `progress=0` and the installation runs inside the request. With the scripts, the pages get `core/app.js` (password show/hide button, D-38-04) and `core/theme-mode.js` (dark mode); the import map is built without a theme (there is no database).
+- **Alternatives:** A) Serve the few files from a controller under `install/` (new URLs, duplicates the asset pipeline). B) Commit the published copies (forbidden: `public/assets/modules/…` and `public/assets/core/` are generated).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Controllers/WebInstaller.php` (`scriptsPublished()`), `modules/Core/Views/install/{_head,_scripts}.php`; test `WebInstallerTest::testFormAsksForTheProgressPageOnlyThroughItsScript`.
+
+## D-39-02 — Web installer jobs: storage, lifetime, rate limit, lock and the order of the last steps
+
+- **Where:** `deploy/39-installer-progress.md` (web flow, security).
+- **Problem:** The session asks for job files like Backup's `JobStore`, a TTL, a rate limit, a lock and a step list ending with "assets, `security:check`, lock file"; it does not fix the values, and the rate limiter's capacities are settings in a database that does not exist yet.
+- **Proposal:** `Modules\Core\Install\InstallJobs` in `writable/install-jobs/` (folder 0700, files 0600, atomic writes): `<id>.json` (status, step, counts, percentage, log of language keys with scalar parameters, the page's language, the non-secret result), `<id>.secrets.json` (the `.env` to copy and the demo passwords, deleted when the result page first reads it) and `running.lock` (created with `fopen('x')`; stale after the TTL). TTL one hour (`InstallJobs::TTL`): afterwards both job pages answer 404 and the files are purged on the next job. `progress/install/<job>`: `RateLimiter::attemptCustom('installProgress', ip, 120, MINUTE)` (file cache, no setting), JSON keys `status, step, label, percent, log, next` only (the failure message is shown on the result page, not in the JSON). A second POST while the lock is held answers the form with 409; the in-request fallback takes the lock too. The order of the last steps is the installer's own (`envFile`, `lock`), then the job runs `security:check` (stored for the Security status page without notifications, as `app:install` does) and `done`; `app:install` keeps its output (it does not print the steps). The superadmin step covers the 2FA offer (`install.superadmin`; on the web the 2FA is set up from the profile, as before).
+- **Alternatives:** A) Jobs in the database (none yet). B) A rate limit through the `ratelimit:` filter (its capacities are settings in the database). C) Run `security:check` before the lock (it would describe an installation that is not finished).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Install/{InstallJobs,InstallJob,InstallProgress}.php`, `modules/Core/Controllers/WebInstaller.php`; tests `InstallJobsTest`, `InstallProgressTest`, `WebInstallerTest`.
+
+## D-38-05 — Order and icons inside the settings groups
+
+- **Where:** `deploy/38-settings-menu.md` ("order inside groups by the entries' `order`").
+- **Problem:** The Activity log (84) and Security status (84) had the same order, so the log came first by key, against the listed order "security settings, security status, activity log"; the groups need icons.
+- **Proposal:** Activity log `order` 85 (its key does not change). Group icons: `bi-person-lock`, `bi-shield-lock`, `bi-plug`, `bi-sliders`, `bi-hdd-stack`; group orders 60, 65, 70, 75, 80. Inside Customisation the order is Dashboard widgets (72), Back-office menu (74), Modules (80), and inside System: Settings (70), Scheduled tasks (85), Backups (86), Updates (87), as the entries already declared.
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Activity/Config/Module.php`, `modules/Core/Config/Module.php`.
+
+## D-40-01 — Configurable back-office path chosen at install time (decide)
+
+- **Where:** owner's review of 2026-11-19 (point 6); specification (every passage naming `backend/`), `CLAUDE.md`, all module routes, `app/Config/Filters.php`, `app/Config/Auth.php`, the installer; `deploy/40-backend-path.md`.
+- **Problem:** The back office always lives under `/backend`. The owner wants to choose another path (`/admin`, `/private`, `/intranet`…) when installing. The prefix is written about 380 times in code and is stored inside data (notification links, dashboard quick links, back-office menu links), so changing it after a site is in use breaks links, bookmarks and customisations.
+- **Proposal:** A `.env` key `app.backendPath` (default `backend`), read by configuration at boot (never from the database: routes are built before any query). Chosen with `app:install --backend-path=<slug>` and a field of the web installer, and documented as a choice made **once, at install time**. Rules: lowercase letters, digits and hyphens, 2–30 characters, one path segment, not a reserved top-level path (`api`, `install`, `progress`, `login`, `logout`, `register`, `auth`, `uploads`, `assets`, `themes`, `ical`, other modules' top-level routes, `robots.txt`, `sitemap.xml`…); Pages refuses it as a top-level page slug, and the demo page `intranet` is renamed if the path chosen is `intranet`. New stored links are saved relative to the back office and resolved when shown; stored links that start with `backend/` keep working. Not changeable from the back office; changing it later is not supported in this session.
+- **Alternatives:** A) A setting in the database (Settings › Security): routes cannot read the database at boot, and a wrong value could lock everybody out. B) Keep `/backend` fixed and use a web-server rewrite (`/admin` → `/backend`): no code, but the application still writes `/backend` in its links. C) The proposal plus a console command `app:backend-path <new>` that changes it later (maintenance mode, rewrites the stored links, clears caches, logs it): about one more day.
+- **Status:** Decided
+- **Decision (2026-11-19):** «Instal·lar + comanda per canviar-la» (alternative C). The back-office path is `app.backendPath` in `.env` (default `backend`), chosen at install time with `app:install --backend-path=<slug>` and a field of the web installer, with the validation rules of the proposal; new stored links are relative and old `backend/…` links keep working. **In addition**, a console command `php spark app:backend-path <new>` changes it later: it validates the new path like the installer, turns maintenance mode on, rewrites `app.backendPath` in `.env` (or prints the line to copy when `.env` is not writable), rewrites the stored links that still carry the old prefix, clears the caches and the menu cache, logs a security event and turns maintenance off; never from the back office. **Must change:** `deploy/40-backend-path.md` (scope and tests), specification "Installer and CLI" and "Security baseline", `docs/commands.md` (session 40), `CLAUDE.md` (session 40, when the prefix becomes configurable).
+- **Applied in:** `docs/specification.md` ("Installer and CLI": back-office path and the `app:backend-path` command), `deploy/40-backend-path.md` (scope and tests); session 40: `app/Config/{App,Filters,Auth}.php`, `modules/Core/Routing/`, the helpers `backend_path()`/`backend_url()`/`backend_link()`, every route file, the installer (`InstallOptions`, `Installer`, `AppInstall`, `WebInstaller`, `env`), `modules/Core/Commands/AppBackendPath.php`, `CLAUDE.md`, `docs/{security,web-server,menus,permissions,creating-a-module,commands}.md`, `README.md`.
+
+## D-40-02 — Stored back-office links use the canonical prefix `backend/…`, resolved when shown
+
+- **Where:** D-40-01 ("new stored links are relative and old `backend/…` links keep working"); notification links (`NotificationType::render()`), calendar source links (`CalendarEvent::$url`), dashboard quick links (`WidgetOptions`), Menus addresses (`menu_items`, `backend_menu_links`); `app:backend-path`.
+- **Problem:** Links saved in the database must survive a change of the prefix, and every link saved before 1.1 starts with `backend/`. A separate marker (e.g. `@backend/…`) would need a migration of the old rows and two forms forever.
+- **Proposal:** The stored form of a back-office link is the path written with the canonical prefix `backend` whatever the installed one is (`backend_link('news/read/7')` = `backend/news/read/7`); `BackendPath::resolve()` moves it under the installed prefix when it is shown (`NotificationMessage::path()`, `QuickLinks`, `LinkTarget`, the Events views and API) and `BackendPath::store()` turns an address typed with the installed prefix into the stored form on save. Old rows are already in that form, so nothing is migrated. `backend` therefore stays reserved as a top-level path (`PageSlugs::RESERVED`, `LocaleUrls::$excluded`) and can always be chosen again as the prefix. `app:backend-path` rewrites only values written with the old non-canonical prefix (typed before, or by third-party code) through the event `backendPathChanged`; a bare word equal to the old prefix (a group named `admin`) is never rewritten. The activity log is append-only and keeps its old paths.
+- **Alternatives:** A) Store the installed prefix and rewrite everything on every change (the old rows would break if the command is skipped). B) A `@backend/` marker (a migration and two forms).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Routing/{BackendPath,BackendPathChanged,BackendPathChanger}.php`, `modules/Core/Helpers/backend_helper.php`, `modules/Core/Notifications/NotificationMessage.php`, `modules/Core/Widgets/{WidgetOptions,QuickLinks}.php`, `modules/Menus/Services/LinkTarget.php`, the Events views and API, the `Config/Events.php` of Dashboard and Menus (the Events module has no listener file, D-00-04: calendar entries are published with `backend_link()`); tests `modules/Core/Tests/BackendPath{,Changer}Test.php`, `modules/Dashboard/Tests/BackendPathSiteTest.php`.
+
+## D-37-01 — Content languages from the site's locales: helpers, removed constants and language changes
+
+- **Where:** specification "Languages" (content with `setTranslations()`, "Catalan as the required language"); `deploy/37-content-locales.md`; `Modules\Core\Content\ContentTranslations`; News, Pages, Events, Menus, Tasks, Users (birthdays calendar); `docs/i18n.md`.
+- **Problem:** Content languages were the constant `ContentTranslations::LOCALES` (ca/es/en) with Catalan written by hand as the required language, the fallback and the source of slugs and summaries in about 20 files, so a language added by configuration never reached content and changing the default language did not change the required one. The session must also define what happens when languages are added, removed or the default changes, and what to do with the constants used by modules built from the tutorials.
+- **Proposal:** `ContentTranslations` reads `Locales`: `locales()`, `codes()`, `defaultLocale()`, `crudOptions()` / `apiOptions()` (required = the default language, kpcrudy fallbacks to it), `defaultText()` (source text: the default language, else the first filled-in available one), `keepUnavailable()`; readers (`texts()`/`pick()`) fall back to the default language and ignore languages no longer offered; `Config\Kpapy::$localeFallbacks = [Locales::default()]`; `CalendarEvent::translated()` builds per-language titles from a language line; `TranslatedText` (translated settings) falls back to the default language too. The constants `ContentTranslations::LOCALES`, `ContentTranslations::FALLBACK_LOCALE`, `NewsRepository::FALLBACK_LOCALE`, `News\Controllers\Posts::LOCALES` and `TranslatedText::FALLBACK_LOCALE` are **removed** (no deprecated alias: a constant cannot follow a setting, and keeping it would keep the bug in third-party modules); the replacements are listed in `docs/i18n.md` ("Upgrading a module written for 1.0.0") and `CHANGELOG.md`. Language changes: an added language shows empty tabs and readers fall back; a removed language keeps its rows but is neither shown nor edited (saving keeps them: kpcrudy only writes the languages it shows, Pages revisions and Menus labels keep them); a new default language is required on the next edit, existing records stay readable. No migration. A static test forbids literal language codes in module and theme code (outside language files, `Database/`, `Config/`, tests and `Locales`/`Language`).
+- **Alternatives:** A) Keep the constants as deprecated aliases with the old values (third-party modules keep working but keep offering ca/es/en only). B) Make the constants dynamic through a static property (not possible for a class constant without breaking its type).
+- **Status:** Accepted (proposal)
+- **Applied in:** session 37 (`modules/Core/Content/ContentTranslations.php`, `app/Config/Kpapy.php`, `modules/Core/Calendar/CalendarEvent.php`, `modules/Core/Settings/TranslatedText.php`, the modules' controllers, services and views; tests `*/Tests/ContentLocalesTest.php`, `*/Tests/ContentLocalesApiTest.php`, `tests/unit/I18n/ContentLanguagesTest.php`), `docs/i18n.md`, `docs/specification.md`
+
+## D-37-02 — Public language switch and the language of public URLs (decide)
+
+- **Where:** owner's request of 2026-11-19 during session 37 ("in the public part the language cannot be changed; a selector is missing, automatic from the defined languages, like the light/dark mode"); specification "Languages" (negotiation: profile → browser → default), "Themes".
+- **Problem:** Visitors can only get another language through their browser's `Accept-Language`; the public site has no way to choose one. The switch adds a public URL, a cookie and a Core event (public conventions).
+- **Proposal (built):** the default theme's public header shows a switch next to the light/dark one (partial `language_switch`, theme option `languageSwitch`, on by default; hidden with a single language): a POST form per available locale (CSRF, no JavaScript) to `POST language` (route `language-switch`, `Modules\Core\Controllers\LanguageSwitch`), which ignores locales the site does not offer, stores the choice in the cookie `kp_locale` (one year, HTTP-only, `SameSite=Lax`), triggers `localeChosen` (user id, locale) for a signed-in user — the Auth module saves it as the profile language, so the back office and emails follow it — and goes back to the page (`return`, internal paths only). Negotiation becomes profile → chosen language (cookie) → browser → default. No rate limit (it only sets a cookie; CSRF protects it).
+- **Alternatives:** A) A language prefix in the URL (`/es/news/…`): best for search engines (one URL per language, `hreflang`), but every public route and stored link changes — a later session if wanted. B) `?lang=<code>` links (GET): simpler, but a state change through GET and duplicate URLs. C) For signed-in users, keep the public choice separate from the profile language (cookie only).
+- **Status:** Applied (decided)
+- **Decision (2026-11-19, first answer):** «galeta + perfil seria la millor opció» (the proposal, as built). **Replaced the same day** by the answer below.
+- **Decision (2026-11-19, final):** «canvia-ho, si pages té slugs diferents per idioma, és preferible tenir millor la gestió URL per a millorar el SEO i la usabilitat dels llocs web, per tant canvia-ho a idioma en la URL i si no es posa que agafi l'idioma per defecte». Alternative A: the language is part of public URLs. A path without a prefix is in the site's default language (`/qui-som`); the other available languages carry their code as the first segment (`/es/quienes-somos`, `/en/news/…`). Reason: Pages has a slug per language, and per-language URLs are better for search engines and users. **Must change:** the public language switch becomes links to the same page in each language (each page's own slugs for Pages), `hreflang` alternates, the sitemap lists every language, internal links keep the current prefix; the cookie `kp_locale`, the route `POST language` and the event `localeChosen` built first are removed; non-public paths (back office, API, login, files…) never carry a prefix; specification "Languages", `docs/i18n.md`, `docs/pages.md`.
+- **Applied in:** `app/Config/LocaleUrls.php`, `app/Config/Services.php` (`localeurls`, `router`), `app/Helpers/url_helper.php` (`site_url()`), `modules/Core/I18n/{LocaleUrls,LocaleRouter}.php`, `modules/Core/Filters/Locale.php`, `modules/Auth/Filters/AuthSession.php`, `themes/default/Views/partials/{language_switch,head}.php`, `themes/default/Views/layouts/public.php`, `modules/Pages/Controllers/PublicPages.php`, `modules/Pages/Services/{PageTree,PageSlugs,SitemapBuilder}.php`; the first version (`LanguageSwitch` controller, cookie `kp_locale`, event `localeChosen`) removed; tests `modules/Core/Tests/LocaleUrlsTest.php`, `modules/Pages/Tests/PublicPagesTest.php` and the public tests that used `Accept-Language`; `docs/specification.md` ("Languages"), `docs/i18n.md`, `docs/pages.md`.
+
+## D-41-01 — A `Devtools` module only for development, with the manifest key `$developmentOnly` (decide)
+
+- **Where:** owner's request of 2026-11-19 (a development module to build CRUDs and packages from the back office); specification "The module contract" (manifest keys); `deploy/41-devtools.md`.
+- **Problem:** Remembering every CRUD variant (audited, re-authentication, read-only, exports, API…) is hard; a visual generator helps, but a screen that writes PHP into `modules/` must never be usable in production.
+- **Proposal:** A module `Devtools` (disabled by default) holds the CRUD recipes (41), the code generator (42) and the package builder (43). Its routes exist only when `ENVIRONMENT === 'development'`; a new boolean manifest key `$developmentOnly` makes `modules:sync`, `modules:enable`, `modules:install` and the Modules screen refuse it outside development (a sync in production disables it and logs it); `security:check` reports an error when such a module is enabled outside development.
+- **Alternatives:** A) Console only (an interactive `make:crud` and a recipes page): no screen writes code, less visual. B) A separate package installed only on developers' machines (not in the skeleton's repository).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Crea un mòdul devtools amb tots els panys». As proposed; sessions 41–43 build it. **Must change:** `ModuleManifest`, `ManifestValidator`, the module commands and screen, `security:check`, `docs/creating-a-module.md`, `docs/security.md`, specification "The module contract".
+
+## D-41-02 — In development, Devtools may write module code from the back office (decide)
+
+- **Where:** `CLAUDE.md` and specification "Security baseline" (module code is installed only from the console; `security:check` wants `modules/` not writable by the web user); `deploy/42-devtools-generator.md`.
+- **Problem:** The generator writes migrations, controllers, manifests and tests into `modules/` from a web request, which the skeleton otherwise never allows.
+- **Proposal:** Allowed only behind every lock of D-41-01 and D-41-03 (development, loopback, superadmin, re-authentication), only after a preview of every file, refused when a file changed after the preview, logged with `activity_log()`. Production keeps the rule unchanged.
+- **Alternatives:** A) The screen only shows the files and the console writes them (`make:module --definition=<file.json>`).
+- **Status:** Decided
+- **Decision (2026-11-19):** «… un motor de generació que em permeti a través de UI crear el màxim de codi amb l'ajuda visual i vista prèvia», for local development with `php spark serve`. As proposed. **Must change:** `CLAUDE.md` and `docs/security.md` (the development-only exception), session 42.
+
+## D-41-03 — Devtools answers only local requests, to the superadmin, with re-authentication for writes (decide)
+
+- **Where:** `deploy/41-devtools.md`; `docs/security.md`.
+- **Problem:** A development site can still be reachable from the network (a laptop on a shared Wi-Fi, a shared development server).
+- **Proposal:** A Devtools filter answers 404 unless the client address is a loopback address and the `Host` is `localhost` or a loopback address (proxy headers are not trusted); resource `devtools` with `devtools.view` and `devtools.write`, no default grants (superadmin only); every write needs `reauth` and `ratelimit:forms`.
+- **Alternatives:** A) No loopback check (any client of a development site could use it).
+- **Status:** Decided
+- **Decision (2026-11-19):** «amb tots els panys». As proposed. **Must change:** session 41.
+
+## D-41-04 — Devtools menu entry in its own settings group "Desenvolupament"
+
+- **Where:** `deploy/41-devtools.md` ("under the **Sistema** group of D-38-01 — or its own group"); `modules/Devtools/Config/Module.php`; D-38-01 (settings entries go in one of the Core's groups).
+- **Problem:** Where the single Devtools entry goes in the settings zone.
+- **Proposal (first build):** under the Core's `group.system` (order 99): one entry does not justify a new group.
+- **Alternatives:** A) Its own group "Desenvolupament", declared by the module (no Core change; a group is shown only while one of its entries is visible).
+- **Status:** Applied (decided)
+- **Decision (2026-11-19, on pull request #59):** «posar l'eina dins group development … sí, fes-ho». Alternative A: the manifest declares `['group' => 'group.development', 'label' => 'Devtools.menu.group', 'icon' => 'bi bi-cone-striped', 'order' => 90, 'zone' => 'settings']` and the entry has `'parent' => 'group.development'`. Nobody but a superadmin on a development copy sees it (no permission or no route: the group is hidden). The only exception to D-38-01's rule, recorded in `CLAUDE.md` and `docs/menus.md`. Test: `modules/Devtools/Tests/DevtoolsMenuTest.php`.
+
+## D-41-05 — Devtools routes not registered for non-local web requests; a docs viewer for the recipes' links
+
+- **Where:** lock 4 of `deploy/41-devtools.md` ("every Devtools URL answers 404" from another machine); the recipes "link the doc section".
+- **Problem:** Route filters run after the global and pattern filters, so the `backend` chain's login redirect answered a non-local, signed-out request before the `devtools` filter, revealing that the URLs exist. And `docs/` is not served by the application, so a card could not link its section.
+- **Proposal (built):** `Config/Routes.php` registers the Devtools routes only when `ENVIRONMENT === 'development'` **and** (console, or `REMOTE_ADDR` loopback and a local `Host`, `LocalOnly::isLocal()`); the `devtools` route filter keeps checking each request (defence in depth, and the tests use it). A read-only viewer `backend/devtools/docs/<page>` (`devtools.view`) shows `docs/<page>.md` as escaped plain text with GitHub-style heading ids (names `^[a-z0-9-]+$`, existing files only).
+- **Alternatives:** A) Filter only (signed-out network clients see a login redirect). B) Cite the doc path as text without a link.
+- **Status:** Accepted (proposal)
+
+## D-42-01 — `nikic/php-parser` as a development dependency to edit existing manifests and routes (decide)
+
+- **Where:** `deploy/42-devtools-generator.md` (adding a table or CRUD to an existing module); `CLAUDE.md` ("ask before adding a dependency").
+- **Problem:** Adding a resource to an existing module means changing its `Config/Module.php`, `Config/Routes.php` and language files. Editing PHP with text replacements is fragile; a parser with a format-preserving printer changes only what it must. The library is already in `vendor/` through the development tools, but not a direct dependency.
+- **Proposal:** `composer require --dev nikic/php-parser:^5` (BSD-3-Clause; development only, like Devtools); the generator edits existing PHP files with it and shows the diff in the preview.
+- **Alternatives:** A) No dependency: for existing modules the preview shows the snippets to paste into the manifest, routes and language files by hand (new files are still written). B) Regenerate the whole manifest from a stored definition (loses manual changes).
+- **Status:** Decided
+- **Decision (2026-11-19):** «afegeix nikic/php-parser com a dependència de desenvolupament». As proposed: session 42 runs `composer require --dev nikic/php-parser:^5` (from Packagist; stop and report if Composer fails) and records it in `docs/dependencies.md`. **Must change:** `composer.json`/`composer.lock` and `docs/dependencies.md` (session 42).
+
+## D-42-02 — The code generator's draft-only POSTs without re-authentication or the forms rate limit (`DevtoolsRoutes::DRAFT`)
+
+- **Where:** `deploy/42-devtools-generator.md` ("writing needs `devtools.write` + `reauth`"); session 41's lock test required every Devtools POST to be `DevtoolsRoutes::WRITE` (`devtools`, `can:devtools.write`, `reauth`, `ratelimit:forms`).
+- **Problem:** The wizard's buttons (add a table, a column, an operation; check; preview; load a definition) are POSTs that only change the user's draft in the session. As WRITE routes, after the 15-minute re-authentication window a button would redirect to `auth/reauth` and the posted form would be lost (POSTs are never replayed), and the `forms` limit (10 an hour) would stop the wizard after ten clicks.
+- **Proposal (built):** A third filter set `DevtoolsRoutes::DRAFT` = `devtools` (loopback, local `Host`) + `can:devtools.view`, used only by the routes listed in `DevtoolsRoutes::DRAFT_ROUTES` (`generator`, `generator/load`); they write no file and run no command (CSRF applies). Writing stays WRITE. `DevtoolsLocksTest` pins both lists.
+- **Alternatives:** A) Every POST WRITE (lost edits, ten clicks an hour). B) Keep the wizard state only in the browser (JavaScript-only wizard, no server validation between steps).
+- **Status:** Accepted (proposal)
+
+## D-42-03 — The generator engine in the Core; demo values made with Faker at generation time; one-page wizard with the draft in the session
+
+- **Where:** `deploy/42-devtools-generator.md` ("record where; `make:module` in the Core must keep working without Devtools"; "a Faker generator per column").
+- **Proposal (built):** The engine is `Modules\Core\Generator` (definition, validator, `Engine` → `Plan`, `SourceEditor`, `PlanWriter`), used by `make:module --definition` and by Devtools; plain `make:module` keeps its templates and output (`ModuleGenerator::files()`) and needs no parser. Faker is a development dependency, so the demo values are made when the code is generated (seeded by the table name) and written into the demo seeder as literals: the seeder runs on a `--no-dev` site and gives the same rows every time. The wizard is one server-rendered form whose names follow the definition's JSON; every button posts it and the draft lives in the session, so it works without JavaScript and the re-authentication round trip returns to the preview (`GET backend/devtools/generator/preview`). The plan's fingerprint covers the definition and the existing files it changes (not the new files, whose migration names carry the time); the writer also refuses a new file that appeared. Syntax highlighting: plain escaped `<pre>` (no library). "Alter" migrations for existing tables are not generated (next step).
+- **Alternatives:** A) The engine in Devtools (then `make:module --definition` would need the development-only module). B) Faker in the generated seeder (breaks `modules:demo` without the development packages).
+- **Status:** Accepted (proposal)
+
+## D-42-04 — Group titles in the generator; `groups:export` / `groups:import` to copy groups without users
+
+- **Where:** owner's review of session 42 (2026-11-20): «a part de sortir el nom intern, surti el títol … Els grups s'haurien de poder exportar, per si cal tenir els mateixos grups en local, sense necessitat de tenir un backup complet».
+- **Problem:** The generator's grants matrix showed only internal group names (`editor`), while a site may rename a reserved group's title ("Coordinador"); and a development copy does not have the production site's own groups (pupils, families, staff), so a module could not be given default grants for them, and copying them meant restoring a full backup with personal data.
+- **Built:** The matrix shows each group's title and internal name (`GeneratorContext::groupTitle()`). Two console commands in the Core, `groups:export [<file>] [--grants]` and `groups:import <file> [--grants] [--yes]` (`Modules\Core\Groups\GroupTransfer`): names, titles, descriptions, 2FA policy and optionally grants, never users; the import creates missing groups (common grants), updates the existing ones, replaces grants only with permissions that exist on the target site (wildcards matched like `GrantManager`), never changes `superadmin`, asks for confirmation, goes through `GrantManager` (`grants_changed`, `privilegesChanged`) and is logged as `groups_imported` (security). Console only: no URL.
+- **Alternatives:** A) An export/import screen in Users › Groups (a web upload that changes privileges: re-authentication and more surface). B) Accept unknown group names in the generator's definition.
+- **Status:** Applied (owner's request)
+
+## D-43-01 — Signing packages from the local Devtools form, with safeguards for the key (decide)
+
+- **Where:** `deploy/43-devtools-packages.md`; `docs/updates.md` and `docs/installing-modules.md` (the secret key stays on the publisher's computer).
+- **Problem:** Signing needs the minisign secret key and its password. From the console they can be read from a file and a hidden prompt; the owner also wants to paste them into a form, since Devtools runs locally. In development, CodeIgniter's debug toolbar stores every request's variables in `writable/debugbar/` (`Config\Toolbar::$collectVarData = true`), the development error page shows the posted data, and `withInput()` copies it into the session: the key could be left on disk without anyone noticing.
+- **Proposal:** Both ways: `modules:package --sign=<key file>` (password without echo) and the local form (secret key as text or uploaded file, read in memory, plus its password). The form keeps every Devtools lock and: no toolbar collection for that request, no `withInput()` or flash data, no logging of the values (the activity log records only the file and the key id), every exception caught with a generic message, `sodium_memzero` after use, `autocomplete="off"`, `Cache-Control: no-store`; a test checks that nothing under `writable/` contains the key after signing. The signature is verified with the Core's `Minisign` before it is offered.
+- **Alternatives:** A) Console only (the screen shows the command). B) Keep the secret key encrypted in `writable/` for repeated use (convenient, but the key would live on the development machine's disk next to the project).
+- **Status:** Decided
+- **Decision (2026-11-19):** «… podria demanar la clau en el moment de fer la signatura … s'executa en local». As proposed, with the safeguards above. **Must change:** session 43, `docs/devtools.md`, `docs/installing-modules.md`.
+- **Addition (2026-11-19):** «… forçar eliminar les variables de sessió amb la comanda de CodeIgniter de php spark i amb la d'eliminar la memòria cau de l'app». After a signature made from the form, Devtools also **cleans up**, on top of the prevention above (which stays mandatory: the debug toolbar writes its file in an *after* filter, once the controller has finished, so a cleanup during the signing request cannot remove that request's own file): the signing request answers a redirect to a result page, and that next request runs the equivalent of `php spark debugbar:clear` (deletes the whole toolbar history), `php spark logs:clear`, `php spark cache:clear` and `php spark app:cache-clear`, removes the session's flash and old-input data and **ends the current session** (log out; CodeIgniter has no spark command for sessions, so the session is destroyed through the session service; the user signs in again), and logs that the cleanup ran. A test checks that after signing and the cleanup nothing under `writable/` (debugbar, logs, cache, session) contains the key or the password.
+
+## D-43-02 — How the package builder and the signing form apply D-43-01
+
+- **Where:** `deploy/43-devtools-packages.md` ("leaving out … whatever `packages.extensions` would refuse" next to "a package with a forbidden file is not built"; "disable the toolbar for that route or filter the fields"; the result page after the cleanup); `CLAUDE.md` (uploads only through the Storage service).
+- **Problem:** Some details were left open: which files stop a build and which are left out; how to keep the debug toolbar from storing the posted key (its *after* filter is a required filter, it cannot be switched off per route, and it collects the POST data whatever `collectVarData` says); what to show once the cleanup has ended the session; an uploaded key file and the Storage-only upload rule.
+- **Proposal (built):** (1) Dotfiles/dot folders, `node_modules/` and `writable/` are left out silently; editor files and files with an extension the installer refuses are left out and listed; a symbolic link, a PHP syntax error or any other installer refusal stops the build and removes the ZIP. (2) The signing controller reads the fields and immediately empties the request's POST data, `$_REQUEST`, `$_FILES` and the raw body (`Packages::scrub()`), so the toolbar (and anything else) finds nothing; the cleanup of the next request removes the toolbar history anyway. (3) The cleanup page (`packages/signed`) renders with the auth layout after the session has ended, with the public facts of the signature (file, key id, public key line, SHA-256 from `<zip>.json`) and a "sign in again" button. (4) An uploaded key file is read in memory from PHP's own temporary upload file and never stored (not a stored upload: the Storage rule does not apply). (5) `cache:clear` also resets this development copy's rate-limit counters; accepted (development only, superadmin on the loopback, re-authentication still applies). (6) Unencrypted minisign keys have a zeroed checksum (minisign 0.11): accepted, and every key is checked by rebuilding its key pair from the seed. (7) `KP_SIGN_PASSWORD` for scripted console signing; console paths relative to the shell's folder.
+- **Alternatives:** A) Refuse to build when any file has a refused extension (stricter, but a module with a `build.sh` could never be packaged). B) Replace the `toolbar` filter in `app/Config/Filters.php` with a Core subclass that skips flagged requests (a Core change for a development tool).
+- **Status:** Accepted (proposal)
+
+## D-44-01 — Web Push encryption and VAPID implemented in the Core with OpenSSL, no library (decide)
+
+- **Where:** owner's request of 2026-11-19 (a free push channel instead of WhatsApp); `deploy/44-web-push.md`; `CLAUDE.md` (every outbound call through `OutboundClient`; ask before adding a dependency).
+- **Problem:** Sending a Web Push message needs the payload encrypted for the browser (RFC 8291, `aes128gcm`) and a VAPID signature (RFC 8292, JWT ES256). The usual PHP library, `minishlink/web-push` (MIT), sends through Guzzle (not installed, and against the `OutboundClient` rule) and brings `web-token/jwt` packages.
+- **Proposal:** Implement the encryption and VAPID in the Core with PHP's OpenSSL (ECDH P-256, HKDF-SHA256, AES-128-GCM, ES256), verified with the RFC 8291/8292 test vectors and a decrypting round-trip test, and send with `OutboundClient`. No new dependency.
+- **Alternatives:** A) `minishlink/web-push` for encryption and headers only, sending with `OutboundClient` (more dependencies, part of the library unused).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Implementació pròpia (recomanada)». As proposed. **Must change:** session 44.
+- **Applied in:** `modules/Core/Push/` (`PayloadEncryption`, `Vapid`, `EcKey`, `Base64Url`, `PushSender` through `OutboundClient`); test `PushCryptoTest` (RFC 8291 appendix A vectors, round trip, the RFC 8292 example token).
+
+## D-44-02 — Web Push: channel name, tables, URLs, settings, keys and the endpoint allow-list (decide)
+
+- **Where:** `deploy/44-web-push.md`; `docs/notifications.md`; specification "Cross-module services (Core)" (notifications).
+- **Problem:** The new channel adds public names (channel, tables, routes, settings, `.env` keys, a command) and a security risk: a browser subscription is a URL the server will call, so a forged one could make the server call internal or arbitrary hosts (SSRF).
+- **Proposal:** Channel `push` added to `NotificationType::CHANNELS` (opt-in per device; existing types keep their default channels). Tables `push_subscriptions` and `push_queue`. Personal routes under `backend/profile/push` (list devices; `POST subscribe`, `POST delete/<id>`, `POST test/<id>`) with `can:core-notifications.list` (granted to every group), CSRF and `ratelimit:forms`. Settings `Core.pushEnabled` (default off) and `Core.pushContent` (`full` | `generic`, default `full`) in Settings › Security › Notifications. `.env` keys `push.vapidPublicKey`, `push.vapidPrivateKey`, `push.subject`, generated by `app:install` and `php spark push:keys [--force]`. Endpoints accepted only over `https://` on the hosts of `Config\Push::$serviceHosts` (Google FCM, Mozilla, Microsoft WNS, Apple), never private addresses; those hosts join the outbound allow-list. The service worker opens only same-origin URLs.
+- **Alternatives:** A) Make the channel list extensible (channels registered by modules, push in its own module): more general, a bigger change to the Core. B) Accept any HTTPS endpoint (works with unknown push services, but an SSRF risk).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: channel `push`, tables `push_subscriptions` and `push_queue`, personal routes under `backend/profile/push`, settings `Core.pushEnabled` (off) and `Core.pushContent`, VAPID keys in `.env`, endpoints only over HTTPS on the hosts of `Config\Push::$serviceHosts` and never private addresses. **Must change:** session 44 (`deploy/44-web-push.md` already describes this; no earlier code changes).
+- **Applied in:** `NotificationType::PUSH`, `modules/Core/Push/`, migrations `CreatePushSubscriptions`/`CreatePushQueue`, `Controllers/PushDevices.php` (routes under `backend/profile/push`), Core settings `pushEnabled`/`pushContent` (group `security.notifications`), `app/Config/Push.php` (`$serviceHosts`: `fcm.googleapis.com`, `updates.push.services.mozilla.com`, `*.notify.windows.com`, `web.push.apple.com`, checked 2026-11-20), `OutboundAllowList` (push hosts while on), `push:keys`, `Installer`, `PushCheck`, `sw.js`, `core/push.js`; tests `PushSubscriptionsTest`, `PushDeliveryTest`, `PushKeysTest`.
+
+## D-44-03 — How session 44 applies D-44-02
+
+- **Where:** `deploy/44-web-push.md` ("default channels of the existing types unchanged", "a device label … editable", "logging out offers to keep or remove the device's subscription", "if the PWA setting is off, register the service worker for push anyway").
+- **Problem:** Several details were left open: whether the base `defaultChannels()` includes `push` and what happens to preferences stored before the channel existed; how a label is edited; how the logout question reaches a theme's logout form; how the worker is registered without the PWA; limits.
+- **Proposal (built):** (1) `NotificationType::CHANNELS` = database, email, push and the base `defaultChannels()` returns the three (the existing types are unchanged; push only reaches devices the user subscribed, so it stays opt-in per device; a type that must not reach a lock screen overrides it). (2) A new migration adds `push` to every stored preference that has at least one channel (a type turned off stays off); `down()` removes it. While push is hidden the preferences form keeps the stored push choice. (3) One more personal route, `POST backend/profile/push/label/<id>`, with the same filters, renames a device. (4) `push_logout_attributes()` (Core helper) puts `data-component="core/push"` (logout mode) on the default theme's logout form; the browser remembers its own device hash in `localStorage` and asks only then. (5) `push: true` in the page configuration makes `core/pwa.js` keep the worker registered; `/sw.js` and the icons are served while the PWA **or** push is on (the manifest only with the PWA). (6) "Send a test" queues a high-urgency message (never sent inline). (7) Endpoints are not resolved at subscription time (no network in a web request): IP literals and local names are refused, and `OutboundClient` checks the resolved addresses on each delivery; the endpoint is re-checked against the hosts before each delivery. (8) A browser already subscribed by another account moves to the new user and its queued messages are dropped. (9) Deleted users' devices are removed when the queue meets them (users are soft-deleted by Shield; no foreign keys). (10) `Config\Push`: TTL 1 day, 5 attempts, a device removed after 10 failures in a row, 20 devices per user, batches of 100, queue rows kept 7 days; VAPID tokens valid 12 h; `generic` content sends the site name, "You have a new notification" and a link to the notifications page.
+- **Alternatives:** A) Push off by default per type (each user would tick every type after subscribing). B) Device labels fixed from the user agent.
+- **Status:** Accepted (proposal)
+
+## D-45-01 — Pages from sections: section types (`$sectionTypes`), tables, page layout and editor URL (decide)
+
+- **Where:** owner's requests of 2026-11-19 (pages with a banner, home pages like the references in `docs/design/`, no shortcodes because editors are not technical); `deploy/45-page-sections.md`; specification "Modules" › "Pages".
+- **Problem:** A page is one rich-text body inside a contained layout: no full-width banner, no structured blocks. Shortcodes typed into the text would be easy to break for non-technical editors.
+- **Proposal:** A Core registry of section types (`Modules\Core\Sections\SectionType`, keys `<module>.<name>`) declared by modules in a new manifest key `$sectionTypes`, each with a field schema validated on the server and a theme view. Pages get a layout field (`article` | `sections`); tables `page_sections` (page, position, type, options and non-translated values as JSON, hidden) and `page_section_translations` (section, locale, translated values as JSON); the editor at `backend/pages/<id>/sections` with the page's permissions (`pages-pages.edit` and its record rules); sections saved in the page's revisions. First types in the Pages module: `pages.hero`, `pages.links`, `pages.cards`, `pages.media_text`, `pages.cta`, `pages.text`. No shortcodes.
+- **Alternatives:** A) Shortcodes in the rich text with an editor button (flexible, fragile for non-technical editors). B) Only a page template "with banner" using the featured image (cheap, one banner per page).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: section types registered in the Core and declared by modules in `$sectionTypes`; page layout `article` | `sections`; tables `page_sections` and `page_section_translations`; editor at `backend/pages/<id>/sections` with the page's permissions; sections saved in the page revisions; no shortcodes. **Must change:** session 45, specification "Modules" › "Pages" and "The module contract" (the new manifest key).
+- **Applied in:** `docs/specification.md` ("Modules" › "Pages": pages built from sections), `deploy/45-page-sections.md`; the code is the session's.
+
+## D-45-02 — How session 45 applies D-45-01
+
+- **Where:** `deploy/45-page-sections.md` (field types, the editor, rendering, demo data); D-45-01.
+- **Problem:** D-45-01 fixes names, tables and URLs; several details of the build were open: the editor flow, how translated parts of composite fields are stored, how links are checked without depending on the Menus module, which images a section may use, the page's `<h1>`, and the demo's placeholder images.
+- **Proposal (built):** (1) Editor: one page per screen — the list (`backend/pages/<id>/sections`, numeric page id like the Menus item editor, the server checks `pages.edit` on the route and the CRUD resolver's record rules in the controller; another page's section or a trashed page answers 404), the gallery (`…/add`), the form of one section (`…/new/<type>`, `…/<section>`, saved to `…/save`; a validation error answers 422 with the form and the message) and POST routes for order (`order` JSON or `move` `<id>:up|down` without JavaScript), duplicate, hide, delete and layout. Every change records a page revision and an activity entry; the order is saved with "Save the order" (like the Menus tree editor). At most 60 sections per page. (2) Stored shape: each field splits its posted value into a non-translated part (`page_sections.data`) and a part per language (`page_section_translations.data`): an image stores key + decorative and its alt text per language; a link stores type + value and its label per language; a list stores its items' parts in both, aligned by position. Unknown fields and options are refused. (3) Links are checked in the Core (`SectionLinks`) with the rules of the Menus module (module link types from `$menuLinks`, GET routes without parameters, `https://` or internal paths; `http:` refused too) instead of calling the Menus module, which is optional. (4) Images: the Core's file picker on the public disk, folder `modules/<module>` and the public shared folders the editor may view; a key the section already had is kept; private files are never shown. (5) The page title is a visually hidden `<h1>`; section titles are `<h2>` (a section page may start with links or cards). (6) Background images are decorative `<img>` elements (no inline styles under the strict CSP). (7) The layout field is optional in a CRUD post (new pages are articles). (8) Icon fields: a text input (`bi-<name>`, checked against the vendored stylesheet) plus a searchable grid (`core/sections/icon-field`), ready for session 49 to move to `core/forms/icon-picker.js`. (9) Demo images are PNG illustrations drawn with GD on the public disk; `modules:demo Pages --remove` removes their rows but not the files (demo removal only deletes files under `writable/`).
+- **Alternatives:** A) The whole page's sections in one big form (one save; heavier forms and a harder no-JavaScript fallback). B) Links through the Menus module's services (a hard dependency on an optional module).
+- **Status:** Accepted (proposal)
+
+## D-46-01 — Embedded content: allowed hosts in Settings › Security, CSP `frame-src`, click to load (decide)
+
+- **Where:** `deploy/46-module-sections.md` (`pages.embed`, e.g. the school's 360° virtual tour, videos); the strict CSP (`docs/security.md`).
+- **Problem:** An iframe loads a third party's page inside ours: it needs a CSP `frame-src` exception and sends the visitor's IP and cookies to that third party.
+- **Proposal:** A setting in Settings › Security (proposal `Pages.embedHosts`, empty by default) lists the allowed hosts; only `https://` URLs on them are accepted; the CSP gets `frame-src` for exactly those origins through `ContentSecurity`; the iframe has a title, `loading="lazy"`, a minimal `sandbox` and `referrerpolicy`; **click to load** on by default (nothing is requested from the third party until the visitor clicks).
+- **Alternatives:** A) A fixed list in the code (YouTube no-cookie, Vimeo): simpler, but the virtual tour's host would need a code change. B) No click to load (the embed loads with the page).
+- **Status:** Decided
+- **Decision (2026-11-19):** «m'agrada la proposta, però es podria posar un avís que si s'intenta incrustar un contingut no permès per CSP que avisi que s'ha de retocar la configuració». As proposed (allowed hosts in Settings › Security, empty by default; only `https://` URLs on them; CSP `frame-src` for exactly those origins; click to load on by default), **plus a clear warning**: when an editor enters a URL whose host is not allowed, the section form refuses it with a message that names the host and explains that an administrator must add it in Settings › Security › allowed embed hosts (with a direct link to that setting for users who hold `settings.security`); a section that was valid but whose host was later removed from the list shows that same warning in the editor and the preview, and renders nothing (no broken iframe) on the public page. **Must change:** session 46 (scope and tests).
+- **Applied in:** `docs/specification.md` ("Pages"), `deploy/46-module-sections.md` (the warning for hosts that are not allowed); the code is the session's.
+
+## D-46-02 — Carousel: no automatic rotation by default (decide)
+
+- **Where:** `deploy/46-module-sections.md` (`pages.carousel`, like the banner of the school's current site).
+- **Problem:** Automatic rotation fails WCAG 2.2.2 unless it can be paused, and moves content away from people who read slowly or use screen readers.
+- **Proposal:** No rotation by default; an option to rotate (minimum interval 6 s) that always shows a pause button, stops on hover and focus, and never rotates with `prefers-reduced-motion`.
+- **Alternatives:** A) Rotation on by default (with the same pause button). B) No rotation option at all.
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: no rotation by default; an option to rotate (minimum 6 s) that always shows a pause button, stops on hover and focus and never rotates with `prefers-reduced-motion`. **Must change:** session 46 (already described).
+- **Applied in:** `docs/specification.md` ("Pages"), `deploy/46-module-sections.md`; the code is the session's.
+
+## D-46-03 — A page marked as the main news list: `/news` redirects to it (decide)
+
+- **Where:** `deploy/46-module-sections.md` (`news.list` in full-list mode); `docs/news.md`; the sitemap.
+- **Problem:** A page with the full news list (and its own banner) duplicates the module's `/news` page; links and search engines would see two lists.
+- **Proposal:** A News setting (proposal `News.listPage`, a page id, empty by default) marks a page as the main list: `/news` then answers a 301 redirect to it (with the language prefix), and the sitemap lists only that page. Category pages (`/news/category/<slug>`) keep working.
+- **Alternatives:** A) No redirect: both lists exist, the page sets a canonical link to itself. B) Remove the module's public list when a page shows it (breaks existing links).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Envia'l a la meva pàgina (recomanada)». As proposed: a News setting marks a page as the main news list; `/news` then answers a 301 redirect to it (with the language prefix) and the sitemap lists only that page; with no page chosen nothing changes; article and category pages keep their URLs. **Must change:** session 46 (already described), `docs/news.md`.
+- **Applied in:** `docs/specification.md` ("Pages"), `deploy/46-module-sections.md`; the code is the session's.
+
+## D-46-04 — How session 46 applies D-46-01 … D-46-03
+
+- **Where:** `deploy/46-module-sections.md`; D-46-01 … D-46-03; `docs/sections.md`, `docs/files.md`, `docs/security.md`.
+- **Problem:** The decisions fix the behaviour; several details were open: who sees a gallery of a private folder, the format of the allowed embed hosts, whether `frame-src` is site-wide or per page, how the Core lets a type refuse a value with a link and warn editors, how two lists on a page page independently, and how News finds the page chosen as its main list without depending on Pages.
+- **Proposal (built):** (1) **Galleries:** shared folders only (`shared/…`); the editor chooses only folders they may view (the form offers those, `check()` refuses others); a folder of the **public disk** is shown to everyone who may read the page (its files are public by nature), a folder of the **private disk** only to signed-in visitors with the folder ACL's `view` right, never to guests (the editor sees a notice); SVG is never shown. (2) **Embed hosts** are host names (`www.youtube-nocookie.com`, `*.example.com` for subdomains), validated with the existing rule `outbound_hosts`, in the group `security.embeds`; the address must be `https://` without credentials. (3) **CSP per page**: `frame-src` gets only the origins of the embeds a page shows, for that response (new `SectionType::cspSources()`, applied by `SectionRenderer`), instead of every allowed host on every page. (4) **Core hooks**: `SectionType::check()` (rules of a whole section; `SectionValidationException` can carry a link), `warnings()` (shown in the section list, the form and the preview; a section that renders nothing is left out with its `<section>`), new field `ChoicesField`, `SelectField::optionsFrom()`, `BooleanField::default()`, `ImageField::withoutDecorative()` (logos), `SectionQuery` (`page-<id>`, `q-<id>`) and the Core views `sections/pager` and `sections/heading`. (5) **Main news list:** `News.listPage` offers the pages through the link type `pages.page` (Core link registry) and `/news` redirects with a 301 only when that link resolves (published page); the sitemap already lists pages only. (6) The events sections show nothing while the public calendar is off. (7) The carousel's pause button is hidden under `prefers-reduced-motion` (it never rotates then). (8) Demo pages: "Notícies", "Sortides", "Agenda" and "Més seccions"; the embed of the demo stays hidden until its host is allowed.
+- **Alternatives:** A) `frame-src` for every allowed host on every page (simpler, wider). B) Galleries of private folders shown to every signed-in user (less precise than the ACL). C) A page id stored and resolved by News reading Pages' tables (a hard dependency).
+- **Status:** Accepted (proposal)
+
+## D-47-01 — Reusable blocks and theme zones: tables, the theme's `$zones`, URLs and permissions (decide)
+
+- **Where:** `deploy/47-reusable-blocks.md` (content shown on every page, e.g. partner logos or a notice); `docs/themes.md`.
+- **Problem:** Some content must appear on many or all pages and be edited once.
+- **Proposal:** Table `page_blocks` (name, status) and the section tables reused with an owner type (page or block); a section type `pages.block`; themes declare zones in a new `Theme.php` key `$zones` (default theme: `public.after_header`, `public.before_footer`); assignments (block, zone, visibility rule: all / home / selected pages / all except selected, order) in a table `page_block_zones`; screen `backend/pages/blocks` with a new resource `pages-blocks` (list, add, edit, delete; default grant like `pages-pages`); deleting a block in use asks for confirmation and removes its uses.
+- **Alternatives:** A) Blocks only as theme options (one fixed text area per zone, no sections). B) Reuse pages as blocks (a hidden page type).
+- **Status:** Decided
+- **Decision (2026-11-19):** «em sembla bé la proposta, però l'avís de finançament és un exemple, en cap cas hi ha d'haver res de finançament; es tracta de l'esquelet d'una pàgina web per a empresa i/o centre educatiu públic». As proposed (blocks as named lists of sections; inside pages through `pages.block` and in theme zones declared by `$zones` with visibility rules; tables `page_blocks` and `page_block_zones`; screen `backend/pages/blocks` with resource `pages-blocks`, default grants like `pages-pages`; deleting a block in use asks for confirmation and removes its uses). **The skeleton stays generic** (a website for a company and/or a public school): no funding notice or any institution-specific content in code, demo data or models; examples are neutral (a partner-logos strip, a contact or opening-hours strip, a notice). **Must change:** session 47 (demo data and models), and the descriptions of the visual references in sessions 45–47.
+- **Applied in:** `docs/specification.md` ("Pages": blocks, generic content), `deploy/45-page-sections.md`, `deploy/46-module-sections.md`, `deploy/47-reusable-blocks.md` (generic models and demo data), `docs/plan.md`; the code is the session's.
+
+## D-47-02 — How session 47 builds D-47-01: block tables, the `pages` prefix beside `pages-blocks`, page models, zones and footer columns
+
+- **Where:** `deploy/47-reusable-blocks.md`; D-47-01; `docs/sections.md`, `docs/themes.md`, `docs/menus.md`; `Modules\Core\Modules\ManifestValidator`.
+- **Problem:** D-47-01 fixes the names; several details were open: (1) reusing `page_sections`/`page_revisions` for blocks needs `page_id` nullable, and changing a column on SQLite rebuilds the table, where CodeIgniter 4.7's rebuild drops the `ON DELETE` actions of every foreign key (deleting a page with revisions then fails); (2) the Pages module keeps the permission prefix `pages` (D-20-01) while adding a second resource, which the manifest validator only allowed for single-resource modules; (3) where page models are declared and how their sections are checked; (4) how a zone knows the current page; (5) how "deleting asks for confirmation" works with kpcrudy's delete.
+- **Proposal (built):** (1) Blocks get **tables of their own with the same columns**: `page_block_sections`, `page_block_section_translations`, `page_block_revisions` (plus `page_blocks` and `page_block_zones` of D-47-01); the code is shared (`PageSections` takes an owner, `PageSections::forBlocks()`), so blocks have the same editor, types, translations and revisions. (2) A module with several resources may name **one** resource after the module itself (`pages` beside `pages-blocks`); any other prefix is still refused. (3) New manifest key **`$pageModels`** (and `Theme.php` `$pageModels`): classes extending `Modules\Core\Sections\PageModel` with keys `<module|theme>.<name>`, offered by `PageModelRegistry`; "New page from a model" (`backend/pages/models`, `pages.add`) creates a **draft** page and passes every section through its type's form (`SectionForm::validate()`), drops sections of types not offered, and stores placeholder images drawn by `PlaceholderImage` (PNG, public disk, `modules/pages`). (4) Zones are filled through the Core event **`themeZone`** (`ZoneContent`); the Pages renderer records the page shown (`CurrentPage`), other screens count as "another page" (`all` and `except` apply, `only` does not) and the home rule matches the home page or the site's root path. (5) The plain delete refuses a block in use (message pointing to the operation); the row operation **"Delete with its uses"** (`delete`, browser confirmation) removes its placements and the block sections of the pages that show it (a page revision each) and deletes the block. (6) Footer columns are built by the default theme from the `footer` menu (top-level items with children; others in a row below) with options `footerColumns` and `footerContact` (translated, lines separated by `|`).
+- **Alternatives:** A) Nullable `page_id` in the shared tables with raw SQL on SQLite (against "Forge / Query Builder only"). B) Refuse to delete a block in use (stricter than D-47-01's "confirm and remove"). C) Page models as JSON files instead of classes (no access to the site's languages or image drawing).
+- **Status:** Accepted (proposal)
+
+## D-48-01 — Contact module: names, URLs, settings and who reads the messages (decide)
+
+- **Where:** `deploy/48-contact.md`.
+- **Problem:** A new module adds public names and decides who may read visitors' messages (personal data).
+- **Proposal:** Module `Contact`; resources `contact-messages` (list, show, delete, extras `answer`, `archive`) and `contact-recipients` (crud); public page `contact` (with the language prefix; the path translated per language if `LocaleUrls` allows it), section type `contact.form`; settings `Contact.privacyPage`, `Contact.maxLinks` (2), `Contact.blockedWords`, `Contact.rateLimit` (3 per hour per IP and per email); default grants: admin all, and each recipient's users read only the messages addressed to them (record rule).
+- **Alternatives:** A) Messages only by email, nothing stored (no back office, harder to audit, mail delivery problems lose messages).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: module `Contact`; resources `contact-messages` (list, show, delete, extras `answer`, `archive`) and `contact-recipients` (crud); public page `contact` with the language prefix; section type `contact.form`; settings `Contact.privacyPage`, `Contact.maxLinks` (2), `Contact.blockedWords`, `Contact.rateLimit` (3 per hour per IP and per email); admin sees everything, each recipient's users only the messages addressed to them (record rule). **Must change:** session 48 (already described).
+- **Applied in:** `docs/specification.md` ("Modules" › "Contact"), `deploy/48-contact.md`; the code is the session's.
+
+## D-48-02 — Contact form: captcha policy, no third-party captcha, retention of messages (decide)
+
+- **Where:** `deploy/48-contact.md`; `CLAUDE.md` (no outbound HTTP on regular requests).
+- **Problem:** Public forms attract spam; third-party captchas (reCAPTCHA, hCaptcha, Turnstile) work well but share visitors' data and need a server call during the request; messages are personal data that should not be kept forever.
+- **Proposal:** Honeypot, signed time trap, rate limits and content rules always; the Auth module's local captcha **always** (simplest and predictable; a setting can switch to "only after N messages from the same IP or email"); no third-party captcha; messages deleted after **365 days** (setting, minimum 30) by a scheduled task.
+- **Alternatives:** A) Captcha only when suspicious (fewer obstacles for visitors, a little more spam). B) A third-party captcha as an option (a documented exception to the outbound rule). C) A shorter retention (e.g. 90 days).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: honeypot, signed time trap, rate limits and content rules always; the Auth module's local captcha always (a setting switches to "only when suspicious"); no third-party captcha; messages deleted after 365 days (setting, minimum 30) by a scheduled task. **Must change:** session 48 (already described).
+- **Applied in:** `docs/specification.md` ("Modules" › "Contact"), `deploy/48-contact.md`; the code is the session's.
+
+## D-48-03 — Contact module as built: `contact-messages.all`, extra settings, Reply-To in the mail queue (decide)
+
+- **Where:** `deploy/48-contact.md`; D-48-01, D-48-02; `modules/Contact`; `Modules\Core\Mail\MailQueue`.
+- **Problem:** D-48-01 fixed the resources and four settings, D-48-02 the policies. Building them
+  needed names and a Core change that were not fixed: (1) the record rule "admin all, each
+  recipient's users only theirs" needs a way to say who sees everything without naming a group in
+  code; (2) the captcha mode, the retention and the optional script rule need settings; (3) the
+  emails to a recipient's addresses must carry the visitor in `Reply-To`, which the Core's mail
+  queue could not do; (4) how a section restricts recipients so a forged POST cannot pick another.
+- **Proposal (built):** (1) a third extra operation **`contact-messages.all`** ("Read the messages
+  of every recipient", admin by default); without it a user with `contact-messages.list` sees only
+  the messages of the recipients whose **group** they belong to (a recipient has a group and/or up
+  to five addresses; its group's members holding `contact-messages.show` are notified; a recipient
+  with neither notifies the holders of `all`). (2) Settings **`Contact.captcha`**
+  (`always`|`suspicious`), **`Contact.retentionDays`** (365, 30–3650), **`Contact.latinScriptOnly`**
+  (off); the spam settings (`captcha`, `rateLimit`, `maxLinks`, `blockedWords`,
+  `latinScriptOnly`) in Settings › Security (group `security.contact`), `privacyPage` (an internal
+  path) and `retentionDays` in Settings › Contact. (3) Core: `MailQueue::push(..., ?string $replyTo)`
+  and column `mail_queue.reply_to` (migration `AddReplyToToMailQueue`); an invalid `Reply-To` (not
+  one address, or with control characters) means the email is not queued. (4) The form's signed
+  token (HMAC, key derived from the app key) carries the time, the recipients offered and the
+  return path; the server accepts only an active recipient of that list. "Suspicious" = the IP or
+  email sent a message or was refused within the hour (hashed cache counters), or a refusal in the
+  session. No IP stored with messages.
+- **Alternatives:** A) Who sees everything decided by a group name (e.g. `admin`) instead of a
+  permission (hard-codes a group). B) Recipients notified only by email, without groups (no record
+  rule possible). C) A `Contact.captchaAfter` number instead of the fixed "one message or refusal
+  within the hour".
+- **Status:** Applied (decided)
+- **Decision (2026-11-21):** «la idea era que segons l'assumpte del correu el destinatari sigui un/uns contacte/es concrets o un grup particular (secretaria, direcció) i com a extra els admins que també ho puguin gestionar. Per exemple contacte per expedició de títols, el secretari i la secretària principal; dubte horari d'informació general, tota secretaria; segons temàtica d'un selectable arriba a un/uns usuaris». Each option of the form's list is a **topic** (e.g. "Degree certificates", "General information") whose messages go to **one or several specific users and/or a group** chosen by the administrator (plus optional external addresses); those users and the group's members are notified and read only that topic's messages; administrators also manage every message (`contact-messages.all`, granted to admin). The rest of the proposal (settings names, `Reply-To` in the mail queue, signed recipients) as built. **Must change:** a recipient–user table and a multiple choice of users in the recipients' form, the record rule and the notification include those users, the form's list labelled as a topic, tests and docs.
+- **Applied in:** `modules/Contact` (migration `CreateContactRecipientUsers`, `Controllers/Recipients.php` `setRelationNN('users', …)`, `Services/Recipients.php` `readableBy()`/`userIds()`, `Services/ContactMessages.php`, language files "topic", demo topics, tests `ContactFormTest::testATopicReachesItsSpecificUsersAndItsGroup`, `MessagesTest::testATopicsUsersReadOnlyItsMessages`, `MessagesTest::testRecipientsGetSpecificUsers`), `docs/specification.md` ("Contact"), `docs/contact.md`, `docs/user-guide.md` (+ `ca`, `es`), `modules/Contact/CLAUDE.md`, `CHANGELOG.md`, `docs/progress.md`.
+
+## D-49-01 — Icons inside rich text: the sanitiser keeps `<i class="bi bi-<name>" aria-hidden="true">` (decide)
+
+- **Where:** owner's request of 2026-11-19 ("a button in the editor to insert Bootstrap icons"); `deploy/49-icon-picker.md`; `Modules\Core\Security\HtmlSanitizer`; specification "Rich text" and "Security baseline".
+- **Problem:** The rich-text editor (Quill) drops elements it does not know, and HTMLPurifier keeps `<i>` but removes its classes (only the alignment classes are allowed). An icon needs `<i class="bi bi-egg">`, which widens what stored rich text may contain: a security-relevant change of the sanitiser.
+- **Proposal:** An "Insert an icon" button inserts an inline embed rendered as `<i class="bi bi-<name>" aria-hidden="true"></i>`. The sanitiser keeps on `<i>` only the class `bi` plus one `bi-<name>` whose name is in the vendored icon list (a custom attribute definition), and `aria-hidden="true"`; every other class, `style` and handler is still removed, and no other element gains classes. Icons are decorative; the help text asks to write their meaning in words.
+- **Alternatives:** A) No icons in rich text (only in icon fields). B) Icons as images (`<img>` of an SVG on the site): no sanitiser change for classes, but SVG files and their colour/size do not follow the text.
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: "Insert an icon" in the editor; on `<i>` the sanitiser keeps only `bi` plus one `bi-<name>` from the icon list and `aria-hidden="true"`. **Must change:** session 49 (as written), `HtmlSanitizer`, `docs/security.md`, specification "Rich text" (updated: "Icons inside rich text").
+
+## D-49-02 — Icon fields marked with `data-icon-picker`, icon list generated by `assets:publish` (decide)
+
+- **Where:** `deploy/49-icon-picker.md`; `docs/frontend.md`; Menus' forms; the section icon field planned in session 45.
+- **Problem:** The picker must reach every icon field (Menus, sections, kpcrudy forms, future modules) without each view writing its own code, and it needs the list of the ~2,000 icon names without any network request.
+- **Proposal:** An input gets the picker with the attribute `data-icon-picker` (a public convention for modules; a kpcrudy field through its `attributes` option); the Core's `core/forms/icon-picker.js` enhances it like the password button (session 38), and the field still works as text. The list of icon names is generated from the vendored `bootstrap-icons` CSS when assets are published (a JSON file in the Core's published assets, checked by `assets:publish --check`). If session 45 already built a picker for the section icon field, it becomes this Core component (one implementation).
+- **Alternatives:** A) Enhance every input named `icon` automatically (no attribute; may catch fields that are not Bootstrap Icons). B) A hand-maintained list in the repository (goes stale when Bootstrap Icons is updated).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: `data-icon-picker` on the input (kpcrudy through `attributes`), the icon list generated from the vendored font at publish time and checked by `assets:publish --check`. **Must change:** session 49 (as written), `docs/frontend.md`, `CLAUDE.md` (icon fields convention), specification "Front-end assets and JavaScript" (updated: "Icon fields").
+
+## D-50-01 — Site search: contract, tables, URLs and settings (decide)
+
+- **Where:** owner's request of 2026-11-19 (a chat assistant without external services built on the metadata of pages and news); `deploy/50-site-search.md`; specification "Cross-module services (Core)".
+- **Problem:** There is no site search. A search shared by every module needs public names (manifest key, service, command, URL, setting, tables) and must never show content the visitor may not see.
+- **Proposal:** Contract in `modules/Core/Search/`: manifest key `$searchSources` (`<module>.<key>`), `service('search')->index(SearchDocument)` / `remove()` on every change, a source's `reindex()` and `php spark search:reindex [<Module>]`; tables `search_documents` and `search_terms` (own index, same on MariaDB and SQLite; terms per language with accents folded and stop words removed; weights title ×5, meta title/keywords ×3, summary/meta description ×2, body ×1); each document stores its audience and publish window and the query filters by them. Public results page `search` (`/cerca`-style translated paths only through `LocaleUrls`; `?q=`), theme option `showSearch` (on), setting `Core.searchRateLimit` (30 per minute per IP). No public API endpoint for now.
+- **Alternatives:** A) The database's own full-text search (MariaDB `FULLTEXT`, SQLite FTS5): better ranking, two implementations to keep equal. B) A search engine (Meilisearch, Elasticsearch): best results, but an extra service to run.
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: own index (`search_documents`, `search_terms`), `$searchSources`, `service('search')`, `search:reindex`, public page `search` (`?q=`), theme option `showSearch`, `Core.searchRateLimit` (30/min per IP), visibility filtered in the query, no public API for now. **Must change:** session 50 (as written), specification "Cross-module services (Core)" (updated: "Site search").
+
+## D-50-02 — Site search: how it was built (ranking, languages, links, noindex, rate limit subject)
+
+- **Where:** session 50 (`deploy/50-site-search.md`), D-50-01; `docs/search.md`.
+- **Problem:** D-50-01 fixes the names, tables and rules; several details were left to the build.
+- **Proposal (applied):**
+  1. **Ranking:** documents matching more of the query's terms first, then the score (an exact term counts its whole weight, a prefix of 3+ characters 60 %; a word counts up to three times per field), then the date. Results matching only some terms are shown after the complete ones (no hard AND), which also suits the chat assistant. The ranking runs in PHP on at most 5,000 matching rows (the same on MariaDB and SQLite, bound parameters only).
+  2. **Languages:** each source indexes one document per **site language** with the content's fallback (`ContentTranslations::pick()`), so a page written only in Catalan is found from the Spanish site too (as it is shown). Stop words for `ca`, `es`, `en`; a light suffix rule in those languages (final `s`, then `a`/`e`/`o`).
+  3. **Links:** documents store the path without the language prefix (or a stored back-office link, D-40-02); the results page adds the document's language. Private and group **news** link to the reader of the back office (`backend/news/read/<id>`, D-00-42), as the public site only shows public posts.
+  4. **Pages marked `noindex`** are not indexed (an author hides them from search engines; the site search follows). Drafts, trash, unreachable subpages are not indexed either.
+  5. **Rate limit subject:** `ratelimit:search` counts per IP for guests and per user when signed in (the Core's `RateLimit` filter, as every other limit); the setting is `Core.searchRateLimit`.
+  6. **Uninstall:** a module's documents are deleted by the Core's `Uninstaller` (`SearchIndex::purgeModule()`, next to the calendar's purge), also with `--keep-data` (derived data); `modules:demo` rebuilds the module's sources after loading or removing demo data; `modules:sync` rebuilds every source (step 11).
+  7. **Contact link:** "no results" links to the route named `contact` when its module is enabled (no module named in the Core).
+- **Alternatives:** a hard AND (fewer, more precise results; nothing for a partly mistyped query); only the translations that exist (a Spanish visitor would not find Catalan-only pages); per-IP counting for signed-in users too.
+- **Status:** Accepted (proposal)
+
+## D-51-01 — Chat assistant: module name, resources, URLs and settings (decide)
+
+- **Where:** owner's request of 2026-11-19 (the classic chat icon without an external service, option A); `deploy/51-chat-assistant.md`.
+- **Problem:** A new module adds public names (module, permissions, URLs, settings) and a public endpoint that anyone can call.
+- **Proposal:** Module `Assistant`, disabled by default; resource `assistant-faqs` (crud: list, add, edit, delete, export) with translations, keywords, links and audience; public endpoint `POST assistant/ask` (CSRF, `ratelimit` 20 per minute per IP and session, 300 characters at most) answering JSON; settings `Assistant.enabled` (bubble on the public site, off), `Assistant.greeting` (translated), `Assistant.results` (3), `Assistant.sources` (index sources it may use), `Assistant.offerContact` (on when the Contact module is enabled); default grants: admin all, editor list/add/edit. FAQs are also a search source (`assistant.faqs`).
+- **Alternatives:** A) FAQs inside the Pages module (no new module; mixes two purposes). B) The bubble only for signed-in users (smaller abuse surface; visitors get no help).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: module `Assistant` (disabled by default), resource `assistant-faqs`, `POST assistant/ask` (CSRF, 20/min per IP and session, 300 characters), settings `Assistant.enabled` (off), `greeting`, `results` (3), `sources`, `offerContact`; admin all, editor list/add/edit; FAQs are the search source `assistant.faqs`. **Must change:** session 51 (as written), specification "Assistant" (updated).
+
+## D-51-02 — Chat assistant: what is stored (unanswered questions) and for how long (decide)
+
+- **Where:** `deploy/51-chat-assistant.md`; GDPR (questions may contain personal data).
+- **Problem:** Knowing which questions got no answer helps editors write FAQs, but storing what visitors type is personal data.
+- **Proposal:** Store nothing by default. A setting `Assistant.logUnanswered` (off) keeps only unanswered questions, without IP, user, session or time finer than the day, with emails and numbers of 6+ digits masked; deleted after 90 days (setting, minimum 7) by a scheduled task; shown to holders of `assistant-faqs.add` with "create an FAQ from this question". The bubble's privacy text says so when it is on.
+- **Alternatives:** A) Never store questions. B) Store whole conversations (more useful, much more personal data).
+- **Status:** Decided
+- **Decision (2026-11-19):** «Proposta (recomanada)». As proposed: nothing stored by default; `Assistant.logUnanswered` (off) keeps only anonymised unanswered questions, deleted after 90 days (minimum 7). **Must change:** session 51 (as written), specification "Assistant" (updated).
+
+## D-51-03 — Chat assistant: the public FAQ page `faq` and the Core event `themeFloating` (decide)
+
+- **Where:** session 51 (`deploy/51-chat-assistant.md`), D-51-01 ("FAQs are also a search source"); `docs/assistant.md`, `docs/themes.md`.
+- **Problem:** (1) A site search result needs an address, but D-51-01 gives the FAQs no public page; (2) the bubble must appear on every public page without the Core or the theme naming the module, and zones (D-47-01) are places for Pages blocks, not for a floating widget.
+- **Proposal (built, can still change):** (1) a public page **`faq`** (with the language prefix, `/es/faq`; `Controllers/PublicFaq.php`, route name `assistant-faq`) listing the FAQs the visitor may read, each with an anchor `#faq-<id>`; FAQ search results link there; it does not depend on `Assistant.enabled`. (2) A Core event **`themeFloating`** (a `ZoneContent` named `public.floating`) printed by the public layout with **`theme_floating()`** before the cookie notice; the Assistant module's `Config/Events.php` adds the bubble. Changing the URL is one route and one line of `FaqSearch` (then `php spark search:reindex Assistant`).
+- **Alternatives:** A) `assistant/faq` (under the module's prefix, less friendly). B) No FAQ page: FAQs without a link left out of the site search. C) A theme partial `assistant` that names the module (simpler, but the theme would know a module). D) A zone `public.floating` declared by the theme (Pages would offer it to blocks).
+- **Status:** Applied (decided)
+- **Decision (2026-11-22):** «Pàgina triada (recomanada)» — the owner wanted the address translatable per language without changing code (as WordPress pages or Drupal path aliases do). The FAQ list becomes a **section type `assistant.faqs`** that editors place on any page of the Pages module, whose slug per language they edit in the back office; a setting **`Assistant.faqPage`** (a page chosen from a list, like `News.listPage`, D-46-03) is where the site search and the bubble link FAQs (`<page path in each language>#faq-<id>`); **`faq`** stays as the fallback page and answers 301 to the chosen page when there is one. The Core event **`themeFloating`** (`theme_floating()`) for the bubble, as proposed. **Must change:** the Assistant module (section type, setting, `FaqSearch` URLs, `PublicFaq` redirect, reindex when the setting or the page's slugs change), its docs and tests; the demo can place the section on a page.
+- **Applied in:** `modules/Assistant` (`Sections/FaqListSection.php`, `Views/sections/faqs.php`, `Views/partials/list.php`, `Services/FaqPage.php`, `Settings/FaqPageOptions.php`, `Controllers/PublicFaq.php`, manifest `$sectionTypes` and `faqPage`, texts, `Tests/AssistantModuleTest.php`), `docs/assistant.md`, `docs/specification.md` ("Assistant"), `CHANGELOG.md`. How: the search documents keep the address `faq#faq-<id>` and `faq` redirects to the chosen page (the browser keeps the anchor), so a change of the setting or of the page's slugs needs no reindex.
+
+## D-51-04 — Chat assistant: how it was built (matching threshold, links, rate limit, bubble, unanswered questions)
+
+- **Where:** session 51, D-51-01, D-51-02; `docs/assistant.md`.
+- **Problem:** D-51-01/02 fix names, URLs and settings; the details were left to the build.
+- **Proposal (applied):**
+  1. **Matching:** an FAQ answers when it matches at least 60 % of the question's terms and they weigh on average 1.5 or more (question ×5, keywords ×3, answer ×1): a word only in an answer never picks an FAQ. Otherwise search results (`Assistant.sources`, empty = every source but the FAQs), otherwise "not found"; the contact form offered last with results and not found. The Core's `SearchHit` gained `$matched`.
+  2. **Links:** one optional link per FAQ, an internal path or an `https://` address checked like menu items' URLs (`SectionLinks::checkUrl()`), with a label per language; no page/link-type picker (kpcrudy has no dependent field; a page's path can be typed).
+  3. **Rate limit:** 20 per minute per IP address **and** per session (the session id hashed), with the Core's `RateLimiter` in the controller (no setting, as decided); a plain form post without JavaScript is redirected to the search results.
+  4. **Bubble:** hidden until its component mounts (no JavaScript, no bubble); suggestions = the first four FAQs the visitor may read, hidden after the first question; the panel is a non-modal dialog; it moves above the cookie notice; the open state in `sessionStorage`.
+  5. **Unanswered questions:** emails → `[email]`, numbers of 6+ digits (with spaces, dots, dashes) → `[######]`, the same question on the same day counted (`times`); "Create an FAQ" makes an **inactive** FAQ (question in its language and the default one) and forgets the question; the purge task runs even when logging is off; both actions are logged.
+  6. **Demo:** `AssistantDemoSeeder` adds five FAQs (one for signed-in users) but does not turn the bubble on (a setting, not demo data).
+- **Alternatives:** a hard AND (fewer answers); per-IP only; a link-type picker built for this module; showing the bubble without JavaScript as a link to the search.
+- **Status:** Accepted (proposal)
+
+## D-52-01 — The tutorial module is renamed from `Tasks` to `Tutorial` (decide)
+
+- **Where:** owner's request of 2026-11-19 (after session 39); `deploy/52-tutorial-module.md`; session 32 (D-00-31, the tutorial module).
+- **Problem:** The tutorial module is called `Tasks`: it can be confused with the Core's scheduled tasks (`Tasks/` folders, `TaskInterface`, `schedule:run`; the module even has `modules/Tasks/Tasks/`) and it takes the name, permissions (`tasks-*`), URLs (`backend/tasks/…`, `api/v1/tasks/…`) and tables (`tasks`, `task_*`) a real tasks module may need later. Renaming changes public conventions (module name, permissions, URLs, settings).
+- **Proposal:** Module `Tutorial` (namespace `Modules\Tutorial`, disabled by default, version 1.0.0), visible name "Mòdul tutorial" / "Módulo tutorial" / "Tutorial module"; the example inside stays a to-do list: resources `tasks`, `projects`, `board`, `requests` → permissions `tutorial-tasks.*`, `tutorial-projects.*`, `tutorial-board.*`, `tutorial-requests.*`; URLs `backend/tutorial/…`, public `tutorial` and `tutorial/request`, API `api/v1/tutorial/…`; settings `Tutorial.*`; assets `tutorial/…`; calendars, widgets, notifications and scheduled tasks `tutorial.*`; tables `tutorial_*` (new migrations of the new module; the old released ones leave with the old module). Installations that enabled it run `php spark modules:uninstall Tasks` before updating (release notes, `docs/updates.md`, and a hint from `modules:sync` for the missing module); its data is not migrated. Last in the queue (session 52).
+- **Alternatives:** A) `TutorialTasks` (longer; keeps "tasks" in the name). B) `Demo` (clashes with the demo data commands and seeders). C) Keep `Tasks` and rename later if a real module is needed (more installations to migrate by then).
+- **Status:** Applied (decided)
+- **Decision (2026-11-19):** The owner chose the name `Tutorial` and to put the session at the end of the queue. **Must change:** session 52 (as written); the specification's tutorial module section and every mention (updated by session 52).
+- **Applied in:** session 52: `modules/Tutorial`, `themes/tutorial-demo`, `Modules\Core\Modules\RenamedModules`, `docs/tutorial-module.md`, `docs/tutorials/`, `docs/specification.md`, `docs/updates.md`, `CHANGELOG.md`, `CLAUDE.md`, CI and e2e.
+
+## D-52-02 — Tutorial module rename: how it was built (child theme, tutorial 13's migration, scratch module `Tutorial2`, renamed-module hint, history kept)
+
+- **Where:** session 52, D-52-01; `docs/tutorial-module.md`, `docs/tutorials/13-releasing-a-version.md`, `docs/updates.md`.
+- **Problem:** D-52-01 fixes the module's public names; some pieces around it were not named.
+- **Proposal (applied):**
+  1. **Child theme:** the tutorial 9 theme follows the module: `themes/tasks-demo` → `themes/tutorial-demo` (`Themes\TutorialDemo\Theme`, "Tutorial Demo", language files `ThemeTutorialDemo`, override `Views/overrides/Tutorial/public/index.php`). A site that had selected `tasks-demo` chooses a theme again (release notes).
+  2. **Tutorial 13 ("Releasing a version"):** the module restarts at 1.0.0 with `tutorial_tasks.started_at` in its table migration (as D-52-01 asks), so the tutorial now walks a 1.0.0 → 1.1.0 release; its migration is kept finished and tested in `docs/tutorials/files/AddStartedAtToTutorialTasks.php` (analysed by PHPStan, formatted by php-cs-fixer; `testTheVersionMigrationAddsStartedAtFillsItAndGoesBack` runs it against the real table).
+  3. **Scratch module of tutorials 1, 11 and 15:** `Tasks2` → `Tutorial2` (`docs/tutorials/files/tutorial2.definition.json`): it was `Tasks2` only because `Tasks` was taken, and the session's check `modules/Tasks…` matches it.
+  4. **Inside names:** class and file names that name the to-do example stay (`Controllers/Tasks.php`, `Api/Tasks.php`, `PublicTasks`, `TaskRepository`, `TaskAssigned`…, the scheduled tasks folder `Tasks/`); seeders, test bases and language files take the module name (`TutorialDemoSeeder`, `TutorialSeeder`, `TutorialTestCase`, `TutorialFixtures`, `TutorialModuleTest`, `TutorialApiTest`, `Language/*/Tutorial.php`); CSS classes, ids and the stylesheet follow the asset owner (`tutorial-*`, `Assets/css/tutorial.css`); the mask contexts of ids are the new table names. New migrations dated 2026-11-22.
+  5. **Renamed-module hint:** a small Core map `Modules\Core\Modules\RenamedModules` (`Tasks` → `Tutorial`) used by `SyncReport::lines()` (so `modules:sync` and `app:update`, which runs it) and by the Modules screen next to "Its folder no longer exists."; text `Core.sync.renamed` (ca/es/en). `modules:uninstall Tasks` works without the folder (tables stay unless the old folder is put back first). No automatic data migration.
+  6. **History kept:** `deploy/*.md` (session prompts, never edited), released entries of `CHANGELOG.md` (`[1.0.0]`), `deploy-status/`, older entries here and in `docs/progress.md`, and the minisign test vectors (`modules/Devtools/Tests/Fixtures/minisign`, trusted comment `Tasks 1.0.0`, an arbitrary string inside a signature). The session's `rg` check therefore still lists `deploy/` and one released `CHANGELOG.md` line. `docs/plan.md` gets "renamed `Tutorial` in session 52" notes. Generic examples of slug conversion in the Core's tests and docblocks use `TutorialDemo`.
+- **Alternatives:** A) Keep `tasks-demo` (a theme named after a module that no longer exists). B) Keep a version migration in the module (against D-52-01's "final schema"). C) Rewrite history files (against `CLAUDE.md`).
+- **Status:** Accepted (proposal)
+
+## D-53-01 — System information and log viewer: place, permissions, URLs; logs read only (decide)
+
+- **Where:** owner's request of 2026-11-22; `deploy/53-system-tools.md`.
+- **Problem:** A web version of `php spark about` and a log viewer are useful in production for support, so they cannot live in Devtools (development only); they add permissions, URLs and menu entries (public conventions) and the log viewer shows data that may be sensitive.
+- **Proposal:** Both in the Core (they share the report with the Core's `about` command), in Settings › System (`group.system`). Core resource `system` with permissions `system.info` (System information, `backend/system`; superadmin and admin by default) and `system.logs` (Error logs, `backend/system/logs`; granted to nobody, so only superadmins; `reauth` filter). The log viewer is read only: no download, no delete; values that look like secrets are masked. Raw `phpinfo()` only in Devtools. No public health URL.
+- **Alternatives:** A) In the Settings module beside Actions (the report would be split from `about`). B) A new `System` module. C) Log viewer with download and/or delete of old files.
+- **Status:** Applied (decided)
+- **Decision (2026-11-22):** «Proposta (recomanada)» for the place, permissions and URLs; logs read only. The owner does not want a public health URL. **Must change:** session 53 (as written); the specification (Settings / System) by session 53.
+- **Applied in:** session 53: `modules/Core/System/*`, `Controllers/System.php`, `Controllers/SystemLogs.php`, `Commands/About.php` (`--plain`), the Core manifest (resource `system`, menu, admin grant), routes, views `system/*`, `modules/Backup/Services/BackupSystemReport.php`, Devtools › PHP info, `docs/system.md`, `docs/specification.md`, `docs/security.md`, `docs/permissions.md`, `docs/menus.md`, `CHANGELOG.md`; tests `SystemInfoTest`, `SystemLogsTest`.
+
+## D-53-02 — The PHP extensions of System information come from composer.json
+
+- **Where:** session 53 scope ("the list the installer checks; reuse it, do not copy it").
+- **Problem:** The installer does not check PHP extensions: the only list is `composer.json` (`require` `ext-*`, `suggest` `ext-*`), which Composer checks at install time.
+- **Proposal:** `Modules\Core\System\PhpRequirements` reads `composer.json`: `require` extensions are required (missing = error), `suggest` extensions recommended (missing = warning). One list, never copied.
+- **Alternatives:** A) A constant list in the Core (would drift from `composer.json`). B) Add an extensions check to the installer first (out of scope).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/System/PhpRequirements.php`, `SystemReport::php()`, `docs/system.md`.
+
+## D-53-03 — "Cron not running" means an active scheduled task overdue by more than an hour
+
+- **Where:** session 53 scope ("warning if the cron has not run for more than an hour while scheduled tasks are enabled").
+- **Problem:** `schedule:run` leaves no trace when nothing is due, so "the last run" is only the last run of a task: with only daily tasks it is normally many hours old although the cron works.
+- **Proposal:** Show the last run of a task by the cron or the poor man's cron (`task_runs`, source `cron`/`web`) and warn when an active task's `next_run_at` is more than 60 minutes in the past (or no run exists while a task is due): that only happens when the cron is not running. No new table or heartbeat.
+- **Alternatives:** A) A heartbeat setting written by every `schedule:run` (a write every minute). B) Warn when the last run is older than an hour (false warnings with daily tasks).
+- **Status:** Accepted (proposal)
+- **Applied in:** `SystemReport::jobs()`, `SystemInfoTest::testWarnings`, `testNoCronWarningWhenTasksAreOnTime`.
+
+## D-53-04 — Log viewer: rate limit, paging and logging
+
+- **Where:** session 53 scope (log viewer "a rate limit", "paginated", "each opening logged").
+- **Problem:** No rate limit is named; page numbers cannot be computed without reading the whole file; logging every page would flood the activity log.
+- **Proposal:** The existing `widgets` limit (120 a minute per user) on the viewer's routes; pages read backwards from a byte offset (`?before=`, at most 256 KB and 50 entries, "Older entries" / "Newest entries" links); only the first page of a file is logged (`system_log_opened`), not "older" pages. The text filter compares the masked text.
+- **Alternatives:** A) A new `logs` limit (a new setting). B) Page numbers (whole-file scans).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Core/Config/Routes.php`, `modules/Core/System/LogFiles.php`, `Controllers/SystemLogs.php`, `docs/system.md`.
+
+## D-53-05 — Devtools mail previews: security e-mails and previewData() defaults
+
+- **Where:** session 53 scope ("every `SecurityMailer` e-mail", "`previewData()` … with a sensible default from the type's own parameters").
+- **Problem:** No list of security e-mails exists (views are passed to `SecurityMailer::send()` from several modules), and notification types take an untyped `$data` array.
+- **Proposal:** Security e-mails = the `Modules\<Name>\Views\emails\…` names written in the non-test PHP files of an enabled module that call `SecurityMailer` (or Auth's `sendLink()`), rendered with generic sample values (code, minutes, IP, device, date, URLs). `previewData()` defaults to every `$this->data['<key>']` the type's source reads, with a value guessed from the key; every bundled type overrides it.
+- **Alternatives:** A) A registry of security e-mails in Auth (the Api module's e-mail would make Auth know Api). B) Every `Views/emails/*.php` (other modules' e-mails need their own data).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Devtools/Mail/MailPreviews.php`, `NotificationType::previewData()`, the bundled types, `docs/devtools.md`, `docs/notifications.md`.
+
+## D-54-01 — Images: dated folders, 1920 px limit, original discarded, variants on upload (decide)
+
+- **Where:** owner's request of 2026-11-22; `deploy/54-image-optimisation.md`; `docs/storage.md` (D-13-01 … D-13-05).
+- **Problem:** Module uploads all go to one folder per module (`public/uploads/modules/news/`…), which becomes unmanageable with thousands of files; images are re-encoded but never resized (only a 40-megapixel safety limit), and public views serve the full image, so a 5 MB phone photo is downloaded where it is shown at 100×100 px.
+- **Proposal:** A) The Storage service adds `YYYY/MM/` under module folders (not under the Files module's user folders; `Config\Storage::$datedFolders`, existing files keep their paths). B) Every image is scaled down on upload to at most 1920 px on its longest side (setting `Core.imageMaxDimension`; fields may only narrow it); the original is discarded. C) Public images get WebP variants at 400, 800 and 1600 px generated on upload (never on demand by URL), recorded in `stored_file_variants` and printed with `srcset` by a Core helper `ui_image()`, also for site images inside rich text. D) `php spark storage:optimize` and a weekly Core scheduled task (enabled by default, bounded batches) shrink existing images and create their variants; System information shows the storage use and warns when images wait to be optimised and the task is disabled or not running.
+- **Alternatives:** limit 2560 px; keep a private original; generate variants on demand (refused: a visitor could make the server compute images); resize in the browser only (the server must enforce it anyway).
+- **Status:** Decided
+- **Decision (2026-11-22):** A + B + C + D as proposed, limit 1920 px, original discarded. **Must change:** session 54 (as written); the specification (storage/uploads) and `CLAUDE.md` (stored images through `ui_image()`) by session 54.
+
+## D-54-02 — How the image optimisation was built
+
+- **Where:** session 54 (`deploy/54-image-optimisation.md`), `docs/storage.md`.
+- **Problem:** the session leaves several details open: how the Storage service tells module folders from user folders, where a failed optimisation is remembered, which variant is the `src`, where `Core.imageMaxDimension` lives, what "the task is disabled" means, and how backups and uninstalls treat variants.
+- **Proposal (applied):** (1) a folder is a module folder when its path starts with `modules/<module>` (`Storage::isModuleFolder()`; `store(…, dated:)` overrides it), so the Core does not depend on the Files module's `Spaces`; `Storage::baseFolder()` strips trailing digit-only segments of module paths. (2) Two columns on `stored_files` in a second migration: `reencoded` (0 for `reencode: false`, never resized) and `optimize_failed_at`/`optimize_error` (skipped by later runs, listed in System information, `--retry-failed` clears them). (3) `ui_image()` puts the widest variant in `src` (browsers without `srcset` get a reasonable size) and the full file last in `srcset`; in rich text `src` keeps the file's URL so cleaning again is stable and the editor keeps the file. (4) `Core.imageMaxDimension` sits in Settings › Security › Uploads with the other upload rules (group `security.uploads`, minimum 320). (5) "Disabled" = the task's `scheduled_tasks` row missing or inactive; "not run for two weeks" counts from its last run, or from when it was declared if it never ran. (6) Backups copy whole disks and the database, so variants are backed up and restored with the files; no regeneration is needed. (7) The uninstaller never deleted a module's stored files, so nothing changes there. (8) Avatars are capped at 400 px and News covers/banners at 1600 px.
+- **Alternatives:** a marker file per failed image; `src` = the 800 px variant; the setting in Settings › System.
+- **Status:** Accepted (proposal)
+
+## D-55-01 — Unused files: references declared by modules, command and admin screen (decide)
+
+- **Where:** owner's request of 2026-11-23 (after session 54); `deploy/55-unused-files.md`; `docs/storage.md`.
+- **Problem:** deleting a news post, a page or a section never deletes the files it used (covers, featured and section images, images in rich text, attachments): content keeps only a file key or URL, one file may be used in several places and revisions keep old references, so the Core cannot know what is safe to delete. Module folders (`modules/<module>/…`) keep growing with files nobody uses, and the file manager does not show them. The owner wants a command and a screen for administrators.
+- **Proposal:** (1) **Contract:** a new manifest key `$fileReferences` listing `Modules\Core\Storage\FileReferenceProvider` classes (the module folders a provider answers for, and every file key/id/site URL it uses, including the trash, revisions, drafts, settings and images in rich text); folders without a provider are "not checked" and never listed. (2) **Scope:** only the module spaces (`modules/<module>/…`, both disks); personal and shared folders stay with the Files module and its trash. (3) **Grace period:** setting `Core.unusedFilesGraceDays` (default 30, minimum 7), Settings › System or Security › Uploads. (4) **Command** `php spark storage:unused [--module] [--older-than] [--delete] [--yes] [--limit]`. (5) **Screen** Settings › System › Unused files at `backend/system/unused-files` (route `system-unused-files`), permission `system.files` (a new extra of the Core resource `system`), granted to **admin** by default (superadmins always), deleting behind `reauth`, a confirmation, a re-check of every file and one activity entry per run; a row "Unused files" in System information. (6) **No automatic deletion** (no scheduled task deletes files).
+- **Alternatives:** A) an event (`fileReferences`) instead of a manifest key (less visible in the module checklist and `permissions:check`-style validation); B) permission only for superadmins (no default grant); C) a scheduled task that deletes unused files after 90 days (convenient, but a missed reference would lose files without anyone looking); D) also scan personal and shared folders (they already have the Files trash and an owner).
+- **Status:** Applied (decided)
+- **Decision (2026-11-23):** «1 amb tasca programada dels arxius més vells de 90 dies però desactivada per defecte». The proposal (1)–(5) as written, **plus** a Core scheduled task that deletes unused files older than **90 days**, **off by default**: it is declared in the Core manifest but does nothing until an administrator turns it on with the setting `Core.unusedFilesAutoDelete` (bool, default off; group `security.uploads` in Settings › Security, so turning it on needs `settings.security` and re-authentication and is logged); the age is `Core.unusedFilesAutoDeleteDays` (default 90, never below the grace period). It uses the same Core class and safety rules as the command and the screen (references of every provider, "not checked" folders untouched, a failing provider aborts the run, re-check before deleting), processes a bounded batch per run and writes one activity entry per run. **Must change:** `deploy/55-unused-files.md` (scope D, tests, docs), the specification (storage) by session 55.
+- **Applied in:** `deploy/55-unused-files.md`, `docs/plan.md`, `deploy/README.md`, `docs/specification.md`
+
+## D-55-02 — How unused files are found and deleted
+
+- **Where:** session 55 (`deploy/55-unused-files.md`), `docs/storage.md` "Unused files".
+- **Problem:** the session leaves open how references are normalised (keys, ids, URLs, rich text, JSON), what a disabled module's references mean for other folders, which folders a provider covers, how the e2e tests get a file past the grace period without weakening production, and how the command reads its options.
+- **Proposal (applied):** (1) Providers may yield whole texts; the Core finds in them every 32-hex token and every path under a public disk's URL prefix (`RichTextFiles::references()`, JSON-escaped `\/` too), and a stored file is used when its id, its key, the hex of its random name (variants share it) or its path or a variant's path matches. Over-matching only keeps files. `TableReferences` reads whole tables in batches with the Query Builder, so soft-deleted rows (the trash) count. (2) The references of **every** declared provider count, those of disabled modules too (a disabled module may link to another module's images); only the folders of enabled modules are checked, and a folder declared by a disabled module is never checked even if an enabled one declares it too. A missing provider class, a provider that throws or a folder outside `modules/<module>[/<sub>]` (or with a date segment) aborts the scan. (3) A provider covers exactly the folders it declares (`Storage::baseFolder()` equality): `modules/news/attachments` is not covered by `modules/news`. (4) Modules with no folder of their own still declare a provider to protect what they link to: Core (every setting and theme option), Events, Assistant, Menus, Files (every `files` row). (5) The grace period can be lowered only by `Config\Storage::$unusedFilesTestGraceDays` (`.env` `storage.unusedFilesTestGraceDays`), ignored in production, for the e2e tests. (6) The last scan is cached one hour (screen, System information); Scan now, Refresh and every deletion drop it. (7) "Delete all listed" deletes the files of a fresh scan with the module filter, at most 1,000 per request. (8) `storage:unused` accepts `--option=value` and `--option value` (CodeIgniter's parser keeps `name=value` as an option name). (9) The automatic deletion task runs Sundays 04:23 and returns a failure when a provider fails (the Core's failing-task notification then reports it).
+- **Alternatives:** parse each column's own format (HTML `<img>`, section JSON fields): more precise but misses references in places a parser does not know; ignore disabled modules' references (could delete an image a disabled module still shows when re-enabled); cover subfolders of a declared folder.
+- **Status:** Accepted (proposal)
+
+## D-56-01 — Importing the old Caparrella website (CaparrellaImport, development only)
+
+- **Where:** owner's request of 2026-11-23 (session 56, branch `session-56-caparrella-import`); `modules/CaparrellaImport`, `docs/caparrella-import.md`.
+- **Problem:** the content of the school's current website (www.iescaparrella.cat) must move into the skeleton, built locally on SQLite and taken to the school's server with a backup. The old site is a hosted Reskyt site with no API (no WordPress, `/wp-json/` is 404): pages with a tree given by their addresses and the menu, a blog with sections (categories not shown on the posts), photo galleries, images and PDFs on `cdn.reskyt.com`. Posts contain photos of students, which must be reviewed before they are published.
+- **Proposal (applied):** (1) A module of its own, `$developmentOnly`, no screens, two console commands that also refuse outside development; hosts in `$outboundHosts`, requests through `OutboundClient` with a one-second pause. (2) `caparrella:fetch` scrapes the HTML into `writable/import/caparrella/` (resumable; posts from a date, asked, default the 1st of September of the school year; `--all`); `caparrella:import` creates the content through the modules' own classes (PageSlugs, Revisions, PagesSearch, Slugger, Publisher, NewsSearch, NoticeCalendar, Storage, Files Uploader and FolderRepository, the Core's SectionForm, MenuRepository, HtmlSanitizer) without changing Pages, News, Files or Menus (they have no write service; the writes the CRUD controllers do are repeated with those classes). (3) Tree: `<s>/<child>/<id>` under `<s>/<id>`; pages sharing a first segment under the one the menu links, else a new group page; the menu's dropdowns become group pages; order from the menu, then the parent's links. Pages with tiles or galleries are built from sections (`pages.text`, `pages.cards`, `files.gallery` with a public shared folder per gallery), the others are articles. (4) Blog sections become News categories; a post gets one category (News has one), the most specific when it is in several. (5) Posts and pages that are only a gallery take the status asked (`draft` by default); other pages are published and, while the status asked is draft, their galleries are hidden sections (an editor shows them after reviewing the photos), so no content page or link is lost; the original date of posts is kept as `published_at`. (6) Every address written is relative (`/uploads/…`, `/news/…`, page paths) so the content survives the backup to another host; files are stored per module folder (`modules/pages`, `modules/news`) so the unused-files scan finds their references. (7) `caparrella_import_map` with a checksum of each source: a second run duplicates nothing and leaves unchanged items (and the edits made since) alone; statuses are never changed on existing items; `--force` rewrites. (8) The menu is imported as a new public menu; it becomes the main menu (`primary`) when no other menu holds that location (the owner removed the demo menus on 2026-11-23), otherwise it is reported and left without a location. The old home page (not a page of Reskyt's tree) is imported as the page "Inici" built from sections (banners as `pages.cards` named after the page they link to, the newest posts as `news.list`, the virtual tour as `pages.embed`, small logos as `pages.logos`) and becomes `Pages.homePage` when none is chosen; a home page chosen by someone is never replaced. The owner allowed the tour's host in `Pages.embedHosts` (Settings › Security, 2026-11-23), and later YouTube and Google (maps) and SVG uploads (`Core.uploadAllowSvg`, `svg` in `Core.uploadTypes`) so the site looks as much as possible like the original. (12) Frames inside text become `pages.embed` sections (rich text drops them); an embed of a host not allowed becomes a link and its page is filled again by the next run. Lists of posts generated by Reskyt become `news.list` sections, filtered by the category every listed post shares. Posts that pages link to are fetched and imported whatever their date. The plain public DOCTYPE of editor-made SVGs (no internal subset, no entity) is removed before the Core's SvgSanitizer, which still refuses any other DOCTYPE. (13) The look of the old site is a theme, `themes/caparrella` (child of `default`, its own `public` layout for the top bar and the header menu, CSS variables only, no change to the default theme or to any module view); the owner asked for a more modern finish with the same identity, then (review of 2026-11-23) for a more serious one after `docs/design/reference-home-sections.webp`: the logo's violet blue (deepened for contrast) as the main colour and its green only in small accents, the menu in the header bar, blue-tinted slider photos at one ratio with controls that never cover a different-sized image, icons instead of the drawn banners (wide title-less banners become `pages.links` icon links), and card and news images at one size by CSS. The header slider, the footer and the social networks are content and come with the import (a carousel, the `footer` and `social` menus). The original's fonts (Open Sans, Montserrat, Abel; OFL) are vendored from the Fontsource packages 5.3.0 in `public/assets/vendor/` (Latin subsets only, checksums in `vendor.json`) and loaded by the theme; nothing is requested from Google Fonts (owner's decision, 2026-11-23). (9) Old → new addresses only as `redirects.csv` (no redirects feature yet). (10) The manifest requires only Core and Auth: a development tool must never stop Pages, News, Files or Menus from being disabled or uninstalled; `caparrella:import` refuses without Pages and News and skips the galleries and the menu without Files and Menus. (11) The upload limit `Core.uploadMaxSize` was raised to 50 MB by the owner (2026-11-23) for the old site's PDFs (up to 42.5 MB).
+- **Alternatives:** a back-office screen (refused: long downloads belong in the console, and nothing of this must reach production); a write service added to Pages and News (cleaner, but it changes two modules for a one-off tool; can be extracted later); one category per post with a multi-category field in News (a change of News); importing posts as published (refused by default: photos of students).
+- **Status:** Accepted (proposal)
+
+## D-56-02 — Theme options `favicon` and `appIcon`
+
+- **Where:** owner's request of 2026-11-24 (session 56): the public site showed CodeIgniter's `public/favicon.ico`, and an installed PWA would have used the whole wide logo; `themes/default/Theme.php`, `themes/default/Views/partials/head.php`, `Modules\Core\Frontend\Pwa`.
+- **Problem:** no theme could set the browser icon, and the PWA icons were always drawn from the `logo` option (a wide logo with text becomes an unreadable strip on a square icon).
+- **Proposal (applied):** two options of the default theme, inherited by every child theme and edited in Settings › Theme (per theme, so the back office and the public site can differ): `favicon` (a path under `public/` or an http(s) URL; the head prints `<link rel="icon">`, nothing when empty, so the browser still asks for `/favicon.ico`) and `appIcon` (a square image: the PWA draws its 192/512 px icons from it before the logo, only from a local PNG/JPEG/GIF/WebP under `public/`, like the logo; without the PWA the head links it as `apple-touch-icon`). Values with `..`, starting with `//`, with another scheme or with characters outside a plain path are ignored. The caparrella theme sets both to the logo's emblem (`img/favicon.png` 64 px, `img/app-icon.png` 512 px).
+- **Follow-up (owner, 2026-11-24):** typing a path or a URL is not simple enough: a new setting type `image` (a file input under a preview, "Browse…" and save; the file replaces the previous one) for modules and themes, used by `logo`, `logoDark`, `favicon` and `appIcon`; stored through the Storage service in `uploads/settings/…`, the path never taken from the post, the replaced upload deleted when nothing uses it. The settings tabs wrap onto more lines (underlined links) instead of scrolling sideways.
+- **Alternatives:** replacing `public/favicon.ico` (one file for every theme, edited in the code); deriving the icons from the logo automatically (cannot know which part of a logo is its mark); the Files picker (a whole file manager for one image).
+- **Status:** Applied (owner's request)
+
+## D-57-01 — Back-office Calendar menu: a group with Agenda, Events and Categories
+
+- **Where:** owner's review of 2026-11-24 (after session 56); `deploy/57-agenda-folder-tree.md`; `modules/Events/Config/Module.php` (`$menu`); `docs/menus.md`, `docs/events.md`.
+- **Problem:** the calendar view `backend/calendar` is the parent entry of the sidebar's Calendar section, drawn as a link with a small chevron; users take it for a section title, open the Events list and only see events as a list, so it is hard to get an idea of what is registered.
+- **Proposal:** the Events `$menu` declares a group (`group.calendar`, "Calendar") with three children: **Agenda** (resource `calendar`, the calendar view, first), **Events** and **Categories** (administration), each behind its own permission; the events list gets a "View in the agenda" button and the agenda keeps "Manage events" and adds "New event". No URL, route name or permission changes.
+- **Alternatives:** keep the parent link and only add a child "Agenda" entry (the parent and the child would point at the same page); make the agenda the default page of `backend/events` (changes a URL).
+- **Status:** Applied (decided)
+- **Decision (2026-11-24):** «l'apartat calendari del backend tingui: el calendari, l'administració events i l'administració de categories». The proposal as written. Added the same day: «estaria bé que recordés l'última visualització, així si a algú li agrada el mode setmana sempre sortiria així» — the agenda remembers each user's last view on the server (`event_calendar_preferences.view` for screens ≥ lg, `view_mobile` for phones; defaults month and list), whitelisted values only, opening always on today's date.
+- **Applied in:** `modules/Events/Config/Module.php` (`$menu`), `Controllers/Events.php` (`addHeaderAction()`, `startFromQuery()`), `Controllers/CalendarView.php`, `Services/AgendaPreferences.php`, migration `2026-11-24-100001_AddViewToEventCalendarPreferences.php`, `Assets/js/calendar.js`, `Views/calendar/{index,show}.php`; `Tests/AgendaTest.php`; `docs/events.md`, `docs/menus.md`, user guides (session 57).
+
+## D-57-02 — The agenda shows every event of the administration to holders of `events-events.all` (decide)
+
+- **Where:** `deploy/57-agenda-folder-tree.md` (scope B); `modules/Events/Controllers/CalendarView.php` (`feed`); `EventVisibility`; D-24-07.
+- **Problem:** the agenda only shows the events the signed-in user can see as a participant (public, private, their groups, them), administrators included; the events list (administration scope) shows more, e.g. events restricted to other groups. The owner wants the agenda to give an idea of every event registered on the platform.
+- **Proposal:** holders of `events-events.all` get a switch "All events (administration)" above the agenda, **off by default**; when on, the feed (`?scope=admin`) adds every event of the administration scope, checked on the server on every request (without the permission: 403); restricted events show their audience in the details; reminders stay limited to events the user sees as a participant. The switch is remembered in the browser only.
+- **Alternatives:** A) the agenda always shows the administration scope to holders of `events-events.all` (no switch; their personal agenda gets mixed with events not meant for them); B) also for holders of `events-events.list` without `all` (only the events they created or that are in their audience, D-24-07); C) no change: the agenda stays personal and only the menu changes (D-57-01).
+- **Status:** Applied (decided)
+- **Decision (2026-11-24):** «Interruptor (recomanada)». The proposal as written: a switch "All events (administration)" for holders of `events-events.all`, off by default, checked on the server on every feed request (`?scope=admin` without the permission → 403); reminders stay limited to the user's own audience. The switch's state is remembered with the user's agenda view (`event_calendar_preferences.scope`), stored as `admin` only with the permission. **Must change:** `deploy/57-agenda-folder-tree.md` (scope B, tests, done when), the specification (Events, "What administrators see").
+- **Applied in:** `deploy/57-agenda-folder-tree.md`, `docs/specification.md`, `docs/plan.md`, `deploy/README.md`, `docs/progress.md`; code in session 57: `Services/EventVisibility.php` (`administration()`), `EventRepository.php`, `Controllers/CalendarView.php` (`feed`, `scope`, `show`), `Views/calendar/{index,show}.php`, `Config/Routes.php` (`can:all,events-calendar.view,events-events.all`); `Tests/AgendaTest.php`, `AudienceTest.php` (an administrator opens the details of an event not meant for them, marked; the agenda still leaves it out); `docs/events.md`, `docs/calendar.md`
+
+## D-57-03 — Collapsible folder tree in the file manager
+
+- **Where:** `deploy/57-agenda-folder-tree.md` (scope C); `modules/Files/Assets/js/file-manager.js`, `Assets/css/file-manager.css`.
+- **Problem:** the folder tree is always fully unfolded; with many folders (module folders have dated `YYYY/MM` subfolders since session 54, plus personal, shared and other users' spaces) it becomes endless.
+- **Proposal:** a chevron per folder with children; top-level spaces open and everything else collapsed except the ancestors of the current folder (always opened); the open folders remembered per user and disk in `localStorage` (never required); "Collapse all" and a client-side filter (matches plus ancestors); the WAI-ARIA tree pattern with roving `tabindex` and arrow keys; the Move dialog lists folders indented by depth and grouped by space. No server change.
+- **Alternatives:** lazy loading of subfolders from the server (more requests, only needed with thousands of folders); hiding dated subfolders of module folders (they are real folders users browse).
+- **Status:** Accepted (proposal)
+- **Applied in:** `modules/Files/Assets/js/file-manager.js`, `Assets/css/file-manager.css`, `Views/manager.php`, `Controllers/FileManager.php` (`user` option), language files; `tests/e2e/agenda-tree.spec.mjs`; `docs/files.md`, user guides (session 57).
+
+## D-58-01 — The impersonated user's forced steps do not apply while impersonating
+
+- **Where:** owner's report of 2026-11-25 (a superadmin impersonating an admin on a local SQLite site got a redirect loop); `modules/Auth/Filters/ForcePasswordReset.php`, `ForceTwoFactor.php`; `docs/auth.md` "Impersonation".
+- **Problem:** when the impersonated user must change their password (Shield's forced reset, e.g. a user created by an administrator), the `forcereset` filter sends every page to `backend/profile/password`, which is refused during an impersonation and sends back to `backend/profile`: an endless loop. The same user in a group that requires 2FA would be stuck on the 2FA set-up page (its actions need a re-authentication, refused while impersonating).
+- **Proposal (applied):** both filters do nothing while an impersonation is active; the steps stay pending and apply when the user signs in themselves. No security is lost: the impersonator is a superadmin who re-authenticated to start, and the user's password and 2FA cannot be changed meanwhile.
+- **Alternatives:** refuse to impersonate users with a pending forced step (support often needs to see exactly those accounts); let the impersonator perform the step (it would change another person's credentials).
+- **Status:** Accepted (proposal)
+- **Applied in:** the two filters; `modules/Users/Tests/ImpersonationTest.php` (both cases; they fail without the change); `docs/auth.md`.
+
+## D-58-02 — One public header partial for the public and auth layouts
+
+- **Where:** owner's review of 2026-11-25 (the language menu opened behind the Caparrella header; the account link, the language and the light/dark switch on another line than the menu; a small logo; the login page without the site's menu and footer); `themes/default`, `themes/caparrella`; `docs/themes.md`.
+- **Proposal (applied):** the header of the public site is the partial `site_header` (default theme: the former header of the `public` layout; Caparrella: its top bar and menu bar), printed by both the `public` and the `auth` layouts, so the login, password reset, 2FA and re-authentication screens show the site's header and footer around the card (`body` also gets `theme-<slug>`). In Caparrella the account link and the two switches move from the dark top bar to the end of the menu bar (from xl; in the side panel below as before), so their menus open over the page; the logo is taller (4.25rem, 3.25rem on phones; default theme 3rem). Owner's follow-up: the search in Caparrella's menu bar is a magnifier, the label of the field, which opens over the menu on click (no JavaScript). In the auth layout only the area around the card is grey (the footer keeps its contrast); Caparrella lightens its link colour in dark mode (WCAG AA on the login links and the active menu item). Owner's second follow-up: the top bar and the menu bar are wider than the page container (`.site-bar-container`: full width up to 1760px, side padding 1–2.5rem), so the logo sits near the left edge and the tools near the right one and the menu has more room.
+- **Alternatives:** raise the top bar's z-index above the sticky header (keeps the tools apart from the menu); a separate auth header (two places to keep in sync).
+- **Status:** Accepted (proposal)
+- **Applied in:** `themes/default/Views/partials/site_header.php`, `layouts/public.php`, `layouts/auth.php`, `Assets/css/theme.css`; `themes/caparrella/Views/partials/site_header.php`, `partials/topbar.php`, `layouts/public.php`, `Assets/css/theme.css`; `docs/themes.md`.

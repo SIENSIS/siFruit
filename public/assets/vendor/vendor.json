@@ -1,0 +1,57 @@
+{
+    "bootstrap": {
+        "version": "5.3.8",
+        "licence": "MIT",
+        "source": "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.8.tgz",
+        "homepage": "https://getbootstrap.com/",
+        "files": {
+            "LICENSE": "4620c84ad5ce8602ff65640ed6b7c8b78ebb9e036584f0ebc1ccc88206a4bb51",
+            "css/bootstrap.min.css": "d85327d99c7a3ee1f9b5d0500d1370acea3ad2db39c163c2f51f232baedbdede",
+            "css/bootstrap.min.css.map": "48144faf6aa0fb3cd2ce748d9730238f888f4ab715f05dabd1c9af2c5671988a",
+            "js/bootstrap.bundle.min.js": "e4fd49181388c48ec5040bd3fe66f57c29c8e67fcd8502b3354b96ec7ab47cc7",
+            "js/bootstrap.bundle.min.js.map": "c61123e58cc0a4b65d737ba070c485911b3dbec6d7b802bdf6628395abd9c08b"
+        }
+    },
+    "bootstrap-icons": {
+        "version": "1.13.1",
+        "licence": "MIT",
+        "source": "https://registry.npmjs.org/bootstrap-icons/-/bootstrap-icons-1.13.1.tgz",
+        "homepage": "https://icons.getbootstrap.com/",
+        "files": {
+            "LICENSE": "0fb3e11bd57e896c5a512afd64864d28a37de45d19835016c87ca1ad19ead969",
+            "font/bootstrap-icons.min.css": "a5d6387a32ca3baec4d02336b5b3edab50c9dd518355576a011ea3dd9c1d884e",
+            "font/fonts/bootstrap-icons.woff": "f55513b7b591cb84a3b87ff0e34ea24d4831d6fedc22e54b911ca64b5b544a15",
+            "font/fonts/bootstrap-icons.woff2": "6c75710364a1ca5604267716f6d28997b26319fdb078cf11e0b42ab66ff2ea61"
+        }
+    },
+    "quill": {
+        "version": "2.0.3",
+        "licence": "BSD-3-Clause",
+        "source": "https://registry.npmjs.org/quill/-/quill-2.0.3.tgz",
+        "homepage": "https://quilljs.com/",
+        "files": {
+            "LICENSE": "395c12b616d6f58238b4be39284d4d9221b58dd6e1f1e34d9ab537e34abbb022",
+            "quill.js": "f6157c72ac9b3f51cdead426335688a027b12405d9d6a4daadd38a676b2d7ff2",
+            "quill.js.LICENSE.txt": "7b1938804d68d96764233d0a148a7501f39e547e6ae2dead4b16836e9b8d123c",
+            "quill.js.map": "a508052334c1c1171d529da80b19948f0521c5cc1db341833908a25a10a2722f",
+            "quill.snow.css": "1c7948cd13aa92fac6390319bc1e5e461823da171519d3a768db56164f871636",
+            "quill.snow.css.map": "aac83b00c50d7396614bb8b37c0a32a549242322c558ba95e6b1a51ee3fb6935"
+        }
+    },
+    "fullcalendar": {
+        "version": "7.1.3",
+        "licence": "MIT",
+        "source": "https://registry.npmjs.org/fullcalendar/-/fullcalendar-7.1.3.tgz",
+        "homepage": "https://fullcalendar.io/",
+        "files": {
+            "LICENSE.md": "000882c713ee4c9729c7eeafbebb04a98a633517c2e95f1258fc488853124df3",
+            "global.js": "14564575f16e82de18da6ccf6d21da12fdd0d0f5d50100f22daad59f2cdeb9bd",
+            "locales/ca.global.js": "05e174a5074b3bf0f9b49f0fe9aa41a0a10169fc968089fc7f6295985538693a",
+            "locales/es.global.js": "4686bba2645085d5352caf295b7663a789742669b302a05815138dc9e0de8424",
+            "skeleton.css": "08b1350f84d3ba970d1533a22f6f58c877d3175a68c9617d470f2421ece4a112",
+            "themes/classic/global.js": "a66eb65fc730f3b662f9c1ef30f8f741c42dcfe381d089f78dac322bf4dfbd5d",
+            "themes/classic/palette.css": "5fa284fcef81b68bca7780f72fd110929284d0bf993b9ce5a8bffed54e3d38ee",
+            "themes/classic/theme.css": "e284a8b53bc52d362d172d37fdc59fe3ae821bc11d6a85d6fab7e20bdf45f043"
+        }
+    }
+}

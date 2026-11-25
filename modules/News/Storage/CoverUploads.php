@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\News\Storage;
+
+use Modules\Core\Storage\CrudUploadHandler;
+
+/**
+ * The post cover: a file picker (upload or choose; JPG, PNG, WebP up to 5 MB) on the Storage
+ * service's public disk, folder `modules/news`, also choosing from the public shared folders the
+ * author may view (Core `CrudUploadHandler::pickerField()`; session 23). Covers are stored at
+ * most 1600 px wide (D-54-01; files land in `modules/news/YYYY/MM/`).
+ */
+final class CoverUploads extends CrudUploadHandler
+{
+    public const MAX_DIMENSION = 1600;
+
+    protected function folder(): string
+    {
+        return 'modules/news';
+    }
+}

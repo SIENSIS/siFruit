@@ -1,0 +1,8 @@
+# Minimal OpenSSL configuration for generating the Web Push (P-256) keys when PHP's OpenSSL has
+# no configuration file of its own (common on Windows with XAMPP): Modules\Core\Push\EcKey
+# passes it to openssl_pkey_new() only when the first attempt fails. Holds no secrets.
+[ req ]
+default_bits = 2048
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]

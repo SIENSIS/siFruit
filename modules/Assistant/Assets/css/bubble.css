@@ -1,0 +1,112 @@
+/* The chat bubble (Assistant module, D-51-01; docs/assistant.md "The bubble"). Colours come from
+   Bootstrap's variables, so light and dark modes follow the theme. `--assistant-lift` is set by
+   the component while the cookie notice is shown, so the bubble never covers it. */
+.assistant {
+    --assistant-gap: 1rem;
+    --assistant-lift: 0px;
+    position: fixed;
+    right: var(--assistant-gap);
+    bottom: calc(var(--assistant-gap) + var(--assistant-lift));
+    z-index: 1045; /* below Bootstrap's modals (1055) and the cookie notice (1050) */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: .75rem;
+}
+
+.assistant[hidden] { display: none; }
+
+.assistant-toggle {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    order: 2;
+}
+
+.assistant-toggle:focus-visible {
+    outline: 3px solid var(--bs-focus-ring-color, rgba(13, 110, 253, .5));
+    outline-offset: 3px;
+}
+
+.assistant-panel {
+    order: 1;
+    width: min(24rem, calc(100vw - 2 * var(--assistant-gap)));
+    max-height: min(36rem, calc(100vh - 7rem - var(--assistant-lift)));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.assistant-panel[hidden] { display: none; }
+
+.assistant-suggestions[hidden] { display: none !important; }
+
+.assistant-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.assistant-message {
+    max-width: 90%;
+    padding: .5rem .75rem;
+    border-radius: .75rem;
+    margin-bottom: .5rem;
+    overflow-wrap: anywhere;
+}
+
+.assistant-bot {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    border-bottom-left-radius: .2rem;
+}
+
+.assistant-you {
+    margin-left: auto;
+    background-color: var(--bs-primary);
+    color: #fff;
+    border-bottom-right-radius: .2rem;
+}
+
+.assistant-thinking { color: var(--bs-secondary-color); font-style: italic; }
+
+.assistant-answer > :last-child { margin-bottom: 0; }
+
+.assistant-answer img { max-width: 100%; height: auto; }
+
+.assistant-bot a:not(.btn) { color: var(--bs-link-color); }
+
+[data-bs-theme="dark"] .assistant-bot a:not(.btn) { color: var(--kp-primary-light, var(--bs-link-color)); }
+
+/* Phones: the panel becomes a sheet across the bottom of the screen. */
+@media (max-width: 575.98px) {
+    .assistant { --assistant-gap: .75rem; }
+
+    .assistant.is-open { left: 0; right: 0; bottom: calc(0px + var(--assistant-lift)); gap: 0; }
+
+    .assistant.is-open .assistant-toggle { display: none; }
+
+    .assistant.is-open .assistant-panel {
+        width: 100%;
+        max-height: min(85vh, calc(100vh - var(--assistant-lift)));
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .assistant-panel:not([hidden]) { animation: assistant-in .15s ease-out; }
+
+    @keyframes assistant-in {
+        from { opacity: 0; transform: translateY(.5rem); }
+        to { opacity: 1; transform: none; }
+    }
+}
+
+@media print {
+    .assistant { display: none !important; }
+}

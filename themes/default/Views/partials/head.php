@@ -1,0 +1,88 @@
+<?php
+/**
+ * <head> content shared by every layout: charset, viewport, title, SEO meta (public layout:
+ * also the `hreflang` alternates of the page in every language, D-37-02), the
+ * colour-mode script (before the stylesheets: no flash of the wrong colours), the theme's
+ * stylesheets (root theme first), the icons (theme options `favicon` and `appIcon`), the PWA links, the CSRF token for scripts (only when the page
+ * already has a session) and the CSS variables set by the theme options.
+ *
+ * @var string|null                $title
+ * @var array<string, mixed>|null  $meta description, canonical, robots, og (bool), image, type
+ */
+$siteName  = site_name();
+$pageTitle = isset($title) && $title !== '' ? $title . ' · ' . $siteName : $siteName;
+$meta ??= [];
+$pwa = pwa_enabled();
+// Theme options `favicon` and `appIcon`: a path under public/ or an http(s) URL; anything else is ignored.
+$iconUrl = static function (mixed $value): string {
+    $value = trim((string) $value);
+    if ($value === '' || str_contains($value, '..') || str_starts_with($value, '//')) {
+        return '';
+    }
+    if (preg_match('#^https?://#i', $value) === 1) {
+        return $value;
+    }
+
+    return preg_match('#^[a-z0-9._~/-]+$#i', $value) === 1 ? base_url(ltrim($value, '/')) : '';
+};
+$favicon = $iconUrl(theme_option('favicon'));
+$appIcon = $iconUrl(theme_option('appIcon'));
+?>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title><?= esc($pageTitle) ?></title>
+<?php if (! empty($meta['description'])): ?>
+    <meta name="description" content="<?= esc($meta['description']) ?>">
+<?php endif ?>
+<?php if (! empty($meta['robots'])): ?>
+    <meta name="robots" content="<?= esc($meta['robots']) ?>">
+<?php endif ?>
+<?php if (! empty($meta['canonical'])): ?>
+    <link rel="canonical" href="<?= esc(ui_safe_url($meta['canonical'])) ?>">
+<?php endif ?>
+<?php $alternates = empty($meta['robots']) ? service('localeurls')->hreflang() : []; ?>
+<?php if (count($alternates) > 1): ?>
+<?php foreach ($alternates as $hreflang => $href): ?>
+    <link rel="alternate" hreflang="<?= esc($hreflang, 'attr') ?>" href="<?= esc(ui_safe_url($href)) ?>">
+<?php endforeach ?>
+<?php if (isset($alternates[\Modules\Core\I18n\Locales::default()])): ?>
+    <link rel="alternate" hreflang="x-default" href="<?= esc(ui_safe_url($alternates[\Modules\Core\I18n\Locales::default()])) ?>">
+<?php endif ?>
+<?php endif ?>
+<?php if (! empty($meta['og'])): ?>
+    <meta property="og:site_name" content="<?= esc($siteName) ?>">
+    <meta property="og:title" content="<?= esc($title ?? $siteName) ?>">
+    <meta property="og:type" content="<?= esc($meta['type'] ?? 'website') ?>">
+<?php if (! empty($meta['description'])): ?>
+    <meta property="og:description" content="<?= esc($meta['description']) ?>">
+<?php endif ?>
+<?php if (! empty($meta['image'])): ?>
+    <meta property="og:image" content="<?= esc(ui_safe_url($meta['image'])) ?>">
+<?php endif ?>
+<?php endif ?>
+    <script src="<?= esc(asset('core::js/theme-mode.js')) ?>" <?= csp_script_nonce() ?>></script>
+<?php foreach (theme()->styles() as $href): ?>
+    <link rel="stylesheet" href="<?= esc($href) ?>">
+<?php endforeach ?>
+<?php if ($favicon !== ''): ?>
+    <link rel="icon" href="<?= esc($favicon) ?>">
+<?php endif ?>
+<?php if (! $pwa && $appIcon !== ''): ?>
+    <link rel="apple-touch-icon" href="<?= esc($appIcon) ?>">
+<?php endif ?>
+<?php if ($pwa): ?>
+    <link rel="manifest" href="<?= esc(base_url('manifest.webmanifest')) ?>">
+    <link rel="apple-touch-icon" href="<?= esc(pwa_icon_url(192)) ?>">
+<?php foreach (pwa_theme_colors() as $scheme => $color): ?>
+    <meta name="theme-color" media="(prefers-color-scheme: <?= esc($scheme) ?>)" content="<?= esc($color) ?>">
+<?php endforeach ?>
+<?php endif ?>
+<?php if (session_status() === PHP_SESSION_ACTIVE): ?>
+    <meta name="csrf-header" content="<?= esc(csrf_header()) ?>">
+    <meta name="csrf-token" content="<?= esc(csrf_hash()) ?>">
+<?php endif ?>
+<?php $variables = theme()->options()->css(); ?>
+<?php if ($variables !== ''): ?>
+    <style <?= csp_style_nonce() ?>><?= $variables /* validated hex colours only (ThemeOptions) */ ?></style>
+<?php endif ?>

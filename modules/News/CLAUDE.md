@@ -1,0 +1,86 @@
+# News module
+
+**Purpose:** the reference module every other module copies: posts (articles and notices) with
+translations, categories, visibility (public / private / groups), read receipts, a reader screen
+for every user, the back office with kpcrudy, the public site and RSS, two dashboard widgets, a
+scheduled task, a notification type, a menu link type and the `news` API resource. Full
+description: `docs/news.md`.
+
+## Resources and permissions
+
+- `news-posts` (crud − `import`; extras `publish`, `author`, `readers`): every post. Without
+  `author`: author hidden, only own posts changed.
+- `news-mine` (crud − `import`, `export`, trash; extra `publish`): "My posts" (`where()`).
+- `news-categories` (crud − `import`, trash).
+- `news-read` (page: `view`): the reader screen.
+- `news-api` (crud − everything but `list`, `show`; extra `read`, D-26-01): the `news` API resource (D-17-01).
+- Grants: admin all; editor posts list/show/add/edit/publish, categories list/show, `news-mine.*`,
+  `news-read.*`, `news-api.*`; user and superadmin `news-read.*`, `news-api.*`.
+- Settings `News.perPage`, `News.feedItems`. Menu: "News" (reader) with "All posts", "My posts",
+  "Categories". Widgets `news.notices`, `news.latest`. Task `Tasks/ExpireNotices.php`.
+  Notification `Notifications/NewNotice.php`. Link type `Menu/CategoryLink.php`. API
+  `Controllers/Api/Posts.php` (`api/v1/news`, `news/notices`, `POST news/{id}/read`) and
+  `Controllers/Api/PublicNews.php` (`api/v1/public/news`, no token, D-26-02).
+- Tables: `news_categories`, `news_category_translations`, `news`, `news_translations`,
+  `news_groups` (surrogate `id`, unique pair), `news_reads` (one migration each).
+- Session 46: section type `news.list` (`Sections/NewsListSection.php`), category banners
+  (`news_categories.banner`, migration `AddBannerToNewsCategories`, view `Views/public/_banner.php`),
+  setting `News.listPage` (`Services/ListPage.php`, `Settings/ListPageOptions.php`: `/news` → 301
+  to that page, D-46-03). Tests `Tests/CategoryBannerTest.php`; the section in
+  `modules/Pages/Tests/ModuleSectionsTest.php`.
+
+## Main pieces
+
+- `Services/NewsVisibility.php` (who reads what; the only place the rule lives),
+  `NewsRepository.php` (read queries with texts in the user's language, fallback to the site's default language),
+  `Publisher.php` (publish, notify once, release scheduled, expire), `ReadReceipts.php`,
+  `FeedWriter.php` (RSS with XMLWriter). From the Core: `Modules\Core\Security\HtmlSanitizer`
+  (HTMLPurifier) and `Modules\Core\Text\Slugger` (moved there in session 19 for Pages and Events);
+  `Modules\Core\Content\{ContentTranslations,Audience,PublishWorkflow}` and
+  `Modules\Core\Storage\CrudUploadHandler` (extracted in session 20, D-20-07). The body is edited
+  with the Core's rich-text editor (`RichTextEditor::attrs()`, D-20-03).
+- `Controllers/Posts.php` (`index` = `news-posts`, `mine` = `news-mine`), `Categories.php`,
+  `Reader.php`, `PublicNews.php`, `Api/Posts.php`; `Storage/CoverUploads.php` (the cover's file
+  picker: `callbackField()` + `CoverUploads::accepts()` in `beforeSave()`, session 23). The body's
+  editor has "Insert image" (`RichTextEditor::images('news')`, folder `modules/news`).
+
+## Decisions
+
+D-17-01 (separate API resource `news-api`) and D-17-08 ("Insert image" with the file picker in session 23) decided by the owner, D-17-02 … D-17-06 accepted, D-17-07 applied (kpapy `where(Closure)`)
+(`docs/decisions.md`); D-00-35, D-00-36, D-00-40, D-00-41, D-00-42.
+
+## Calendar (session 25)
+
+Notices with an event date (`event_starts_at`, `event_ends_at`, `event_all_day`; migration
+`AddEventDateToNews`) are published to `news.notices` while published and readable
+(`Services/NoticeCalendar.php`, also the calendar's `CalendarSource`); every write and state
+change calls `NoticeCalendar::sync()` (CRUD `afterWrite`, publish/unpublish, `Publisher`).
+Tests `Tests/NoticeCalendarTest.php`. D-25-06.
+
+Session 37 (D-37-01): translated texts use the site's languages and require its default language through `Modules\Core\Content\ContentTranslations` (`locales()`, `crudOptions()`, `defaultText()`…); never write a language code (`tests/unit/I18n/ContentLanguagesTest.php`). Tests `Tests/ContentLocalesTest.php`, `Tests/ContentLocalesApiTest.php` (`Modules\Core\Tests\ContentLocalesTrait`).
+
+## Search (session 50)
+
+Search source `news.posts` (`$searchSources`, `Search/NewsSearch.php`, D-50-01, D-50-02):
+published and scheduled posts, one document per site language, the audience of `NewsVisibility`
+(private and group posts link to the reader), window `published_at` → `expires_at`, the category
+as a keyword. `NewsSearch::sync()` runs next to every `NoticeCalendar::sync()`. Tests
+`Tests/NewsSearchTest.php`.
+
+## Unused files (session 55)
+
+`Storage\NewsFileReferences` (manifest `$fileReferences`, D-55-01, `docs/storage.md` "Unused files") gives
+the files the module uses: covers, category banners, post and category texts in every language (trash included); folder `modules/news`. Keep it complete when the module starts storing a file
+somewhere else: a file it forgets can be listed (and deleted) as unused.
+
+## Open tasks
+
+- Session 21: the Menus module consumes `Menu/CategoryLink.php` (formalise the contract).
+- Done in session 26: read receipts and notices in the API, public news (D-26-01 decided as built).
+
+## How to test
+
+`vendor/bin/phpunit modules/News` (base `Tests/NewsTestCase.php`: Auth fixture, catalogue and
+grants, News widgets, `newsPost()`, `code()`, `body()` with decoded entities, `assertNotFound()`).
+By hand: `php spark modules:demo Auth`, `php spark modules:demo News`, then `backend/news`,
+`backend/news/posts`, `news`, `news/feed.xml`.

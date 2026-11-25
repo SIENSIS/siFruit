@@ -1,0 +1,457 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Config;
+
+/**
+ * Manifest of the Core module: the kernel every other module depends on.
+ */
+final class Module extends ModuleManifest
+{
+    public string $name    = 'Core';
+    public string $version = Version::CORE;
+    public string $icon    = 'bi bi-cpu';
+
+    public string $description = 'Core.module.description';
+
+    /**
+     * The Modules screen (session 29) and the module commands: modules.list, modules.toggle,
+     * modules.sync, modules.upload, modules.uninstall and modules.demo.
+     * The user's notifications (list page, bell, preferences: `core-notifications.*`, granted to
+     * every group; `read` marks them read through `api/v1/notifications`, D-26-01) and the scheduled tasks screen (`schedule.list`, `schedule.show`,
+     * `schedule.run` for "run now"). `maintenance.manage` turns maintenance mode on and off by
+     * hand and keeps using the site while it is on (D-28-02): no default grant, superadmins always
+     * pass; assign it in the permission matrix when an administrator needs it.
+     */
+    public array $resources = [
+        'modules' => [
+            'label'  => 'Core.res.modules',
+            'type'   => 'crud',
+            'name'   => 'modules',
+            'except' => ['show', 'add', 'edit', 'delete', 'export', 'import', 'trash', 'restore', 'purge'],
+            'extra'  => [
+                'toggle'    => 'Core.perm.toggle',
+                'sync'      => 'Core.perm.sync',
+                'upload'    => 'Core.perm.upload',
+                'uninstall' => 'Core.perm.uninstall',
+                'demo'      => 'Core.perm.demo',
+            ],
+        ],
+        'notifications' => [
+            'label'  => 'Core.res.notifications',
+            'type'   => 'crud',
+            'except' => ['add', 'edit', 'export', 'import', 'trash', 'restore', 'purge'],
+            'extra'  => [
+                'read' => 'Core.perm.markRead',
+            ],
+        ],
+        'maintenance' => [
+            'label'  => 'Core.res.maintenance',
+            'type'   => 'crud',
+            'name'   => 'maintenance',
+            'except' => \Modules\Core\Modules\ManifestValidator::CRUD_OPERATIONS,
+            'extra'  => [
+                'manage' => 'Core.perm.manageMaintenance',
+            ],
+        ],
+        // The Security status page (`backend/security`; docs/security.md, "Production checklist"):
+        // `security.check` shows the checks, runs them again and (with re-authentication) the
+        // external probe. Superadmin and admin by default.
+        'security' => [
+            'label'  => 'SecurityCheck.res.security',
+            'type'   => 'crud',
+            'name'   => 'security',
+            'except' => \Modules\Core\Modules\ManifestValidator::CRUD_OPERATIONS,
+            'extra'  => [
+                'check' => 'SecurityCheck.perm.check',
+            ],
+        ],
+        // Settings › System (D-53-01, docs/system.md): `system.info` (System information,
+        // `backend/system`; superadmin and admin) and `system.logs` (Error logs, read only,
+        // `backend/system/logs`, re-authentication; granted to nobody: superadmins only) and
+        // `system.files` (Unused files, `backend/system/unused-files`, deleting behind
+        // re-authentication; superadmin and admin, D-55-01).
+        'system' => [
+            'label'  => 'System.res',
+            'type'   => 'crud',
+            'name'   => 'system',
+            'except' => \Modules\Core\Modules\ManifestValidator::CRUD_OPERATIONS,
+            'extra'  => [
+                'info' => 'System.perm.info',
+                'logs' => 'System.perm.logs',
+                'files' => 'System.perm.files',
+            ],
+        ],
+        'schedule' => [
+            'label'  => 'Core.res.schedule',
+            'type'   => 'crud',
+            'name'   => 'schedule',
+            'except' => ['add', 'edit', 'delete', 'export', 'import', 'trash', 'restore', 'purge'],
+            'extra'  => [
+                'run' => 'Core.perm.run',
+            ],
+        ],
+    ];
+
+    public array $menu = [
+        // The groups of the settings zone (D-38-01, docs/menus.md): headings without a route,
+        // shown only while one of their children is visible. Modules use them as `parent`.
+        ['group' => 'group.access', 'label' => 'Core.menu.groupAccess', 'icon' => 'bi bi-person-lock', 'order' => 60, 'zone' => 'settings'],
+        ['group' => 'group.security', 'label' => 'Core.menu.groupSecurity', 'icon' => 'bi bi-shield-lock', 'order' => 65, 'zone' => 'settings'],
+        ['group' => 'group.api', 'label' => 'Core.menu.groupApi', 'icon' => 'bi bi-plug', 'order' => 70, 'zone' => 'settings'],
+        ['group' => 'group.customisation', 'label' => 'Core.menu.groupCustomisation', 'icon' => 'bi bi-sliders', 'order' => 75, 'zone' => 'settings'],
+        ['group' => 'group.system', 'label' => 'Core.menu.groupSystem', 'icon' => 'bi bi-hdd-stack', 'order' => 80, 'zone' => 'settings'],
+        ['resource' => 'modules', 'label' => 'Core.menu.modules', 'icon' => 'bi bi-boxes', 'order' => 80, 'zone' => 'settings', 'parent' => 'group.customisation'],
+        ['resource' => 'notifications', 'label' => 'Core.menu.notifications', 'icon' => 'bi bi-bell', 'order' => 15, 'zone' => 'user'],
+        ['route' => 'security-status', 'permission' => 'security.check', 'label' => 'SecurityCheck.menu', 'icon' => 'bi bi-shield-check', 'order' => 84, 'zone' => 'settings', 'parent' => 'group.security'],
+        ['route' => 'system', 'permission' => 'system.info', 'label' => 'System.menu.info', 'icon' => 'bi bi-info-circle', 'order' => 81, 'zone' => 'settings', 'parent' => 'group.system'],
+        ['route' => 'system-logs', 'permission' => 'system.logs', 'label' => 'System.menu.logs', 'icon' => 'bi bi-journal-text', 'order' => 82, 'zone' => 'settings', 'parent' => 'group.system'],
+        ['route' => 'system-unused-files', 'permission' => 'system.files', 'label' => 'System.menu.unusedFiles', 'icon' => 'bi bi-file-earmark-x', 'order' => 83, 'zone' => 'settings', 'parent' => 'group.system'],
+        ['resource' => 'schedule', 'label' => 'Core.menu.schedule', 'icon' => 'bi bi-clock-history', 'order' => 85, 'zone' => 'settings', 'parent' => 'group.system'],
+    ];
+
+    /** @var list<string> */
+    public array $tasks = [
+        \Modules\Core\Tasks\SendQueuedEmails::class,
+        \Modules\Core\Tasks\SendQueuedPush::class,
+        \Modules\Core\Tasks\PurgeActivityLog::class,
+        \Modules\Core\Tasks\SecurityCheckTask::class,
+        \Modules\Core\Tasks\OptimizeImagesTask::class,
+        \Modules\Core\Tasks\DeleteUnusedFilesTask::class,
+    ];
+
+    /** @var list<string> Files the Core's data uses: settings and theme options (D-55-01, docs/storage.md) */
+    public array $fileReferences = [
+        \Modules\Core\Storage\SettingsFileReferences::class,
+    ];
+
+    /** @var list<string> Dashboard widgets (docs/widgets.md): failing scheduled tasks, shortcuts per group */
+    public array $widgets = [
+        \Modules\Core\Widgets\ScheduledTasks::class,
+        \Modules\Core\Widgets\QuickLinks::class,
+        \Modules\Core\Widgets\SecurityStatus::class,
+    ];
+
+    /** @var list<string> */
+    public array $notifications = [
+        \Modules\Core\Notifications\Types\ScheduledTaskFailed::class,
+        \Modules\Core\Notifications\Types\PackageProcessed::class,
+        \Modules\Core\Notifications\Types\SecurityCheckFailed::class,
+    ];
+
+    /**
+     * Edited in the Settings module (docs/settings.md): the "Core" tab (`settings.core`) and,
+     * for the `security.*` groups, Settings › Security (`settings.security` + re-authentication).
+     * Minimal PWA (web app manifest, icons, a service worker that caches nothing): off by default.
+     * Rate limits are requests per minute or hour (Modules\Core\Security\RateLimiter::LIMITS).
+     */
+    public array $settings = [
+        // Site-wide: the name shown in titles, emails and the authenticator app (empty: the
+        // language line Core.app.name) and the time zone dates are shown in (stored in UTC).
+        'siteName' => [
+            'type'    => 'string',
+            'default' => '',
+            'rules'   => 'permit_empty|max_length[100]',
+            'label'   => 'Core.settings.siteName',
+            'help'    => 'Core.settings.siteNameHelp',
+            'group'   => 'general',
+        ],
+        'timezone' => [
+            'type'    => 'string',
+            'default' => 'UTC',
+            'rules'   => 'required|timezone',
+            'label'   => 'Core.settings.timezone',
+            'help'    => 'Core.settings.timezoneHelp',
+            'group'   => 'general',
+        ],
+        // Languages (docs/i18n.md): the site's default (empty: Config\App::$defaultLocale, Catalan) and
+        // the available ones (checkboxes, D-31-01; at least one); Modules\Core\I18n\Locales.
+        'defaultLocale' => [
+            'type'            => 'select',
+            'default'         => '',
+            'label'           => 'Core.settings.defaultLocale',
+            'help'            => 'Core.settings.defaultLocaleHelp',
+            // Every supported locale (Config\App::$supportedLocales), by its own name (session 37).
+            'optionsProvider' => \Modules\Core\I18n\DefaultLocaleOptions::class,
+            'group'           => 'general',
+        ],
+        'locales' => [
+            'type'            => 'multiselect',
+            'default'         => ['ca', 'es', 'en'],
+            'rules'           => 'required|supported_locales',
+            'optionsProvider' => \Modules\Core\I18n\LocaleOptions::class,
+            'label'           => 'Core.settings.locales',
+            'help'            => 'Core.settings.localesHelp',
+            'group'           => 'general',
+        ],
+        // Dashboard widgets: most items of a `links` option (the "Quick links" of each group).
+        'widgetMaxLinks' => [
+            'type'    => 'int',
+            'default' => 20,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'label'   => 'Core.settings.widgetMaxLinks',
+            'help'    => 'Core.settings.widgetMaxLinksHelp',
+            'group'   => 'dashboard',
+        ],
+        'pwa' => [
+            'type'    => 'bool',
+            'default' => false,
+            'label'   => 'Core.settings.pwa',
+            'help'    => 'Core.settings.pwaHelp',
+            'group'   => 'pwa',
+        ],
+        'pwaStart' => [
+            'type'    => 'select',
+            'default' => 'public',
+            'label'   => 'Core.settings.pwaStart',
+            'options' => [
+                'public'  => 'Core.settings.pwaStartPublic',
+                'backend' => 'Core.settings.pwaStartBackend',
+            ],
+            'group'   => 'pwa',
+        ],
+        'rateLimitBackend' => [
+            'type'    => 'int',
+            'default' => 300,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.rateLimitBackend',
+            'group'   => 'security.rateLimits',
+        ],
+        'rateLimitApiToken' => [
+            'type'    => 'int',
+            'default' => 120,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.rateLimitApiToken',
+            'group'   => 'security.rateLimits',
+        ],
+        'rateLimitApiIp' => [
+            'type'    => 'int',
+            'default' => 60,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.rateLimitApiIp',
+            'group'   => 'security.rateLimits',
+        ],
+        'rateLimitFeeds' => [
+            'type'    => 'int',
+            'default' => 60,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.rateLimitFeeds',
+            'group'   => 'security.rateLimits',
+        ],
+        'rateLimitUploads' => [
+            'type'    => 'int',
+            'default' => 100,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.rateLimitUploads',
+            'group'   => 'security.rateLimits',
+        ],
+        'rateLimitForms' => [
+            'type'    => 'int',
+            'default' => 10,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[1000]',
+            'label'   => 'Core.settings.rateLimitForms',
+            'group'   => 'security.rateLimits',
+        ],
+        'rateLimitWidgets' => [
+            'type'    => 'int',
+            'default' => 120,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.rateLimitWidgets',
+            'group'   => 'security.rateLimits',
+        ],
+        // Public site searches (D-50-01, `ratelimit:search`, docs/search.md).
+        'searchRateLimit' => [
+            'type'    => 'int',
+            'default' => 30,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[1000]',
+            'label'   => 'Core.settings.searchRateLimit',
+            'group'   => 'security.rateLimits',
+        ],
+        // Runs the due scheduled tasks from back-office requests (at most once a minute) on hosts
+        // without cron (Modules\Core\Filters\PoorMansCron).
+        'poorMansCron' => [
+            'type'    => 'bool',
+            'default' => false,
+            'label'   => 'Core.settings.poorMansCron',
+            'help'    => 'Core.settings.poorMansCronHelp',
+            'group'   => 'scheduler',
+        ],
+        // Upload rules of the Storage service (docs/storage.md): the global allow-list of
+        // extensions and size limit (fields can only narrow them) and SVG through the sanitiser.
+        'uploadTypes' => [
+            'type'    => 'string',
+            'default' => 'jpg,jpeg,png,gif,webp,pdf,txt,csv,odt,ods,odp,doc,docx,xls,xlsx,ppt,pptx',
+            'rules'   => 'required|max_length[500]|upload_types',
+            'label'   => 'Core.settings.uploadTypes',
+            'help'    => 'Core.settings.uploadTypesHelp',
+            'group'   => 'security.uploads',
+        ],
+        'uploadMaxSize' => [
+            'type'    => 'int',
+            'default' => 10,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[2048]',
+            'label'   => 'Core.settings.uploadMaxSize',
+            'help'    => 'Core.settings.uploadMaxSizeHelp',
+            'group'   => 'security.uploads',
+        ],
+        'uploadAllowSvg' => [
+            'type'    => 'bool',
+            'default' => false,
+            'label'   => 'Core.settings.uploadAllowSvg',
+            'help'    => 'Core.settings.uploadAllowSvgHelp',
+            'group'   => 'security.uploads',
+        ],
+        // Longest side of stored images in px (D-54-01): larger images are scaled down on upload
+        // and by `storage:optimize`; fields may only narrow it (UploadRules::maxDimension()).
+        'imageMaxDimension' => [
+            'type'    => 'int',
+            'default' => 1920,
+            'rules'   => 'required|integer|greater_than_equal_to[320]|less_than_equal_to[10000]',
+            'label'   => 'Core.settings.imageMaxDimension',
+            'help'    => 'Core.settings.imageMaxDimensionHelp',
+            'group'   => 'security.uploads',
+        ],
+        // Unused files of the module spaces (D-55-01, docs/storage.md): a file younger than the
+        // grace period is never listed (it may sit in a form not saved yet); the weekly
+        // DeleteUnusedFilesTask deletes unused files older than `unusedFilesAutoDeleteDays` only
+        // while `unusedFilesAutoDelete` is on (off by default).
+        'unusedFilesGraceDays' => [
+            'type'    => 'int',
+            'default' => 30,
+            'rules'   => 'required|integer|greater_than_equal_to[7]|less_than_equal_to[3650]',
+            'label'   => 'Core.settings.unusedFilesGraceDays',
+            'help'    => 'Core.settings.unusedFilesGraceDaysHelp',
+            'group'   => 'security.uploads',
+        ],
+        'unusedFilesAutoDelete' => [
+            'type'    => 'bool',
+            'default' => false,
+            'label'   => 'Core.settings.unusedFilesAutoDelete',
+            'help'    => 'Core.settings.unusedFilesAutoDeleteHelp',
+            'group'   => 'security.uploads',
+        ],
+        'unusedFilesAutoDeleteDays' => [
+            'type'    => 'int',
+            'default' => 90,
+            'rules'   => 'required|integer|greater_than_equal_to[7]|less_than_equal_to[3650]|not_below_setting[Core.unusedFilesGraceDays]',
+            'label'   => 'Core.settings.unusedFilesAutoDeleteDays',
+            'help'    => 'Core.settings.unusedFilesAutoDeleteDaysHelp',
+            'group'   => 'security.uploads',
+        ],
+        // Days the activity log keeps its entries (PurgeActivityLog, daily).
+        'activityRetentionDays' => [
+            'type'    => 'int',
+            'default' => 365,
+            'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[3650]',
+            'label'   => 'Core.settings.activityRetentionDays',
+            'help'    => 'Core.settings.activityRetentionDaysHelp',
+            'group'   => 'security.activity',
+        ],
+        // Web Push notifications (the `push` channel, D-44-02): off by default; the VAPID keys
+        // are in .env (php spark push:keys). `generic` sends only "You have a new notification"
+        // (a lock screen shows the message).
+        'pushEnabled' => [
+            'type'    => 'bool',
+            'default' => false,
+            'label'   => 'Push.settings.enabled',
+            'help'    => 'Push.settings.enabledHelp',
+            'group'   => 'security.notifications',
+        ],
+        'pushContent' => [
+            'type'    => 'select',
+            'default' => 'full',
+            'label'   => 'Push.settings.content',
+            'help'    => 'Push.settings.contentHelp',
+            'options' => [
+                'full'    => 'Push.settings.contentFull',
+                'generic' => 'Push.settings.contentGeneric',
+            ],
+            'group'   => 'security.notifications',
+        ],
+        // Extra outbound hosts, added to Config\Outbound and the manifests' $outboundHosts.
+        'outboundHosts' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'outbound_hosts',
+            'label'   => 'Core.settings.outboundHosts',
+            'help'    => 'Core.settings.outboundHostsHelp',
+            'group'   => 'security.outbound',
+        ],
+        // Extra Content-Security-Policy origins per directive, added to Config\ContentSecurityPolicy
+        // and the manifests' $csp by the `cspmodules` filter (never keywords or wildcards for
+        // scripts and styles: Modules\Core\Settings\SecurityRules).
+        'cspScriptSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_script_sources',
+            'label'   => 'Core.settings.cspScriptSrc',
+            'help'    => 'Core.settings.cspStrictHelp',
+            'group'   => 'security.csp',
+        ],
+        'cspStyleSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_script_sources',
+            'label'   => 'Core.settings.cspStyleSrc',
+            'help'    => 'Core.settings.cspStrictHelp',
+            'group'   => 'security.csp',
+        ],
+        'cspImgSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_sources',
+            'label'   => 'Core.settings.cspImgSrc',
+            'help'    => 'Core.settings.cspHelp',
+            'group'   => 'security.csp',
+        ],
+        'cspFontSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_sources',
+            'label'   => 'Core.settings.cspFontSrc',
+            'help'    => 'Core.settings.cspHelp',
+            'group'   => 'security.csp',
+        ],
+        'cspConnectSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_sources',
+            'label'   => 'Core.settings.cspConnectSrc',
+            'help'    => 'Core.settings.cspHelp',
+            'group'   => 'security.csp',
+        ],
+        'cspFrameSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_sources',
+            'label'   => 'Core.settings.cspFrameSrc',
+            'help'    => 'Core.settings.cspHelp',
+            'group'   => 'security.csp',
+        ],
+        'cspMediaSrc' => [
+            'type'    => 'list',
+            'default' => [],
+            'rules'   => 'csp_sources',
+            'label'   => 'Core.settings.cspMediaSrc',
+            'help'    => 'Core.settings.cspHelp',
+            'group'   => 'security.csp',
+        ],
+    ];
+
+    /**
+     * upload, uninstall and demo stay with the superadmin (who bypasses the checks). Personal
+     * screens (notifications) go to every group (D-00-17).
+     */
+    /** The user's notifications in the API (D-26-01). */
+    public array $api = [
+        'notifications' => ['path' => 'notifications', 'handler' => '\Modules\Core\Controllers\Api\Notifications::index'],
+    ];
+
+    public array $defaultGrants = [
+        'superadmin' => ['core-notifications.*'],
+        'admin'      => ['modules.list', 'modules.toggle', 'modules.sync', 'core-notifications.*', 'schedule.*', 'security.check', 'system.info', 'system.files'],
+        'editor'     => ['core-notifications.*'],
+        'user'       => ['core-notifications.*'],
+    ];
+}

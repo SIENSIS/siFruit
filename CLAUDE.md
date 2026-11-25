@@ -1,0 +1,276 @@
+# CLAUDE.md
+
+**siFruit**: an ERP: back office, internal news and notices, and JSON API for a company. Built on kpskeletor 1.1.0 (`c5ff670`), a modular CodeIgniter 4
+skeleton whose Core and modules this repository inherits.
+
+## Project management lives in Google Drive, not here
+
+This repository holds only the source code and its technical documentation (`docs/`). The
+project's management is in the owner's Google Drive folder **`siFruit`**, read and written with
+the Google Drive connector (plain Markdown and PNG files, uploaded with `disableConversionToGoogleType`; never copy them into
+the repository). The connector cannot edit a file's content: to change one, upload the new version
+with the same name in the same folder, then move the old one to the trash (`trash_file`; Drive
+keeps it 30 days):
+
+- `siFruit/deploy/`: the session prompts. "executa next" (or "run next") = read
+  `siFruit/deploy/next.md` from Drive and follow it; also `continue.md`, `decide.md` and the
+  sessions `NN-<slug>.md`. Do not edit them unless asked.
+- `siFruit/deploy-status/NN-<slug>/`: each session ends with its report (`README.md`) and its
+  screenshots (`screenshots/01-<what>.png`…) there.
+- `siFruit/gestio/`: `specification.md` (what siFruit must do), `plan.md` (the sessions),
+  `progress.md` (status of every session, its branch and pull request, notes for the next one)
+  and `decisions.md` (the project's decisions, IDs `P-NN-MM`, Open/Decided/Applied).
+
+Each session merges the finished session branches into `main` first. If the Drive connector is
+not available in a session, stop and tell the owner: never write the management into the
+repository instead.
+
+## Base reference (kpskeletor)
+
+`docs/specification.md` (kpskeletor's build prompt) and `docs/decisions.md` (its decisions
+`D-NN-MM`, which override that specification) explain the inherited Core and modules: read the
+relevant section before changing one of them. They are records of the base and are not
+rewritten; siFruit's own specification and decisions (`gestio/` in Drive) override them when they
+disagree.
+
+## Upstream (kpskeletor)
+
+- Remote `upstream` = https://github.com/SIENSIS/kpskeletor (`git remote add upstream …` once).
+- A **generic** fix of the Core or of a shared module (security, bug, convention) is made in
+  kpskeletor first, then brought here with `git cherry-pick <sha>` (name the upstream commit in
+  the commit message and in `CHANGELOG.md`).
+- What only siFruit needs is done only here: a module of its own, or, when the Core itself must
+  change for siFruit, a commit marked "project-specific Core change" with its decision in
+  `gestio/decisions.md`.
+- `Modules\Core\Config\Version::CORE` stays the version of the kpskeletor Core this project is based
+  on; siFruit's own version is in `CHANGELOG.md`.
+
+## Required libraries (never replace them)
+
+- **`siensis/kpcrudy` ^1.0**: every back-office CRUD screen (`Kpcrudy\Crud`), always through the
+  Core: `CrudFactory::routes()` + `$this->crud('<resource>')` + `$this->renderCrud()`, never
+  `new Crud()` (`docs/cruds.md`; `permissions:check` enforces it).
+- **`siensis/kpapy` ^1.0**: every JSON API endpoint (`Kpapy\Resource`), routed under `api/v1/<path>`
+  with the `kpapy` filter, `setResource()` = the CRUD's resource name, declared in the manifest
+  `$api` (`docs/api.md`; the API core is the `Api` module).
+- Install from Packagist only: `composer require siensis/kpcrudy:^1.0 siensis/kpapy:^1.0`. Never
+  `dev-main`, a `repositories` entry or a local path. If Composer fails, stop and report it.
+  `composer.json` requires kpcrudy `^1.3` (`where(Closure)`, the `attrs` option of translations) and
+  kpapy `^1.2` (time zones of `datetime` fields, `where(Closure)`).
+- **Read their docs in `vendor/` before using them**, not from memory:
+  `vendor/siensis/<lib>/README_EN.md`, `docs/functions_EN.md` (every method and option),
+  `docs/howto_EN.md` (recipes), `docs/commands_EN.md`. Their demos (`src/Demo/`) show working
+  examples.
+- Use their features instead of custom code: `kpcrudy:make` / `kpapy:make`, `addOperation()`,
+  `hideFields()`, `where()`, `setTranslations()`, `multiselect`, permission resolvers, masked ids,
+  signed URLs, uploads.
+- Configure in `app/Config/Kpcrudy.php` / `app/Config/Kpapy.php` or extend their classes in
+  `modules/Core`. **Never edit `vendor/`.** Missing features go to `docs/library-requests.md`.
+- The two libraries are independent; the Core connects them: one shared `CrudPermissions`
+  resolver (last parameter typed `object`), the same resource names, the same `app.maskKey`.
+
+## Commands
+
+```bash
+composer install
+php spark modules:sync            # migrations, seeds, permissions, settings, assets
+php spark permissions:check       # manifests, catalogue, grants, Shield matrix, route filters
+php spark assets:publish --watch  # while editing modules/*/Assets (--check: CI)
+php spark csp:check               # no inline scripts, handlers or styles in views
+vendor/bin/phpunit                # tests (SQLite)
+vendor/bin/phpstan analyse        # level 6
+vendor/bin/php-cs-fixer fix --dry-run --diff
+php spark security:check          # before any production deploy
+```
+
+Run the tests, PHPStan and php-cs-fixer before every commit; show the results.
+
+## Architecture and conventions
+
+- Everything lives in **modules** (`modules/<Name>/`), described by a typed manifest
+  `Config/Module.php` (resources, menus, settings, widgets, tasks, notifications, api, csp,
+  outboundHosts, sectionTypes, `enabledByDefault`, `developmentOnly`). Never hard-code a module in the Core.
+- Loading only through CodeIgniter discovery; never `require` route files; `Routes.php` never
+  queries the database. Each module has its own namespace (`Modules\News` → `modules/News`) listed
+  in the generated `app/Config/ModuleNamespaces.php` (written by `make:module`, `modules:sync` and
+  `modules:install`; never edit it by hand). A module copied by hand needs `php spark modules:sync`.
+- **Permissions:** `<module>-<resource>.<operation>` (e.g. `news-posts.edit`), generated from the
+  manifest, never written by hand. Only Core and single-resource modules may override the prefix
+  with the resource `'name'` (e.g. `backup.*`), and a module with several resources only with its
+  own name (`pages.*` beside `pages-blocks.*`, D-47-02); duplicates are rejected and `Security`/`Update` are
+  reserved module names. Every back-office route has a `can:` filter, personal screens included
+  (their own resources, granted to every group by `defaultGrants`); every `api/v1/` route has the
+  `kpapy` filter or is declared public. Default deny. `can:a,b` = any, `can:all,a,b` = all; the
+  `backend` chain covers the back office by itself. Check permissions only through
+  `Authorization::for($user)` / `can()` / `CrudPermissions`, change grants only through
+  `GrantManager` (`docs/permissions.md`); `php spark permissions:check` must pass.
+- **Back-office prefix:** `app.backendPath` in `.env` (default `backend`, chosen at install time,
+  changed only with `php spark app:backend-path`; D-40-01). Never write `backend/` in code: use
+  `backend_path('<path>')` (routes, redirects), `backend_url('<path>')` (links), `backendUrl()`
+  (`core/config.js`), and `backend_link('<path>')` for links that are stored (notifications,
+  calendar entries), which are resolved when shown (D-40-02). Docs write `backend/…` for "under
+  the back-office prefix".
+- **Database:** one migration per table, Forge / Query Builder only, `down()` always implemented,
+  released migrations never edited. Demo data only in `<Name>DemoSeeder` (extends
+  `Modules\Core\Demo\DemoSeeder`) through `DemoData`; load it with `php spark modules:demo <Name>`.
+  Module routes point at controllers (a disabled module answers 404 through its controller namespace).
+- **Activity log:** CRUD writes, custom operations and exports are logged by the Core
+  (`AuditedCrud`, through `CrudFactory`); log other actions with `activity_log()` and security
+  events with `security_log()` (`<Module>`, action code, labels in `<Module>.activity.<code>`),
+  never with `log_message()`; the log is append-only (`docs/activity.md`).
+- **Notifications and scheduled tasks:** types in `Notifications/` (extend `NotificationType`,
+  send with `notify()` / `notifyGroup()` / `notifyPermission()`, never email or push inline;
+  channels `database`, `email`, `push` — Web Push through `Modules\Core\Push`, D-44-02), scheduled
+  tasks in `Tasks/` (`TaskInterface`), both declared in the manifest; one cron line runs
+  `php spark schedule:run` (`docs/notifications.md`, `docs/scheduler.md`).
+- **Calendar:** put a module's dates in the calendar through the Core's contracts
+  (`modules/Core/Calendar`): declare `$calendars` (`<module>.<key>`, optional `permission`,
+  `policy`, `source`) and publish with `service('calendar')->publish()` / `unpublish()` on every
+  change, or declare a `CalendarProvider` in `$calendarProviders`; never write to `events`
+  directly (`docs/calendar.md`).
+- **Site search:** put a module's content in the site search through the Core's contract
+  (`modules/Core/Search`): declare `$searchSources` (`<module>.<key>`, a `SearchSource` for
+  `search:reindex`) and keep it current with `service('search')->replace()` / `remove()` on every
+  change, one `SearchDocument` per site language with its real audience and publish window (the
+  query filters by them); never write to `search_*` directly (D-50-01, `docs/search.md`).
+- **Page sections:** section types in `Sections/` extending `Modules\Core\Sections\SectionType`
+  (key `<module>.<name>`, a field schema of the Core's field types, a view `Views/sections/<name>.php`),
+  declared in the manifest `$sectionTypes`; never shortcodes (D-45-01, `docs/sections.md`). Page
+  models (`$pageModels`, `Modules\Core\Sections\PageModel`) stay generic (D-47-01); content shown
+  on many pages is a Pages reusable block placed in a theme zone (`$zones`, `theme_zone()`, Core
+  event `themeZone`, D-47-02), never hard-coded in a layout.
+- **Dashboard widgets:** classes in `Widgets/` extending `Modules\Core\Widgets\Widget` (or
+  `AsyncWidget`), declared in the manifest `$widgets`, id `<module>.<name>`, a `permission()`;
+  shown only with the permission **and** enabled for one of the user's groups (`docs/widgets.md`).
+- **Settings:** declared in the manifest `$settings`; the Settings module generates their forms
+  (`docs/settings.md`). A `group` of `security` or `security.<sub>` puts a setting in Settings ›
+  Security (`settings.security` + re-auth); refuse weakening values with rules
+  (`Modules\Core\Settings\SecurityRules`), never with code in a controller.
+- **Menus:** back-office entries only in the manifest `$menu` (resource or route + permission,
+  `zone` `sidebar`/`settings`/`user`, `parent`, `order`); a `settings` entry goes in one of the
+  Core's groups (`'parent' => 'group.access'|'group.security'|'group.api'|'group.customisation'|'group.system'`,
+  D-38-01; the one exception is the development-only `Devtools`, in its own `group.development`,
+  D-41-04); the menu is generated, filtered by permission and cached per group set
+  (`docs/menus.md`). Password inputs get the Core's show/hide button by themselves
+  (`data-no-reveal` to opt out; `docs/frontend.md`); icon fields (Bootstrap Icons classes) get
+  the Core's icon picker with `data-icon-picker` (kpcrudy: `attrs`; the list of names is
+  generated by `assets:publish`, D-49-02), never a list or picker of their own. Security headers, rate limits
+  (`ratelimit:<limit>`, `RateLimiter`), `safe_redirect()` and `OutboundClient`: `docs/security.md`,
+  `docs/outbound-requests.md`.
+- **Views and themes:** render through the active theme (`BackendController::render()` /
+  `theme_view()`, `$this->extend($layout)`), compose the standard views and components
+  (`theme_component('page_header'|'card'|'form_layout'…)`, `ui_badge()`, `ui_date()`…) and never
+  hard-code a theme path; stored images are printed with `ui_image()` (responsive variants,
+  `srcset`/`sizes`, width/height; never `<img src="<stored url>">`, D-54-01); something floating above every public page (the chat bubble) is added
+  through the Core event `themeFloating`, printed by `theme_floating()` (D-51-03); a theme overrides a module view in
+  `themes/<slug>/Views/overrides/<Module>/…` and colours through CSS variables or option defaults
+  (`docs/themes.md`, `php spark make:theme <Name>`).
+- **Front end:** Bootstrap 5.3 served locally, native ES modules in `modules/<Name>/Assets/js`
+  imported with bare specifiers (`core/…`, `<module>/…`; never relative paths), components by
+  `data-component`, URLs with `asset('<owner>::<path>')` (`docs/frontend.md`). **No inline `<script>`, `on*=` handlers or `style=""`** (strict
+  CSP with nonces). Never edit `public/assets/modules/…` (published copies).
+- **Rich text:** edit it with the Core's editor (`RichTextEditor::attrs()` on the textarea; the
+  `attrs` option of `setTranslations()` for a translated kpcrudy field) and sanitise it with
+  `Modules\Core\Security\HtmlSanitizer` before storing and when showing it (it keeps icons
+  `<i class="bi bi-<name>" aria-hidden="true">` of the vendored list only, D-49-01). Content shared by
+  modules (languages and fallback, public/private/groups audience, publish workflow, upload
+  handler) comes from `Modules\Core\Content` and `CrudUploadHandler`, not copied (`docs/pages.md`).
+- **Languages:** code, comments and docs in English; UI texts only in language files, complete in
+  `ca`, `es` and `en` (same keys; `tests/unit/I18n/LanguageKeysTest.php` checks it). Catalan is the
+  default, Spanish the fallback (`service('language')` = `Modules\Core\I18n\Language`: requested →
+  base locale → `es` → `en`). The site's locales only through `Modules\Core\I18n\Locales`
+  (`Core.defaultLocale`, `Core.locales`); per-language settings use the type `translated`;
+  translated content through `Modules\Core\Content\ContentTranslations` (never a literal
+  `'ca'`). Public URLs carry the language (`/es/…`, none for the default; `LocaleUrls`, D-37-02):
+  build links with `site_url()`, never hard-code a language prefix, and give per-language paths
+  with `service('localeurls')->setAlternates()` (`docs/i18n.md`).
+- PHP 8.2+, `declare(strict_types=1)`, typed code, PSR-12.
+
+## Developing a module
+
+- **Start:** `/new-module <Name>` or `php spark make:module <Name> [--crud=<table>] [--api]`, or
+  generate it from a definition (Devtools › Code generator in development, or
+  `php spark make:module --definition=<file.json>`; one engine, `Modules\Core\Generator`,
+  `docs/devtools.md`) and refine it. Read `docs/creating-a-module.md` first; copy patterns from `modules/News` (reference module) and
+  `modules/Tutorial` (tutorial module), not from memory.
+- **Work inside the module:** everything goes in `modules/<Name>/`. Do not change the Core,
+  another module or a shared convention for this module's needs: if the Core must change, stop
+  and ask.
+- **Keep `modules/<Name>/CLAUDE.md` current:** purpose, resources and permissions, decisions,
+  open tasks and how to test. Read it first when resuming work on a module.
+- **Module checklist** (run `/check-module <Name>` before calling it done):
+  - manifest complete: resources, menus, default grants, settings, `$requires`, `$backup`,
+    `$csp`, `$outboundHosts`, `$api`, `$fileReferences` (a module that stores files);
+  - one migration per table with `down()`; demo data only in `<Name>DemoSeeder`;
+  - CRUDs with kpcrudy (`CrudFactory`), API resources with kpapy; every operation declared in
+    the manifest;
+  - `can:` on every back-office route, the `kpapy` filter on every API route;
+  - texts in `ca`, `es` and `en` (same keys); no hard-coded strings;
+  - assets in `Assets/`, ES modules, no inline JavaScript or styles;
+  - tests: permissions (including forged POSTs), migration up/down/up, API scopes, the module's
+    own rules;
+  - docs and the module's `CLAUDE.md` updated;
+  - `php spark modules:sync`, `php spark permissions:check`, `vendor/bin/phpunit` and
+    `php spark security:check` pass.
+- **Module in its own repository:** develop it inside a checkout of the skeleton
+  (`modules/<Name>/`) so this file, the commands and the tests apply.
+
+## Security rules (non-negotiable)
+
+- Production is the default environment; never weaken a default to make something work.
+- Every action is authorised on the server (resolver + record rules); masked ids are not access
+  control; the UI only hides what the server also enforces.
+- Sensitive actions require re-authentication (`reauth` filter).
+- Authentication and sessions follow `docs/auth.md` (generic messages, rate limits, session
+  tracking); after changing a user's groups or permissions call
+  `SessionTracker::privilegesChanged()`; security emails go through `SecurityMailer`.
+- No raw SQL with interpolated values; no `getPost()` wholesale into inserts; escape all output;
+  HTMLPurifier for rich text; redirects only to internal paths (`safe_redirect()`).
+- Uploads through the Storage service only (`service('storage')->store()`, `UploadRules`;
+  allow-lists, random names, no SVG/HTML by default; `docs/storage.md`, `docs/web-server.md`).
+  A module that stores files declares a `FileReferenceProvider` in `$fileReferences` giving every
+  file it uses (trash, revisions, rich text included); folders without one are never touched by
+  the unused-files scan (`storage:unused`, D-55-01).
+  The one exception is an uploaded backup file (Backup module: header check, generated name,
+  `writable/backups`, never served).
+- ZIP files from outside (backups, module packages) only through `Modules\Core\Archive\SafeZip`
+  (zip-slip and zip-bomb checks).
+- Module and theme packages only through `Modules\Core\Packages` (`PackageValidator`,
+  `PackageInstaller`, `Uninstaller`, `StagedPackages`; `docs/installing-modules.md`): read without running
+  them, installed and uninstalled only from the console (`modules:install`, `--pending`), never by
+  the web server; the Core asks other modules through events (`packageBackup`,
+  `moduleUninstalling`, `moduleVersions`), and a module that keeps data about other modules
+  listens to `moduleUninstalling`. The one exception that writes module code from a web request
+  is Devtools' code generator, in development only, behind every Devtools lock, after a preview
+  of every file and re-authentication (D-41-02, `docs/security.md`).
+- Maintenance mode only through `Modules\Core\Maintenance\MaintenanceMode` (its state is a file;
+  the global `maintenance` filter answers 503; by hand: Settings › Actions or
+  `php spark app:maintenance`; `maintenance.manage` holders bypass only that mode). Paths under `progress/*` serve the JSON progress of
+  long jobs from files, skip the database/session filters and never return secrets.
+- No outbound HTTP on regular requests; external calls only through `OutboundClient`
+  (HTTPS + allow-list).
+- Secrets only in `.env`; never commit real values, keys, passwords or tokens.
+- Write security-relevant changes to the activity log, and add a test for every security rule
+  you touch.
+- Production readiness: `php spark security:check` and Settings › Security status (`docs/security.md`,
+  "Production checklist"); a module adds its own checks from the Core event `securityChecks`
+  (a `SecurityCheck` class, ids `<group>.<what>`), never by changing the Core; rows of System
+  information / `php spark about` come from the Core event `systemReport` (`SystemReport`,
+  `docs/system.md`), never secrets.
+
+## Workflow
+
+- Small, reviewable commits following the order of the session files in Drive `siFruit/deploy/` (it takes
+  precedence over the order at the end of the specification); before each step, state the plan
+  and the files; after it, run the checks.
+- Branches: use the branch the environment assigns (or `session-NN-<slug>`) and record it in
+  Drive `siFruit/gestio/progress.md`; sessions are identified by the pull request title "Session NN: …". Never
+  force-push; if `main` cannot be pushed, stop and ask the owner to merge the pull request.
+- Keep `docs/` in sync with the code (including `docs/commands.md` for every new command) and
+  update this file when a convention changes.
+- Ask before: adding a dependency, changing a public convention (permission names, manifest keys,
+  URLs), or anything that weakens security. Libraries named in the specification (TOTP, QR code,
+  HTMLPurifier, Flysystem) and an MIT/BSD-licensed rich-text editor and calendar are
+  pre-approved; install them in the session that uses them.
+- Open questions go to Drive `siFruit/gestio/decisions.md` (status Open, IDs `P-NN-MM`); the owner
+  answers them with Drive `siFruit/deploy/decide.md`.

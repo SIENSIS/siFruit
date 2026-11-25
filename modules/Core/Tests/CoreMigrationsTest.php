@@ -1,0 +1,100 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Tests;
+
+use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
+use Modules\Core\Modules\ModuleMigrator;
+
+/**
+ * Migrations of the Core: up → down → up leaves the same tables (session 44: the push tables and
+ * the `push` channel added to stored preferences, and removed again by down()).
+ *
+ * @internal
+ */
+final class CoreMigrationsTest extends CIUnitTestCase
+{
+    use DatabaseTestTrait;
+    use CleanDatabaseTrait;
+
+    protected $migrate   = false;
+    protected $refresh   = false;
+    protected $namespace = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->dropAllTables();
+    }
+
+    private const TABLES = [
+        'modules', 'permissions', 'group_permissions', 'module_declarations', 'demo_records',
+        'notifications', 'notification_preferences', 'mail_queue', 'scheduled_tasks', 'task_runs',
+        'activity_log', 'stored_files', 'groups', 'module_packages', 'push_subscriptions', 'push_queue',
+        'search_documents', 'search_terms', 'stored_file_variants',
+    ];
+
+    private const MIGRATIONS = [
+        '2026-11-04-000001_CreateModules',
+        '2026-11-04-000002_CreatePermissions',
+        '2026-11-04-000003_CreateGroupPermissions',
+        '2026-11-04-000004_AddGrantsAppliedToModules',
+        '2026-11-04-000005_CreateModuleDeclarations',
+        '2026-11-04-000006_CreateDemoRecords',
+        '2026-11-06-000001_CreateNotifications',
+        '2026-11-06-000002_CreateNotificationPreferences',
+        '2026-11-06-000003_CreateMailQueue',
+        '2026-11-06-000004_CreateScheduledTasks',
+        '2026-11-06-000005_CreateTaskRuns',
+        '2026-11-07-000001_CreateActivityLog',
+        '2026-11-08-000001_CreateStoredFiles',
+        '2026-11-09-000001_CreateGroups',
+        '2026-11-16-000001_CreateModulePackages',
+        '2026-11-20-000001_CreatePushSubscriptions',
+        '2026-11-20-000002_CreatePushQueue',
+        '2026-11-20-000003_AddPushToNotificationPreferences',
+        '2026-11-21-000001_AddReplyToToMailQueue',
+        '2026-11-22-000001_CreateSearchDocuments',
+        '2026-11-22-000002_CreateSearchTerms',
+        '2026-11-23-000001_CreateStoredFileVariants',
+        '2026-11-23-000002_AddOptimizationToStoredFiles',
+    ];
+
+    public function testUpDownUp(): void
+    {
+        $migrator = new ModuleMigrator();
+        $count    = count(self::MIGRATIONS);
+
+        $this->assertSame($count, $migrator->migrate('Modules\Core'));
+        $this->assertTablesExist(true);
+        $this->assertTrue($this->db->fieldExists('grants_applied', 'modules'));
+        $this->assertTrue($this->db->fieldExists('reply_to', 'mail_queue'));
+        $this->assertTrue($this->db->fieldExists('optimize_failed_at', 'stored_files'));
+        $this->assertSame([], $migrator->pending('Modules\Core'));
+
+        $this->assertSame($count, $migrator->rollback('Modules\Core'));
+        $this->assertTablesExist(false);
+        $this->assertSame(self::MIGRATIONS, $migrator->pending('Modules\Core'));
+
+        $this->assertSame($count, $migrator->migrate('Modules\Core'));
+        $this->assertTablesExist(true);
+    }
+
+    private function assertTablesExist(bool $exist): void
+    {
+        $this->db->resetDataCache();
+
+        foreach (self::TABLES as $table) {
+            $this->assertSame($exist, $this->db->tableExists($table), $table);
+        }
+    }
+
+    public function testPackageMigrationsAreNeverRolledBack(): void
+    {
+        $this->expectException(\LogicException::class);
+
+        (new ModuleMigrator())->rollback('CodeIgniter\Shield');
+    }
+}

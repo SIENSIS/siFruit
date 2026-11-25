@@ -1,0 +1,12 @@
+/* Settings › System › Unused files (D-55-01): the previews of the table. */
+.kp-unused-thumb {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+}
+
+.kp-unused-icon {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.75rem;
+}

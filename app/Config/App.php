@@ -1,0 +1,331 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Config;
+
+use CodeIgniter\Config\BaseConfig;
+
+class App extends BaseConfig
+{
+    /**
+     * --------------------------------------------------------------------------
+     * Base Site URL
+     * --------------------------------------------------------------------------
+     *
+     * URL to your CodeIgniter root. Typically, this will be your base URL,
+     * WITH a trailing slash:
+     *
+     * E.g., http://example.com/
+     */
+    public string $baseURL = 'http://localhost:8080/';
+
+    /**
+     * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
+     * If you want to accept multiple Hostnames, set this.
+     *
+     * E.g.,
+     * When your site URL ($baseURL) is 'http://example.com/', and your site
+     * also accepts 'http://media.example.com/' and 'http://accounts.example.com/':
+     *     ['media.example.com', 'accounts.example.com']
+     *
+     * @var list<string>
+     */
+    public array $allowedHostnames = [];
+
+    /**
+     * --------------------------------------------------------------------------
+     * Index File
+     * --------------------------------------------------------------------------
+     *
+     * Typically, this will be your `index.php` file, unless you've renamed it to
+     * something else. If you have configured your web server to remove this file
+     * from your site URIs, set this variable to an empty string.
+     */
+    public string $indexPage = ''; //hide index.php to usable pages
+
+    /**
+     * --------------------------------------------------------------------------
+     * Back-office path
+     * --------------------------------------------------------------------------
+     *
+     * The first path segment of the back office (D-40-01): `app.backendPath` in `.env`,
+     * chosen at install time (`app:install --backend-path=<slug>`) and changed later only with
+     * `php spark app:backend-path <new>`. Lowercase letters, digits and hyphens, 2–30
+     * characters. Read it with `backend_path()` / `backend_url()`
+     * (`Modules\Core\Routing\BackendPath`).
+     */
+    public string $backendPath = 'backend';
+
+    /**
+     * --------------------------------------------------------------------------
+     * URI PROTOCOL
+     * --------------------------------------------------------------------------
+     *
+     * This item determines which server global should be used to retrieve the
+     * URI string. The default setting of 'REQUEST_URI' works for most servers.
+     * If your links do not seem to work, try one of the other delicious flavors:
+     *
+     *  'REQUEST_URI': Uses $_SERVER['REQUEST_URI']
+     * 'QUERY_STRING': Uses $_SERVER['QUERY_STRING']
+     *    'PATH_INFO': Uses $_SERVER['PATH_INFO']
+     *
+     * WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
+     */
+    public string $uriProtocol = 'REQUEST_URI';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed URL Characters
+    |--------------------------------------------------------------------------
+    |
+    | This lets you specify which characters are permitted within your URLs.
+    | When someone tries to submit a URL with disallowed characters they will
+    | get a warning message.
+    |
+    | As a security measure you are STRONGLY encouraged to restrict URLs to
+    | as few characters as possible.
+    |
+    | By default, only these are allowed: `a-z 0-9~%.:_-`
+    |
+    | Set an empty string to allow all characters -- but only if you are insane.
+    |
+    | The configured value is actually a regular expression character group
+    | and it will be used as: '/\A[<permittedURIChars>]+\z/iu'
+    |
+    | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
+    |
+    */
+    public string $permittedURIChars = 'a-z 0-9~%.:_\-';
+
+    /**
+     * --------------------------------------------------------------------------
+     * Default Locale
+     * --------------------------------------------------------------------------
+     *
+     * The Locale roughly represents the language and location that your visitor
+     * is viewing the site from. It affects the language strings and other
+     * strings (like currency markers, numbers, etc), that your program
+     * should run under for this request.
+     *
+     * Catalan (docs/specification.md, "Languages"). The site's default locale and its available
+     * locales are the settings `Core.defaultLocale` / `Core.locales` (Modules\Core\I18n\Locales);
+     * this value applies while they are not set (and before installation).
+     */
+    public string $defaultLocale = 'ca';
+
+    /**
+     * --------------------------------------------------------------------------
+     * Negotiate Locale
+     * --------------------------------------------------------------------------
+     *
+     * If true, the current Request object will automatically determine the
+     * language to use based on the value of the Accept-Language header.
+     *
+     * If false, no automatic detection will be performed.
+     */
+    public bool $negotiateLocale = false;
+
+    /**
+     * --------------------------------------------------------------------------
+     * Supported Locales
+     * --------------------------------------------------------------------------
+     *
+     * If $negotiateLocale is true, this array lists the locales supported
+     * by the application in descending order of priority. If no match is
+     * found, the first locale will be used.
+     *
+     * IncomingRequest::setLocale() also uses this list.
+     *
+     * The three languages of the skeleton. Negotiation is the Core's (`locale` filter and
+     * Modules\Core\I18n\LocaleNegotiator: the user's profile, then the browser, then the
+     * default), restricted to the site's available locales (setting `Core.locales`), so
+     * $negotiateLocale stays off.
+     *
+     * @var list<string>
+     */
+    public array $supportedLocales = ['ca', 'es', 'en'];
+
+    /**
+     * --------------------------------------------------------------------------
+     * Fallback chain of the language lines
+     * --------------------------------------------------------------------------
+     *
+     * A line missing in the requested locale (and in the locale without its region) is looked
+     * up in these locales, in order; English is always the last resort
+     * (Modules\Core\I18n\Language). Spanish is the fallback of the skeleton.
+     *
+     * @var list<string>
+     */
+    public array $localeFallbacks = ['es', 'en'];
+
+    /**
+     * --------------------------------------------------------------------------
+     * Application Timezone
+     * --------------------------------------------------------------------------
+     *
+     * The default timezone that will be used in your application to display
+     * dates with the date helper, and can be retrieved through app_timezone()
+     *
+     * @see https://www.php.net/manual/en/timezones.php for list of timezones
+     *      supported by PHP.
+     */
+    public string $appTimezone = 'UTC';
+
+    /**
+     * --------------------------------------------------------------------------
+     * Default Character Set
+     * --------------------------------------------------------------------------
+     *
+     * This determines which character set is used by default in various methods
+     * that require a character set to be provided.
+     *
+     * @see http://php.net/htmlspecialchars for a list of supported charsets.
+     */
+    public string $charset = 'UTF-8';
+
+    /**
+     * --------------------------------------------------------------------------
+     * Force Global Secure Requests
+     * --------------------------------------------------------------------------
+     *
+     * If true, this will force every request made to this application to be
+     * made via a secure connection (HTTPS). If the incoming request is not
+     * secure, the user will be redirected to a secure version of the page
+     * and the HTTP Strict Transport Security (HSTS) header will be set.
+     *
+     * The skeleton sets it to true in production (the default environment) in the constructor;
+     * `.env` (`app.forceGlobalSecureRequests`) can still change it.
+     */
+    public bool $forceGlobalSecureRequests = false;
+
+    /**
+     * --------------------------------------------------------------------------
+     * Reverse Proxy IPs
+     * --------------------------------------------------------------------------
+     *
+     * If your server is behind a reverse proxy, you must whitelist the proxy
+     * IP addresses from which CodeIgniter should trust headers such as
+     * X-Forwarded-For or Client-IP in order to properly identify
+     * the visitor's IP address.
+     *
+     * You need to set a proxy IP address or IP address with subnets and
+     * the HTTP header for the client IP address.
+     *
+     * Here are some examples:
+     *     [
+     *         '10.0.1.200'     => 'X-Forwarded-For',
+     *         '192.168.5.0/24' => 'X-Real-IP',
+     *     ]
+     *
+     * @var array<string, string>
+     */
+    public array $proxyIPs = [];
+
+    /**
+     * --------------------------------------------------------------------------
+     * Content Security Policy
+     * --------------------------------------------------------------------------
+     *
+     * Enables the Response's Content Secure Policy to restrict the sources that
+     * can be used for images, scripts, CSS files, audio, video, etc. If enabled,
+     * the Response object will populate default values for the policy from the
+     * `ContentSecurityPolicy.php` file. Controllers can always add to those
+     * restrictions at run time.
+     *
+     * For a better understanding of CSP, see these documents:
+     *
+     * @see http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+     * @see http://www.w3.org/TR/CSP/
+     *
+     * Always on (strict policy with nonces, see Config\ContentSecurityPolicy); test a change with
+     * `contentsecuritypolicy.reportOnly = true` instead of disabling it.
+     */
+    public bool $CSPEnabled = true;
+
+    /**
+     * --------------------------------------------------------------------------
+     * Mask key (kpcrudy and kpapy)
+     * --------------------------------------------------------------------------
+     *
+     * The one key both libraries use to mask ids in URLs and to sign URLs
+     * (`app.maskKey` in `.env`, at least 32 characters: 64 random hex characters,
+     * `php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"`). Read by `Config\Kpcrudy`
+     * and `Config\Kpapy`; production refuses to boot without it
+     * (`Modules\Core\Security\MaskKey`). Changing it breaks every masked or signed link.
+     */
+    public string $maskKey = '';
+
+    public function __construct()
+    {
+        // HTTPS for every request in production (docs/specification.md, "Security baseline"),
+        // except a browser on this same computer talking to PHP's development server
+        // (`php spark serve`), where nothing crosses the network (decision D-19-05).
+        $this->forceGlobalSecureRequests = ENVIRONMENT === 'production' && ! self::isLocalDevServer();
+
+        // Before installation (no .env, no writable/install.lock) the web installer answers on
+        // whatever host the site is reached at: the base URL comes from the request
+        // (Modules\Core\Install\InstallState; decision D-18-02).
+        if (! is_cli() && ! is_file(ROOTPATH . '.env') && ! is_file(WRITEPATH . 'install.lock')) {
+            $this->baseURL = self::requestBaseURL() ?? $this->baseURL;
+        }
+
+        parent::__construct();
+    }
+
+    /**
+     * Whether this request is served by PHP's built-in development server (`php spark serve`,
+     * `php -S`) to a browser on the same computer: the client address is a loopback address
+     * and the host is `localhost`, `*.localhost` or a loopback IP. Only then production does
+     * not force HTTPS nor `Secure` cookies (D-19-05). Web servers (Apache, nginx, PHP-FPM) never
+     * qualify, not even behind a proxy on the same machine that sends `Host: 127.0.0.1`.
+     *
+     * @param array<string, mixed>|null $server Default: $_SERVER
+     * @param string|null               $sapi   Default: PHP_SAPI
+     */
+    public static function isLocalDevServer(?array $server = null, ?string $sapi = null): bool
+    {
+        if (($sapi ?? PHP_SAPI) !== 'cli-server') {
+            return false;
+        }
+
+        $server ??= $_SERVER;
+        $client = (string) ($server['REMOTE_ADDR'] ?? '');
+        $host   = strtolower((string) ($server['HTTP_HOST'] ?? ''));
+        // Without the port: "localhost:8080", "[::1]:8080".
+        $host = preg_replace('/^(\[[0-9a-f:.]+\]|[^:]+)(?::\d{1,5})?$/', '$1', $host) ?? '';
+
+        return self::isLoopbackIp($client)
+            && ($host === 'localhost' || str_ends_with($host, '.localhost') || self::isLoopbackIp(trim($host, '[]')));
+    }
+
+    private static function isLoopbackIp(string $ip): bool
+    {
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
+            return str_starts_with($ip, '127.');
+        }
+
+        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false && inet_pton($ip) === inet_pton('::1');
+    }
+
+    /**
+     * The base URL of the current web request (scheme, a well-formed host and the folder of the
+     * front controller), or null when the host is missing or malformed.
+     */
+    public static function requestBaseURL(): ?string
+    {
+        // Read while the config is being built, before the superglobals service exists.
+        $server = $_SERVER;
+        $host   = (string) ($server['HTTP_HOST'] ?? '');
+
+        if (preg_match('/^(?:[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*|\[[0-9A-Fa-f:.]+\])(?::\d{1,5})?$/', $host) !== 1) {
+            return null;
+        }
+
+        $https  = (isset($server['HTTPS']) && strtolower((string) $server['HTTPS']) !== 'off') || (string) ($server['SERVER_PORT'] ?? '') === '443';
+        $folder = str_replace('\\', '/', dirname((string) ($server['SCRIPT_NAME'] ?? '/index.php')));
+        $folder = '/' . trim($folder, '/.');
+
+        return ($https ? 'https' : 'http') . '://' . $host . rtrim($folder, '/') . '/';
+    }
+}

@@ -1,0 +1,176 @@
+# Settings
+
+Runtime settings are stored by `codeigniter4/settings` and declared in the module manifests
+(`$settings`). The **Settings** module generates their screens (`backend/settings`). File
+configuration (`Config\…` and `.env`) gives the defaults; the screens only store **overrides**.
+
+## Declaring a setting
+
+```php
+public array $settings = [
+    'perPage' => [
+        'type'    => 'int',                       // string, text, int, float, bool, select,
+                                                  // email, url, color, json, list
+        'default' => 10,
+        'rules'   => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+        'label'   => 'News.settings.perPage',     // language keys
+        'help'    => 'News.settings.perPageHelp',
+        'group'   => 'listing',                   // heading inside the tab (optional)
+    ],
+];
+```
+
+- A `select` setting lists fixed `options` (value → language key), or names an
+  `optionsProvider`: a class implementing `Modules\Core\Settings\SettingOptionsProvider`
+  whose `options()` returns value → **translated** label, computed each time the form is shown
+  and validated (`in_list` of those values). Example: `Pages.homePage` lists the pages
+  (`Modules\Pages\Settings\HomePageOptions`) and stores the page id.
+
+  ```php
+  'homePage' => [
+      'type'            => 'select',
+      'default'         => '',
+      'optionsProvider' => \Modules\Pages\Settings\HomePageOptions::class,
+      'label'           => 'Pages.settings.homePage',
+  ],
+  ```
+- `setting('News.perPage')` returns the manifest default until a value is saved (or the property
+  of `Config\News` when that class has one, `.env` included).
+- `list` is a list of strings, edited one per line (`SettingCaster::cast('list', …)`); `json`
+  is edited as JSON text (`valid_json` is added automatically).
+- `multiselect` (D-31-01) is a list of values chosen with checkboxes, one per option (fixed
+  `options` or an `optionsProvider`, like `select`; `options` required). Stored like `list`, in the
+  order of the options; values that are not options are dropped; the declared rules check the
+  chosen values joined with commas (e.g. `required` = at least one). Example: `Core.locales`.
+- `image` (D-56-02) is an image chosen with a file input ("Browse…") under a preview of the
+  current one: when the form is saved, the file is stored through the Storage service on the public
+  disk in `uploads/settings/<module>/` or `uploads/settings/theme-<slug>/` (PNG, JPEG, GIF, WebP;
+  SVG only with `Core.uploadAllowSvg`; random name, re-encoded) and the setting keeps its path under
+  `public/` (relative, so it survives a move to another host). A box "go back to the default image"
+  (or "remove the image") appears when the value differs from the default. The path is never
+  taken from the post; a replaced upload under `uploads/settings/` is deleted once no stored
+  setting uses it (a theme's own images are never deleted). `Modules\Settings\Forms\ImageUploads`,
+  view `fields/image.php`. The theme options `logo`, `logoDark`, `favicon` and `appIcon` are images.
+- `translated` (D-25-10, session 31) is one text per language of the site, stored as one JSON
+  map `locale => text` (`SettingCaster::cast('translated', …)`: locale-like keys, trimmed,
+  empty texts dropped, keys sorted). Its `default` is a **language key** (its text in every
+  supported locale, `TranslatedText::defaults()`) or a map. The form shows one input per
+  **available** locale (`Core.locales`, else every supported locale) named `<field>[<locale>]`;
+  the declared rules apply to each input; texts stored for locales the site no longer offers are
+  kept. Read it with `Modules\Core\Settings\TranslatedText::get('<Module>.<key>', $locale)`:
+  the locale's text, else the Catalan one, else the default of the locale, else the Catalan
+  default. Example: `Users.birthdayGreeting`.
+
+  ```php
+  'birthdayGreeting' => [
+      'type'    => 'translated',
+      'default' => 'Users.greetings.defaultMessage',
+      'rules'   => 'required|max_length[300]',
+      'label'   => 'Users.settings.birthdayGreeting',
+  ],
+  ```
+- Each type adds its own rules (`integer`, `decimal`, `valid_email`, `valid_url_strict[https]`,
+  colour pattern, `in_list[...]` for selects, `valid_json`); without `required` the field also
+  gets `permit_empty`. A posted array is emptied (forged input), except for `translated` fields,
+  where only the available locales' texts are read.
+- Group labels: `<Module>.settingGroups.<group>` (for `security.<sub>`: `<sub>`), else the
+  group name.
+
+## Tabs and permissions
+
+| Screen | URL | Open | Save |
+|---|---|---|---|
+| A module's tab ("General" for the Core) | `backend/settings/<module>` | `settings.update` | `settings.<module>` |
+| Theme | `backend/settings/theme[?theme=<slug>]` | `settings.update` | `settings.core` |
+| Settings › Security | `backend/settings/security` | `settings.security` + re-auth | `settings.security` + re-auth |
+| Actions | `backend/settings/actions` | `settings.update` | see below |
+
+- `settings.update` and `settings.security` are the only operations of the Settings module's
+  resource `settings`; `settings.<module>` is generated by the Core for every module that
+  declares settings (`modules:sync`). The `admin` group gets `settings.*` by default; the
+  superadmin bypasses everything.
+- Without the tab's permission the fields are shown disabled, and a POST (forged or not) gets the
+  `can:` filter's 403 and a `forbidden` security entry.
+- A module whose settings are all in security groups has no tab (404).
+
+## Settings › Security
+
+A setting whose `group` is `security` or `security.<sub>` is shown **only** in Settings ›
+Security, one card per module and a heading per sub-group. Today:
+
+- **Core:** rate limits (`security.rateLimits`), upload rules (`security.uploads`, with the
+  largest stored image `Core.imageMaxDimension`, default 1920 px, minimum 320; D-54-01; the
+  unused files' grace period `Core.unusedFilesGraceDays`, default 30, minimum 7, and their
+  automatic deletion `Core.unusedFilesAutoDelete`, **off** by default, after
+  `Core.unusedFilesAutoDeleteDays`, default 90, never below the grace period; D-55-01), activity log
+  retention (`security.activity`), extra outbound hosts `Core.outboundHosts`
+  (`security.outbound`), extra CSP origins per directive `Core.cspScriptSrc`, `cspStyleSrc`,
+  `cspImgSrc`, `cspFontSrc`, `cspConnectSrc`, `cspFrameSrc`, `cspMediaSrc` (`security.csp`).
+- **Auth:** minimum password length, session lifetimes (absolute, idle lock, remember-me),
+  re-authentication window, new-device notice, captcha, login and email-link limits, 2FA
+  policy per group (JSON `{"admin": "required"}`).
+- **Api:** `Api.publicSpec`, `Api.corsOrigins`, `Api.appTokenDays`.
+
+Values that would weaken the baseline are refused (422, nothing stored, a
+`security_settings_refused` security entry). Besides the bounds in each setting's `rules`, the
+Core's `Modules\Core\Settings\SecurityRules` (registered in `Config\Validation::$ruleSets` by
+the Core's registrar) give:
+
+| Rule | Refuses |
+|---|---|
+| `csp_sources` | keywords (`'unsafe-inline'`, `'self'`…), `*`, schemes alone (`https:`, `data:`), `http://`, paths |
+| `csp_script_sources` | the same plus wildcards (`script-src`, `style-src`) |
+| `outbound_hosts` | IP addresses, `localhost` and local names, schemes, ports, paths |
+| `cors_origins` | anything but `https://host[:port]` (`http://` only for localhost) |
+| `upload_types` | `Config\Storage::$forbiddenExtensions` (code, HTML, executables…) |
+| `min_config[Auth.minimumPasswordLength]` | a value below the file configuration's (`Config\Auth`, `.env`) |
+| `not_below_setting[Core.unusedFilesGraceDays]` | a value below another setting (the one posted in the same form, else the stored one): the age of the automatic deletion of unused files below their grace period |
+
+The 2FA policy per group is not a setting (a column of the `groups` table, D-15-02). The `cspmodules` filter
+adds the stored origins to the policy and checks them again (`SecurityRules::isAllowedCspSource()`),
+so a value written another way cannot weaken it. Every change is a `security_settings_changed`
+security entry with the before/after values.
+
+The minimum password length is copied into Shield's `config('Auth')` on every request
+(`AuthPolicy::apply()`, D-00-07) and the remember-me lifetime caps sessions re-created by the
+remember-me cookie (D-00-14).
+
+## Site-wide settings (Core, "General" tab)
+
+- `Core.siteName`: page titles, emails, the authenticator app label, the PWA and the OpenAPI
+  title (`site_name()`; empty: the language line `Core.app.name`).
+- `Core.timezone`: the time zone `ui_date()` shows dates in (`site_timezone()`); dates are still
+  stored in UTC (`Config\App::$appTimezone`).
+- `Core.pwa`, `Core.pwaStart`, `Core.poorMansCron`.
+
+Default and available locales arrive with session 31; the mail transport stays in `.env`
+(secrets); the logo is a theme option. Maintenance mode is not a stored setting (its state is a
+file, D-27-02): it is turned on and off in Settings › Actions (below).
+
+## Theme tab
+
+`Theme.backend` and `Theme.public` (stored without context) and the options of one theme
+(`?theme=<slug>`, the back office's by default), stored as `Theme.<option>` with the context
+`theme:<slug>` (D-03-02). Saving invalidates the menu and asset caches.
+
+## Actions
+
+- **Send a test email** (`settings.update`): queued in `mail_queue` for the logged-in user and
+  sent by the scheduled task `SendQueuedEmails` (never inline). Activity `test_email`.
+- **Clear caches** (`settings.update`): the Core's cache scopes and the theme registry, never the
+  whole cache store (it holds the rate limiter's counters). Activity `caches_cleared`.
+- **Publish assets** (`settings.security` + re-authentication): like `php spark assets:publish`,
+  only into `public/assets/…` and `public/themes/` (D-00-33). Security entry `assets_published`.
+- **Maintenance mode** (`maintenance.manage` + re-authentication, `POST
+  backend/settings/actions/maintenance`, D-28-02): on with an optional plain-text message (at most
+  500 characters), or off. Holders of `maintenance.manage` keep using the site meanwhile. The
+  permission has no default grant (superadmins always pass; administrators do not get it through
+  `settings.*`): assign it in the permission matrix to whoever needs it. A mode turned on by a restore or an update is shown but
+  not turned off here. Security entries `maintenance_on` / `maintenance_off`.
+
+## Storing overrides
+
+`SettingsEditor::save()` compares each posted value with the current one: unchanged values are
+skipped, a value equal to the baseline (file configuration or manifest default) is
+**forgotten**, any other value is stored. Module tab changes are `settings_changed` activity
+entries (summary: the module, or `theme:<slug>`).

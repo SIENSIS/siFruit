@@ -1,0 +1,120 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Events\Config;
+
+use Modules\Core\Config\ModuleManifest;
+
+/**
+ * Manifest of the Events module: the calendar (docs/events.md; specification "Modules" › "Events").
+ *
+ * Resources (permission names `events-<resource>.<operation>`, D-24-01):
+ * - `events` (kpcrudy): the administration of the events; extras `all` (see and manage every
+ *   event, not only those of the user's audience or created by them) and `duplicate`;
+ * - `categories` (kpcrudy): the categories;
+ * - `calendar` (page): the calendar view, the event details and the user's reminders (`view`),
+ *   granted to every group;
+ * - `api` (D-26-01): the `events` API resource (`events-api.list`, `events-api.show`), every
+ *   group; `api/v1/public/events` is public (no token, no permission, public events only).
+ *
+ * Configuration: `Config/Calendar.php` (D-00-04, D-24-05). The calendar API (`service('calendar')`,
+ * other modules' `$calendars` and `$calendarProviders`) and the iCal feeds: docs/calendar.md,
+ * docs/events.md (session 25). Menu "Calendar subscription" in the user menu.
+ */
+final class Module extends ModuleManifest
+{
+    public string $name    = 'Events';
+    public string $version = '0.1.0';
+    public string $icon    = 'bi bi-calendar3';
+    public array $requires = ['Core' => '^1.0', 'Auth' => '^0.2', 'Dashboard' => '^0.1'];
+
+    public array $resources = [
+        'events' => [
+            'label' => 'Events.res.events',
+            'type'  => 'crud',
+            'extra' => [
+                'all'       => 'Events.perm.all',
+                'duplicate' => 'Events.perm.duplicate',
+            ],
+        ],
+        'categories' => [
+            'label'  => 'Events.res.categories',
+            'type'   => 'crud',
+            'except' => ['import', 'trash', 'restore', 'purge'],
+        ],
+        'calendar' => [
+            'label' => 'Events.res.calendar',
+            'type'  => 'page',
+        ],
+        'api' => [
+            'label'  => 'Events.res.api',
+            'type'   => 'crud',
+            'except' => ['add', 'edit', 'delete', 'export', 'import', 'trash', 'restore', 'purge'],
+        ],
+    ];
+
+    public array $defaultGrants = [
+        'superadmin' => ['events-calendar.*', 'events-api.*'],
+        'admin'      => ['events-events.*', 'events-categories.*', 'events-calendar.*', 'events-api.*'],
+        'editor'     => [
+            'events-events.list', 'events-events.show', 'events-events.add', 'events-events.edit',
+            'events-events.delete', 'events-events.duplicate', 'events-events.export', 'events-events.import',
+            'events-categories.list', 'events-categories.show',
+            'events-calendar.*', 'events-api.*',
+        ],
+        'user' => ['events-calendar.*', 'events-api.*'],
+    ];
+
+    public array $menu = [
+        // "Calendar" is a group with the agenda first, then the administration (D-57-01).
+        ['group' => 'group.calendar', 'label' => 'Events.menu.calendar', 'icon' => 'bi bi-calendar3', 'order' => 25],
+        ['resource' => 'calendar', 'label' => 'Events.menu.agenda', 'icon' => 'bi bi-calendar-week', 'order' => 1, 'parent' => 'group.calendar'],
+        ['resource' => 'events', 'label' => 'Events.menu.events', 'icon' => 'bi bi-calendar-event', 'order' => 2, 'parent' => 'group.calendar'],
+        ['resource' => 'categories', 'label' => 'Events.menu.categories', 'icon' => 'bi bi-tags', 'order' => 3, 'parent' => 'group.calendar'],
+        ['route' => 'events-subscription', 'permission' => 'events-calendar.view', 'label' => 'Events.menu.subscription', 'icon' => 'bi bi-rss', 'order' => 26, 'zone' => 'user'],
+    ];
+
+    /** Link type "Calendar" of the public menu editor. */
+    public array $menuLinks = [\Modules\Events\Menu\CalendarLink::class];
+
+    /** No manifest settings: `setting('Events.*')` would autoload `app/Config/Events.php` (D-24-05). */
+    public array $settings = [];
+
+    /** Section types of pages built from sections (session 46; docs/sections.md): calendar and upcoming events. */
+    public array $sectionTypes = [
+        \Modules\Events\Sections\CalendarSection::class,
+        \Modules\Events\Sections\EventsListSection::class,
+    ];
+
+    public array $widgets = [\Modules\Events\Widgets\UpcomingEvents::class];
+
+    public array $tasks = [\Modules\Events\Tasks\SendReminders::class];
+
+    public array $notifications = [\Modules\Events\Notifications\EventReminder::class];
+
+    /** No files: events have no uploads. */
+    public array $backup = [];
+
+    /** @var list<string> Files the module uses, for the unused-files scan (D-55-01, docs/storage.md) */
+    public array $fileReferences = [
+        \Modules\Events\Storage\EventFileReferences::class,
+    ];
+
+    /** No extra Content-Security-Policy sources: the calendar library is vendored and needs none. */
+    public array $csp = [];
+
+    /** No outbound requests. */
+    public array $outboundHosts = [];
+
+    /**
+     * No declared calendar: the events created by hand form the built-in calendar `events`.
+     * Other modules declare theirs (docs/calendar.md).
+     */
+    public array $calendars = [];
+
+    public array $api = [
+        'events'        => ['path' => 'events', 'handler' => '\Modules\Events\Controllers\Api\Events::index'],
+        'public-events' => ['path' => 'public/events', 'handler' => '\Modules\Events\Controllers\Api\PublicEvents::index'],
+    ];
+}

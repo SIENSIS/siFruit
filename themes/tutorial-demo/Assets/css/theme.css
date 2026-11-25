@@ -1,0 +1,39 @@
+/*
+ * Theme "Tutorial Demo" (tutorial 9): loaded after the parent theme's stylesheets. The primary colour
+ * comes from the option `primaryColor` (Theme.php); here only the theme's own touches, through
+ * CSS custom properties so light and dark mode both work.
+ */
+:root {
+    --tutorial-demo-accent: #6f42c1;
+    --tutorial-demo-column-todo: var(--bs-secondary-bg);
+    --tutorial-demo-column-doing: var(--bs-primary-bg-subtle);
+    --tutorial-demo-column-done: var(--bs-success-bg-subtle);
+}
+
+.brand-logo {
+    height: 2rem;
+    width: auto;
+}
+
+.tutorial-demo-hero {
+    border-left: 0.35rem solid var(--tutorial-demo-accent);
+    padding-left: 1rem;
+}
+
+.tutorial-demo-column {
+    border-radius: var(--bs-border-radius-lg);
+    padding: 0.75rem;
+    height: 100%;
+}
+
+.tutorial-demo-column-todo {
+    background-color: var(--tutorial-demo-column-todo);
+}
+
+.tutorial-demo-column-doing {
+    background-color: var(--tutorial-demo-column-doing);
+}
+
+.tutorial-demo-column-done {
+    background-color: var(--tutorial-demo-column-done);
+}

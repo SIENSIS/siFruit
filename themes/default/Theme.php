@@ -1,0 +1,188 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Themes\Default;
+
+use Modules\Core\Theme\ThemeManifest;
+
+/**
+ * The default theme: Bootstrap 5.3 (served locally from public/assets/vendor), every colour a
+ * CSS custom property so options and child themes only change variables, in light and dark mode.
+ */
+final class Theme extends ThemeManifest
+{
+    public string $name    = 'Default';
+    public string $version = '1.0.0';
+    public string $author  = 'SIENSIS';
+
+    public array $layouts = ['backend', 'public', 'auth', 'blank', 'print'];
+
+    public array $regions = [
+        'backend' => ['sidebar', 'topbar', 'footer'],
+        'public'  => ['header', 'sidebar', 'footer', 'home'],
+        'auth'    => ['footer'],
+    ];
+
+    public array $menuLocations = [
+        'primary' => 'ThemeDefault.menu.primary',
+        'footer'  => 'ThemeDefault.menu.footer',
+        'social'  => 'ThemeDefault.menu.social',
+    ];
+
+    /** Templates of content pages (Pages module); views in modules/Pages/Views/templates. */
+    public array $pageTemplates = [
+        'default' => 'ThemeDefault.pageTemplates.default',
+        'wide'    => 'ThemeDefault.pageTemplates.wide',
+        'sidebar' => 'ThemeDefault.pageTemplates.sidebar',
+    ];
+
+    /**
+     * Zones for reusable blocks (D-47-01; docs/themes.md, "Zones"), printed by the public layout
+     * inside `<main>`: right after the header and right before the footer.
+     */
+    public array $zones = [
+        'public.after_header'  => 'ThemeDefault.zones.afterHeader',
+        'public.before_footer' => 'ThemeDefault.zones.beforeFooter',
+    ];
+
+    public array $styles = [
+        'vendor:bootstrap/css/bootstrap.min.css',
+        'vendor:bootstrap-icons/font/bootstrap-icons.min.css',
+        'css/theme.css',
+    ];
+
+    public array $scripts = [
+        'vendor:bootstrap/js/bootstrap.bundle.min.js',
+    ];
+
+    public array $options = [
+        'logo' => [
+            'type'    => 'image',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.logo',
+            'help'    => 'ThemeDefault.options.logoHelp',
+        ],
+        'primaryColor' => [
+            'type'    => 'color',
+            'default' => '#0d6efd',
+            'label'   => 'ThemeDefault.options.primaryColor',
+            'css'     => '--bs-primary',
+        ],
+        'primaryColorDark' => [
+            'type'    => 'color',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.primaryColorDark',
+            'help'    => 'ThemeDefault.options.primaryColorDarkHelp',
+            'css'     => '--bs-primary',
+            'mode'    => 'dark',
+        ],
+        'logoDark' => [
+            'type'    => 'image',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.logoDark',
+            'help'    => 'ThemeDefault.options.logoDarkHelp',
+        ],
+        'favicon' => [
+            'type'    => 'image',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.favicon',
+            'help'    => 'ThemeDefault.options.faviconHelp',
+        ],
+        'appIcon' => [
+            'type'    => 'image',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.appIcon',
+            'help'    => 'ThemeDefault.options.appIconHelp',
+        ],
+        'defaultMode' => [
+            'type'    => 'select',
+            'default' => 'auto',
+            'label'   => 'ThemeDefault.options.defaultMode',
+            'options' => [
+                'auto'  => 'Core.mode.auto',
+                'light' => 'Core.mode.light',
+                'dark'  => 'Core.mode.dark',
+            ],
+        ],
+        'forceMode' => [
+            'type'    => 'select',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.forceMode',
+            'help'    => 'ThemeDefault.options.forceModeHelp',
+            'options' => [
+                ''      => 'ThemeDefault.options.forceModeNone',
+                'light' => 'Core.mode.light',
+                'dark'  => 'Core.mode.dark',
+            ],
+        ],
+        'modeSwitch' => [
+            'type'    => 'bool',
+            'default' => true,
+            'label'   => 'ThemeDefault.options.modeSwitch',
+        ],
+        // The language switch of the public site (partial language_switch; shown only when the
+        // site offers more than one language, docs/i18n.md "Choosing the language").
+        'languageSwitch' => [
+            'type'    => 'bool',
+            'default' => true,
+            'label'   => 'ThemeDefault.options.languageSwitch',
+        ],
+        // The account link at the end of the public navbar (partial account_link, Core
+        // `AccountLink`): sign in, back office or my account (docs/themes.md, "Account link").
+        'showAccountLink' => [
+            'type'    => 'bool',
+            'default' => true,
+            'label'   => 'ThemeDefault.options.showAccountLink',
+            'help'    => 'ThemeDefault.options.showAccountLinkHelp',
+        ],
+        // The site search box in the public navbar (partial search_box, D-50-01, docs/search.md).
+        'showSearch' => [
+            'type'    => 'bool',
+            'default' => true,
+            'label'   => 'ThemeDefault.options.showSearch',
+        ],
+        'sidebarColor' => [
+            'type'    => 'color',
+            'default' => '#1e293b',
+            'label'   => 'ThemeDefault.options.sidebarColor',
+            'css'     => '--kp-sidebar-bg',
+        ],
+        'font' => [
+            'type'    => 'select',
+            'default' => 'system',
+            'label'   => 'ThemeDefault.options.font',
+            'options' => [
+                'system' => 'ThemeDefault.options.fontSystem',
+                'serif'  => 'ThemeDefault.options.fontSerif',
+                'mono'   => 'ThemeDefault.options.fontMono',
+            ],
+        ],
+        'footerText' => [
+            'type'    => 'text',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.footerText',
+        ],
+        // The footer in columns (session 47; docs/menus.md, "Footer columns"): each top-level
+        // item of the `footer` menu with children is a column (its heading and its links).
+        'footerColumns' => [
+            'type'    => 'select',
+            'default' => '4',
+            'label'   => 'ThemeDefault.options.footerColumns',
+            'help'    => 'ThemeDefault.options.footerColumnsHelp',
+            'options' => ['2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6'],
+        ],
+        // An optional first column with the address and contact details, per language.
+        'footerContact' => [
+            'type'    => 'translated',
+            'default' => '',
+            'label'   => 'ThemeDefault.options.footerContact',
+            'help'    => 'ThemeDefault.options.footerContactHelp',
+        ],
+        'cookieNotice' => [
+            'type'    => 'bool',
+            'default' => false,
+            'label'   => 'ThemeDefault.options.cookieNotice',
+        ],
+    ];
+}

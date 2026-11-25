@@ -1,0 +1,198 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Config;
+
+/**
+ * Base class of every module manifest (`modules/<Name>/Config/Module.php`).
+ *
+ * The manifest is the single source of truth for everything the skeleton needs to know about a
+ * module. Every key is typed and has a default; `ManifestValidator` checks the contents on
+ * `modules:sync` and fails with a message naming the key. See docs/specification.md,
+ * "The module contract".
+ */
+abstract class ModuleManifest
+{
+    /** Module name: StudlyCase, equal to the folder name (e.g. "News"). */
+    public string $name = '';
+
+    /** Semantic version of the module (e.g. "1.0.0"). */
+    public string $version = '0.0.0';
+
+    /** Bootstrap Icons class shown in menus and on the Modules screen. */
+    public string $icon = 'bi bi-box';
+
+    /**
+     * One-line description shown on the Modules screen and by a package before it is installed:
+     * a language key (`<Module>.module.description`) or plain text (D-29-01).
+     */
+    public string $description = '';
+
+    /**
+     * Author or vendor (plain text). A package may only replace an installed module of the same
+     * author (`modules:install`; D-29-01).
+     */
+    public string $author = '';
+
+    /**
+     * Module dependencies: name => version constraint (e.g. ['Core' => '^1.0']).
+     *
+     * @var array<string, string>
+     */
+    public array $requires = [];
+
+    /**
+     * Whether `modules:sync` enables the module when it finds it for the first time (D-32-01).
+     * `false` (e.g. the `Tutorial` module) installs it disabled, also on the first sync of a
+     * new installation; it is then enabled from the Modules screen or `modules:enable`.
+     */
+    public bool $enabledByDefault = true;
+
+    /**
+     * A module that exists only for development (D-41-01, e.g. `Devtools`): `modules:sync`,
+     * `modules:enable`, `modules:install` and the Modules screen refuse to enable or install it
+     * when `ENVIRONMENT` is not `development`, a sync outside development disables it (security
+     * log) and `security:check` reports it as an error. It must keep `$enabledByDefault = false`.
+     */
+    public bool $developmentOnly = false;
+
+    /** Where Updates looks for new versions (e.g. "github:acme/news-module"). */
+    public ?string $repository = null;
+
+    /**
+     * Resources: one per CRUD or screen. Permission names are "<module>-<resource>.<operation>".
+     * Keys of each definition: label, type ('crud'|'page'), except (crud operations to drop),
+     * extra (operation => label) and name (prefix override, Core and single-resource modules).
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public array $resources = [];
+
+    /**
+     * Default grants per group (atomic names or Shield wildcards), applied on first install.
+     *
+     * @var array<string, list<string>>
+     */
+    public array $defaultGrants = [];
+
+    /**
+     * Back-office menu entries (resource or route + permission, label, icon, order, zone, parent).
+     *
+     * @var list<array<string, mixed>>
+     */
+    public array $menu = [];
+
+    /**
+     * Link types offered to the public menu editor (class names).
+     *
+     * @var list<string>
+     */
+    public array $menuLinks = [];
+
+    /**
+     * Runtime settings: key => definition (type, default, rules, label, options).
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public array $settings = [];
+
+    /** @var list<string> Dashboard widgets */
+    public array $widgets = [];
+
+    /** @var list<string> Scheduled tasks */
+    public array $tasks = [];
+
+    /** @var list<string> Notification types */
+    public array $notifications = [];
+
+    /**
+     * Content the module contributes to backups beyond its tables (e.g. ['files' => ['news']]).
+     *
+     * @var array<string, list<string>>
+     */
+    public array $backup = [];
+
+    /**
+     * Calendars the module publishes events to (docs/calendar.md): key => [label, color, and
+     * optionally permission (required to see any of its events; without it each event's
+     * visibility decides), policy (an `EventAccessPolicy` class) and source (a `CalendarSource`
+     * class for `calendar:resync`), hidden (true: hidden in the calendar view until
+     * the user shows it)]. Its id in events is `<module in lower case>.<key>`.
+     *
+     * @var array<string, array<string, string|bool>>
+     */
+    public array $calendars = [];
+
+    /** @var list<string> On-the-fly calendar event providers (`CalendarProvider` classes) */
+    public array $calendarProviders = [];
+
+    /**
+     * Section types of pages built from sections (`Modules\Core\Sections\SectionType` classes,
+     * keys `<module>.<name>`; D-45-01, docs/sections.md).
+     *
+     * @var list<string>
+     */
+    public array $sectionTypes = [];
+
+    /**
+     * Ready-made page models offered by "New page from a model" (`Modules\Core\Sections\PageModel`
+     * classes, keys `<module>.<name>`; D-47-02, docs/sections.md "Page models").
+     *
+     * @var list<string>
+     */
+    public array $pageModels = [];
+
+    /**
+     * Sources of the site search (D-50-01, docs/search.md): key => [label (language key), source
+     * (a `Modules\Core\Search\SearchSource` class for `search:reindex`)]. Their id in the index
+     * is `<module in lower case>.<key>`; the module keeps its documents current with
+     * `service('search')->index()` / `replace()` / `remove()`.
+     *
+     * @var array<string, array<string, string>>
+     */
+    public array $searchSources = [];
+
+    /**
+     * The files the module uses (D-55-01, docs/storage.md "Unused files"):
+     * `Modules\Core\Storage\FileReferenceProvider` classes giving the module folders they answer
+     * for and every file they reference (content, trash, revisions, settings, rich text). A module
+     * that stores files declares one; its folders are "not checked" (never listed or deleted as
+     * unused) without it.
+     *
+     * @var list<string>
+     */
+    public array $fileReferences = [];
+
+    /**
+     * API resources (kpapy) under /api/v1: key => [path, handler]; checked against Config/Routes.php.
+     *
+     * @var array<string, array<string, string>>
+     */
+    public array $api = [];
+
+    /**
+     * Extra Content-Security-Policy sources: directive => list of sources.
+     *
+     * @var array<string, list<string>>
+     */
+    public array $csp = [];
+
+    /** @var list<string> Outbound host names the module calls through OutboundClient */
+    public array $outboundHosts = [];
+
+    /**
+     * The permission prefix of a resource: its 'name' override or "<module>-<resource>".
+     */
+    public function permissionPrefix(string $resource): string
+    {
+        $definition = $this->resources[$resource] ?? [];
+        $name       = $definition['name'] ?? null;
+
+        if (is_string($name) && $name !== '') {
+            return $name;
+        }
+
+        return strtolower($this->name) . '-' . $resource;
+    }
+}

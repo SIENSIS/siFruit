@@ -1,0 +1,154 @@
+# News (reference module)
+
+`modules/News` is the module every other module copies (specification "Modules" › "News"). It
+uses every piece of the skeleton: a manifest with resources, grants, menus, settings, widgets, a
+task, a notification type, a menu link type, backups and an API resource; kpcrudy CRUDs through
+the Core; a kpapy resource; the Storage service; HTMLPurifier; demo data; tests.
+
+## What it does
+
+- **Posts** (`news`, texts in `news_translations`: title, summary, body; one per site
+  language, the site's default language required, `docs/i18n.md`): type `article` or `notice`, category, visibility, status,
+  publication and expiry dates, a cover image, an author. Notices also have a **priority**
+  (`info`, `warning`, `critical`) and can be **pinned**.
+- **Categories** (`news_categories` + `news_category_translations`): slug, order, active.
+- **Visibility:** `public` (public site, feed), `private` (signed-in users) or `groups` (the
+  groups in `news_groups`, edited with kpcrudy `setRelationNN()`).
+- **Read receipts** (`news_reads`): "mark as read" from the *Notices* widget and the reader
+  screen; authors with `news-posts.readers` see who read a post.
+
+## Screens and URLs
+
+| URL | Resource / permission | What |
+|---|---|---|
+| `backend/news` | `news-read.view` (every group) | Reader screen: posts the user may read, filters (type, category, unread) |
+| `backend/news/read/{id}` | `news-read.view` | A post (masked id; anything unreadable is a 404) |
+| `POST backend/news/read/{id}/mark` | `news-read.view` | Mark as read (`return` = internal path) |
+| `backend/news/posts` | `news-posts.*` | Every post (kpcrudy); operations `publish`, `unpublish`, `readers`; bulk "Publish" |
+| `backend/news/mine` | `news-mine.*` | "My posts": the `where('author_id', me)` pattern |
+| `backend/news/categories` | `news-categories.*` | Categories (kpcrudy) |
+| `news`, `news/{slug}`, `news/category/{slug}` | public | Public posts only (`News.perPage` per page) |
+| `news/feed.xml` | public | RSS 2.0 of the latest public posts (`News.feedItems`) |
+| `GET api/v1/news`, `GET api/v1/news/{id}` | `news-api.list` / `news-api.show` (every group) | Readable posts as JSON (kpapy, read-only) |
+| `GET api/v1/news/notices` | `news-api.list` | The user's notices like the widget (`?unread=1`, `?limit=`) |
+| `POST api/v1/news/{id}/read` | `news-api.read` (every group, D-26-01) | Marks a readable post as read |
+| `GET api/v1/public/news`, `GET api/v1/public/news/{id}` | none (`kpapy:public`, per IP) | Public posts only (D-26-02) |
+
+Permission names and URLs: decision **D-17-01** (decided: the API has its own resource
+`news-api`). Images inside the body: decision **D-17-08** (decided: an "Insert image" button with
+the file picker, session 23).
+
+## Rules
+
+- **Who reads what** (`Services/NewsVisibility.php`, D-17-04): a post is readable when it is not
+  deleted, its status is `published` or `scheduled`, `published_at` has passed and `expires_at`
+  (if any) has not. Guests and the public site: only `public`. Signed-in users: `public`,
+  `private` and `groups` posts of one of their groups. The same rule serves the reader screen, the
+  widgets, the public site, the feed and the API (there, through kpapy's `where(Closure)`, D-17-07).
+- **Own posts** (`Controllers/Posts.php`): without `news-posts.author` the author field is hidden
+  everywhere (`hideFields()`) and a user only edits, deletes and (un)publishes their own posts
+  (per-record `setPermission()` rules, checked again by kpcrudy on every row and bulk action). New
+  posts belong to their author.
+- **Dates** are edited in the site's time zone (`Core.timezone`) and stored in UTC (kpcrudy 1.2,
+  set by `CrudFactory`).
+- **Statuses** (`Services/Publisher.php`, D-17-03): new posts are drafts; `publish` makes a post
+  `published` (or `scheduled` when `published_at` is in the future); `unpublish` turns it back
+  into a draft; the form never sets the status. The task *Publish scheduled news and expire
+  notices* (`Tasks/ExpireNotices.php`, every 5 minutes) releases due scheduled posts and marks
+  notices past `expires_at` as `expired` (unpinned). Readers never wait for it.
+- **Notifications** (`Notifications/NewNotice.php`): a `private` notice notifies every user with
+  `news-read.view`, a `groups` notice the members of its groups, once (`news.notified_at`), when
+  it is published or released. Users choose the channels in their notification preferences.
+- **Body**: sanitised with HTMLPurifier (the Core's `Modules\Core\Security\HtmlSanitizer`, shared with later modules) before kpcrudy reads the
+  form (D-17-02) and again when a post is shown. It is written with the Core's rich-text editor
+  (`core/forms/editor`, D-20-03); alignment is kept as the classes `text-center`, `text-right`,
+  `text-justify`.
+- **Slugs** (the Core's `Modules\Core\Text\Slugger`): from the Catalan title (or the given slug), transliterated,
+  unique (`-2`, `-3`…); kept when the title changes unless the slug field is edited.
+- **Cover**: kpcrudy `image` field with an upload handler on the Storage service
+  (`Storage/CoverUploads.php`, D-17-06): public disk, folder `modules/news`, JPG/PNG/WebP up to
+  5 MB, re-encoded; the column keeps the file key. Session 23 switches it to the file picker.
+
+## News in pages (session 46)
+
+- **Section `news.list`** (`Sections/NewsListSection.php`, view `Views/sections/list.php`): a page
+  built from sections can show the news. Mode *latest* (the newest N, an optional "more" link) or
+  *full list* (N per page; the page is the query parameter `page-<section id>` and the optional
+  search box `q-<section id>`, so two lists on one page do not clash); one or several categories
+  (none = every category); 2–4 columns; cards or a compact list; date, summary and image
+  optional. It shows **exactly what the public list shows** to the same visitor
+  (`NewsRepository::page(…, $publicOnly = true)`: public, published, not expired, in the reader's
+  language).
+- **Category banners**: a category has an optional banner (column `news_categories.banner`,
+  migration `AddBannerToNewsCategories`; the file picker of the cover, public disk, folder
+  `modules/news`, forged keys refused). The category page (`news/category/{slug}`) shows it as a
+  hero with the category's name as the `<h1>`; an article shows its category's banner above it.
+- **The main news list** (D-46-03): setting `News.listPage` (Settings › News, a page chosen from the
+  site's pages through the link type `pages.page`; News does not depend on Pages). When it is set
+  and the page is published, `GET news` answers a **301** to that page (in the visitor's language);
+  article and category pages keep their URLs. The sitemap lists pages, never `/news`, so the page
+  is the only list in it. With no page chosen (or the page unpublished or gone) nothing changes.
+
+## Dashboard widgets
+
+| Id | Title | Permission | Options |
+|---|---|---|---|
+| `news.notices` | Notices | `news-read.view` | `limit` (5), `unreadOnly` |
+| `news.latest` | Latest news | `news-read.view` | `limit` (5) |
+
+*Notices*: pinned first, then critical, warning, info, newest first; each with "mark as read"
+(back to the dashboard). Administrators enable or reorder them per group in Settings › Dashboard
+widgets (`docs/widgets.md`).
+
+## Settings, menus and other declarations
+
+- Settings (Settings › News, group "Public site"): `News.perPage` (10, 1–100), `News.feedItems`
+  (20, 1–100).
+- Menu: "News" (sidebar, the reader) with "All posts", "My posts" and "Categories" under it, each
+  shown only with its permission.
+- Menu link type `news.category` (`Menu/CategoryLink.php`, D-17-05) for the public menus of
+  session 21.
+- Backup: the tables and the files of `modules/news` (Backup, session 27). The `news.notices`
+  calendar arrives in session 25; read receipts and notices in the API in session 26 (`docs/api.md`).
+
+## Calendar
+
+A **notice** may have an event date (`event_starts_at`, optional `event_ends_at`,
+`event_all_day`; the end may not be before the start). While the notice is published and readable
+(not scheduled, not expired, not in the trash) and has a date, it is published to the calendar
+`news.notices` ("Notices", red) through the calendar API (`Services/NoticeCalendar.php`,
+`docs/calendar.md`) with the notice's audience: `public` → public, `private` → private,
+`groups` → restricted to its groups (D-00-41; the calendar declares no permission). The event
+links back to the reader page (`backend/news/read/{code}`) and allows reminders. Every write of
+the CRUDs, publish/unpublish (single and bulk), the release of scheduled notices and the expiry
+task call `NoticeCalendar::sync()`; `php spark calendar:resync News` repairs drift. D-25-06.
+
+## Search
+
+Published and scheduled posts are found by the site search ([`search.md`](search.md), D-50-01;
+source `news.posts`, `Search/NewsSearch.php`) with the audience of `NewsVisibility`: guests find
+public posts (linked to the public article `news/<slug>`), signed-in users also private posts and
+members their groups' posts (linked to the reader, `backend/news/read/<id>`, D-00-42). The window
+is `published_at` → `expires_at`; the category's name is a keyword. `NewsSearch::sync()` runs next
+to `NoticeCalendar::sync()` after every write and state change.
+
+## Activity log
+
+CRUD writes, `publish`/`unpublish`, bulk actions and exports are logged by the Core
+(`AuditedCrud`). The task writes `News.notices_updated` when it changes something. "Mark as read"
+is a personal action and is not logged.
+
+## Demo data
+
+`php spark modules:demo News` (after `modules:demo Auth` for the authors): two categories, three
+public articles, a private article, a pinned critical notice for everybody, a warning notice for
+the `editor` group, an information notice, a scheduled article and a draft, all in Catalan.
+
+## Tests
+
+`vendor/bin/phpunit modules/News`: `PostsCrudTest` (read-only user, forged POSTs, own posts,
+`author` hidden, "My posts", sanitised body, slugs, publish and notifications, readers),
+`ReaderTest` (visibility, details, mark as read), `WidgetsAndTaskTest` (notices per audience,
+widget "mark as read", the task), `PublicSiteTest` (public pages and feed), `NewsApiTest`/`PublicNewsApiTest` (list
+and details with visibility, scopes, read-only), `NewsModuleTest` (manifest, migrations
+up/down/up, sanitiser, slugs, link type). Base class `Tests/NewsTestCase.php`.

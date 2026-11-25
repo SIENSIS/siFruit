@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'name'    => 'Default',
+    'pageTemplates' => [
+        'default' => 'Default (reading column)',
+        'wide'    => 'Wide',
+        'sidebar' => 'With subpages beside',
+    ],
+    'menu'    => [
+        'primary' => 'Main menu',
+        'footer'  => 'Footer menu',
+        'social'  => 'Social networks',
+    ],
+    'zones'   => [
+        'afterHeader'  => 'Reusable blocks after the header',
+        'beforeFooter' => 'Reusable blocks before the footer',
+    ],
+    'footer'  => ['contact' => 'Contact'],
+    'options' => [
+        'logo'         => 'Logo',
+        'logoHelp'     => 'Logo image (PNG, JPEG, GIF, WebP or SVG). No image: the site name with an icon.',
+        'primaryColor' => 'Primary colour',
+        'primaryColorDark'     => 'Primary colour in dark mode',
+        'primaryColorDarkHelp' => 'Empty: the same as in light mode.',
+        'logoDark'             => 'Logo for dark backgrounds',
+        'logoDarkHelp'         => 'Used in dark mode. Empty: the normal logo.',
+        'favicon'              => 'Browser icon (favicon)',
+        'faviconHelp'          => 'A square image of 32 px or more (PNG, WebP or SVG). No image: public/favicon.ico.',
+        'appIcon'              => 'App icon',
+        'appIconHelp'          => 'A square image of 512 px or more (PNG, JPEG or WebP) for the installed app (PWA) and phones\' home screens. No image: the logo.',
+        'defaultMode'          => 'Default colour mode',
+        'forceMode'            => 'Force a colour mode',
+        'forceModeHelp'        => 'Ignores the visitors\' choice and hides the switch.',
+        'forceModeNone'        => 'Do not force (visitors choose)',
+        'modeSwitch'           => 'Show the light/dark switch',
+        'languageSwitch'       => 'Show the language switch on the public site',
+        'showAccountLink'      => 'Show the sign-in link on the public site',
+        'showAccountLinkHelp'  => '“Sign in” for visitors, “Administration” for users who can open the back office, “My account” for the rest.',
+        'showSearch'           => 'Show the search box in the public site\'s header',
+        'sidebarColor' => 'Back-office sidebar colour',
+        'font'         => 'Font',
+        'fontSystem'   => 'System (sans-serif)',
+        'fontSerif'    => 'Serif',
+        'fontMono'     => 'Monospace',
+        'footerText'   => 'Footer text',
+        'footerColumns'     => 'Footer columns (on wide screens)',
+        'footerColumnsHelp' => 'When the footer menu has items with sub-items, each one is a column with its links.',
+        'footerContact'     => 'Footer contact column',
+        'footerContactHelp' => 'Address and contact details shown as the first footer column. Separate lines with |. Empty: no column.',
+        'cookieNotice' => 'Show the cookie notice',
+    ],
+    'cookies' => [
+        'label'  => 'Cookie notice',
+        'text'   => 'This site only uses the cookies it needs to work.',
+        'accept' => 'Close the cookie notice',
+    ],
+];

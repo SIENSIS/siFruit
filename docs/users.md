@@ -1,0 +1,183 @@
+# Users, groups and the permission matrix
+
+The **Users** module (core module, cannot be disabled) administers accounts, groups and grants
+(specification "Modules" › "Users", "RBAC"). It never writes permissions or groups by itself:
+accounts go through Shield, groups through the Core's `GroupRegistry`, group membership through
+Auth's `GroupRules`, and grants through the Core's `GrantManager`, so every escalation rule of
+`EscalationGuard` applies (`docs/permissions.md`).
+
+## Screens and permissions
+
+| Screen | URL | Permission |
+|---|---|---|
+| Users (kpcrudy) | `backend/users` | `users-users.list` (+ `show`, `add`, `edit`) |
+| Row operations | `backend/users/<op>/<masked id>` (POST) | `users-users.<op>` (below) |
+| Groups and permissions of a user | `backend/users/access/<id>` | `users-users.access` + `reauth` |
+| Groups (kpcrudy) | `backend/users/groups` | `users-groups.*` (changes need a re-authentication) |
+| Permission matrix | `backend/users/permissions` | `users-matrix.view`; saving `users-matrix.edit` + `reauth` |
+
+Default grants: `admin` gets every Users permission except `users-users.impersonate` (the
+superadmin, who bypasses the checks, is the only one who impersonates). Menu: "Users", "Groups"
+and "Permissions" in the `settings` zone. Names and URLs: D-15-01 (decided: the convention).
+
+## Users
+
+- **List and details:** user name, email (Shield's `email_password` identity), groups, 2FA method,
+  status (active, inactive, banned) and last activity; search by user name; filters "active",
+  "banned" and a range of last activity. Only columns of `users` can be searched or filtered: the
+  email, groups and 2FA live in other tables (kpcrudy request in `docs/library-requests.md`).
+- **Add:** user name, email and an initial password (Shield's local password rules). The account
+  is created by the CRUD, then `UserAccounts::completeNewAccount()` stores the identity through
+  Shield, adds the default group (`AuthGroups.defaultGroup`) and forces a password change at the
+  first login.
+- **Edit:** user name, email and "active" (nobody deactivates themselves). Administrators never
+  set another user's password: they force a password change instead.
+- **No deletion** (D-15-03): accounts are banned; Shield's soft-deleted rows are outside the CRUD.
+- **Row operations** (`addOperation`, POST with CSRF, masked ids):
+
+  | Key | What it does |
+  |---|---|
+  | `ban` | Ban/unban; a ban ends every session and remember-me token |
+  | `forcereset` | The user must change the password at the next request |
+  | `reset2fa` | Turns 2FA off (re-authentication; the user is notified, `TwoFactorReset`) |
+  | `logout` | Ends every session and remember-me token of the user |
+  | `impersonate` | Superadmins only, re-authentication (below) |
+  | `access` | Opens the groups and permissions screen |
+
+- **Who manages whom** (`EscalationGuard::canManageUser()`, D-15-04): superadmins manage every
+  account; anybody else only accounts that are not superadmins and hold nothing they do not hold
+  themselves (their groups' grants and individual permissions). Every operation but edit is
+  refused on one's own account. The buttons are hidden and the server refuses the same.
+
+## Groups and permissions of a user
+
+Checkboxes for the groups and for individual atomic permissions (enabled modules only). What the
+current user may not change is disabled, and the server applies the same rules (`UserAccess`):
+nobody changes their own access, only a superadmin assigns `superadmin` or touches a
+superadmin, a group can only be given by someone holding all its permissions, the last superadmin
+keeps the group, individual permissions only if the actor holds them. Saved in one transaction;
+the user's sessions are regenerated (`privilegesChanged`).
+
+## Groups
+
+kpcrudy over the Core `groups` table (`GroupRegistry`, D-15-02):
+
+- name (lower case, `[a-z][a-z0-9_-]{1,49}`, set once, never a reserved name), title, description
+  and the **2FA policy** (`optional` / `required`; a member of a required group must set up 2FA
+  after logging in);
+- every change is mirrored into `setting('AuthGroups.groups')` (Shield) with the policy as the
+  `twoFactor` key; a new group receives the grants every reserved group holds (profile, sessions,
+  my activity, notifications…);
+- reserved groups and groups with members cannot be deleted; deleting a group removes its grants;
+- only a superadmin edits the `superadmin` group; adding, editing and deleting need a
+  re-authentication.
+
+### Copying the groups to another site (D-42-04)
+
+To have a production site's groups on a development copy (for example to give a module made
+with the code generator default grants for them) without restoring a full backup, copy only the
+groups — never users or personal data — from the console:
+
+```bash
+php spark groups:export groups.json --grants     # on the source site (names, titles, descriptions, 2FA policy, grants)
+php spark groups:import groups.json --grants     # on the copy: asks for confirmation (--yes to skip)
+```
+
+The import creates the missing groups (with the common grants), updates the title, description
+and 2FA policy of the existing ones and, with `--grants`, replaces each group's grants by the
+exported permissions that exist on this site (wildcards included; others are listed as skipped).
+`superadmin` keeps every permission. It goes through `GrantManager` (`grants_changed`,
+`privilegesChanged`) and is logged as `groups_imported`. Code: `Modules\Core\Groups\GroupTransfer`.
+
+## Permission matrix
+
+One card per module, one row per resource, one column per group (`PermissionMatrix`, D-15-05):
+
+- each cell holds the resource's atomic operations and "All" (the resource wildcard
+  `<prefix>.*`); the quick selections "Read" (`list`, `show`, `view`) and "None" only tick
+  checkboxes (component `users/matrix`);
+- only atomic catalogue names and resource wildcards are accepted; any other posted name refuses
+  the whole save; grants the screen does not show (other wildcards, disabled modules) are kept;
+- saving completes the grants with their implied permissions (`edit` → `list`, `show`…);
+- the columns of the user's own groups and of `superadmin` are read-only (only superadmins
+  change them); every group is checked against the escalation rules first and all groups are
+  saved in one transaction, then Shield's matrix is rewritten;
+- a column that is not on the form is never changed (each editable column posts an empty
+  marker).
+
+## Impersonation
+
+See `docs/auth.md` › "Impersonation": superadmins only, never another superadmin, after a
+re-authentication, limited by `Users.impersonationMinutes` (30), with a banner and "Back to my
+account", sensitive actions refused meanwhile, start and end in the activity log.
+
+## Birthdays calendar
+
+Two calendars computed on the fly (calendar API, pull; `docs/calendar.md`; D-25-07, D-25-08):
+all-day events with the day and month only ("<name>'s birthday", never the year or the age; 29
+February shown on 28 February in common years) of active, non-banned users who entered a date of
+birth in their profile (`user_profiles.birth_date`, Auth). Nothing is stored; never on the public
+site.
+
+- **"Birthdays"** (`users.birthdays`, `Calendar/BirthdaysProvider.php`): a birthday is shown only
+  when **all** of these hold:
+  1. the setting `Users.birthdaysCalendar` is on (Settings › Users › Calendar; **off by default**);
+  2. the person **consented** in their profile ("Share my birthday in the calendar",
+     `user_profiles.share_birthday`, off by default; cleared without a date);
+  3. the viewer holds `users-birthdays.view` (default: every reserved group; remove it from a
+     group, e.g. students, so its members see no birthday at all);
+  4. one of the viewer's groups may see one of the person's groups: table
+     `group_birthday_audiences`, edited in **Users › Groups › "Sees the birthdays of"**. Defaults
+     (created with the table): each reserved group sees its own members, `admin` sees every
+     reserved group.
+- **"Birthdays (administration)"** (`users.birthdaysadmin`, `Calendar/AdminBirthdaysProvider.php`):
+  every date of birth, **whether or not it is shared**, for administrative work; only for holders
+  of `users-users.birthdate` (default: `admin`); hidden in the calendar view until the user shows
+  it; independent of the setting.
+- **The user's record** (Users › show) shows the full date of birth, whether it is shared, and
+  an hourglass icon whose tooltip gives the age in completed years (native `title`, no
+  JavaScript; also read by screen readers), only with `users-users.birthdate`.
+
+Example (a school): management (`admin`) sees every group; teachers (`editor`) see the teachers;
+students (`user`) without `users-birthdays.view` see nothing. A student's shared birthday is seen
+by the management, not by the teachers; an unshared one only in the administrative calendar and
+the record.
+
+## Birthday greetings
+
+On their birthday (site time zone; 29 February greeted on 28 February in common years), the
+members of the groups chosen in **Users › Groups › "Greet the members on their birthday"**
+(table `group_birthday_greetings`; none by default) receive the notification **"Birthday
+greeting"** (`Notifications/BirthdayGreeting.php`): in the bell by default, by email if they
+choose it, and each user can turn it off in their notification preferences. Once a year per user
+(`birthday_greetings_sent`, rows older than two years purged). The greeting only reaches the
+person (D-25-09).
+
+- Task `Tasks/SendBirthdayGreetings.php`, daily at `Users.birthdayGreetingTime` (`HH:MM`, default
+  08:00; a new value moves the task on the scheduler's next sync).
+- `Users.birthdayGreetingSharedOnly` (on by default): only users who share their birthday in the
+  calendar (privacy); off: every member of the greeted groups with a date of birth.
+- The message, `Users.birthdayGreeting` (type `translated`: one text per language of the site,
+  `{name}` = the user's name; default `Users.greetings.defaultMessage`); each user receives the
+  one of their language, or the Catalan one when their language has none. Settings › Users ›
+  "Birthday greetings". Session 31 merged the former `Users.birthdayGreetingCa|Es|En` (migration
+  `2026-11-17-100001_MergeBirthdayGreetingSettings`, D-25-10).
+- Service `Services/BirthdayGreetings.php`; tests `Tests/BirthdayGreetingsTest.php`.
+
+## Activity log
+
+CRUD writes are logged by `AuditedCrud`. The module adds `user_created`, `email_changed`,
+`user_banned`, `user_unbanned`, `reset_forced`, `logged_out_everywhere`, `access_refused`
+(labels `Users.activity.*`); the Core logs grant changes (`grants_changed`,
+`permissions_granted`, `permissions_revoked`), Auth group membership, 2FA resets and
+impersonation.
+
+## Tests
+
+`vendor/bin/phpunit modules/Users`: `UsersScreensTest` (adding through Shield, password rules,
+email changes, bans, forced resets, logout everywhere, 2FA reset with re-authentication,
+accounts stronger than the actor, forged POSTs), `ImpersonationTest` (superadmin only, never a
+superadmin or a banned user, re-authentication, banner and way back, time limit, sensitive
+actions refused, logout), `GroupsAndMatrixTest` (new groups, reserved names, deletion, 2FA
+policy, re-authentication, matrix saves atomic names and wildcards with implied permissions,
+escalation, a user's access).

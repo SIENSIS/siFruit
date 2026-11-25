@@ -1,0 +1,304 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Modules;
+
+use Closure;
+use CodeIgniter\I18n\Time;
+use Config\Database;
+use Modules\Core\Config\ModuleManifest;
+use Modules\Core\Demo\DemoDataManager;
+use Modules\Core\Frontend\AssetPublisher;
+use Modules\Core\Groups\GroupRegistry;
+use Modules\Core\Models\ModuleModel;
+use Modules\Core\Permissions\CatalogueBuilder;
+use Modules\Core\Permissions\DefaultGrants;
+use Modules\Core\Permissions\PermissionCatalogue;
+use Modules\Core\Permissions\ShieldMatrix;
+use Modules\Core\Registry\ApiRouteChecker;
+use Modules\Core\Registry\DeclarationRegistry;
+use Modules\Core\Registry\OpenApiDocument;
+use Modules\Core\Search\SearchIndex;
+use Modules\Core\Theme\ThemeValidator;
+
+/**
+ * `modules:sync` (see "Module lifecycle"): discovers and validates the modules, rewrites the
+ * generated namespaces file, runs migrations (packages first, then modules in dependency order),
+ * seeds new modules, upserts the registry, the permission catalogue, the default grants (first
+ * install only) and the declarations (settings, widgets, tasks…), optionally loads demo data and
+ * invalidates the derived caches. Idempotent: a second run changes nothing.
+ *
+ * Every check (manifests, dependencies, duplicate permissions, `$api` routes) runs before
+ * anything is written, the themes included (ThemeValidator). Step 7 publishes the assets of the
+ * Core, the modules and the themes and writes the asset manifest (AssetPublisher); step 10 writes
+ * the OpenAPI document of `api/v1` to `writable/api/openapi.json` (OpenApiDocument).
+ *
+ * Outside the `development` environment a development-only module (`$developmentOnly`, D-41-01)
+ * is installed disabled, and one found enabled is disabled (security log).
+ */
+final class ModuleSynchronizer
+{
+    public function __construct(
+        private readonly ModuleDiscovery $discovery = new ModuleDiscovery(),
+        private readonly NamespaceFile $namespaceFile = new NamespaceFile(),
+        private readonly ModuleMigrator $migrator = new ModuleMigrator(),
+        private readonly CacheInvalidator $caches = new CacheInvalidator(),
+        private readonly ?ModuleModel $registry = null,
+        private readonly PermissionCatalogue $permissions = new PermissionCatalogue(),
+        private readonly DeclarationRegistry $declarations = new DeclarationRegistry(),
+        private readonly ?DemoDataManager $demo = null,
+        private readonly ?ThemeValidator $themes = null,
+        private readonly ?AssetPublisher $assets = null,
+        private readonly ?OpenApiDocument $openApi = null,
+        private readonly ?bool $autoEnable = null,
+        private readonly DevelopmentOnly $developmentOnly = new DevelopmentOnly(),
+        private readonly ?SearchIndex $search = null,
+    ) {
+    }
+
+    /**
+     * @param bool                               $prune        Remove permissions no manifest generates any more…
+     * @param Closure(list<string>): bool|null   $confirmPrune …after this confirmation (required with $prune)
+     * @param list<string>|null                  $demo         Load the demo data of these modules (null: none; []: every enabled module with a demo seeder)
+     * @param (Closure(string, int, int, array<string, scalar>): void)|null $progress Told each step (code, done, total, params): `migrations`, `modules`, `permissions`, `settings`, `assets`, `groups`, `api` (the web installer's progress)
+     *
+     * @throws SyncFailedException when a manifest or a dependency is invalid (nothing is changed)
+     */
+    public function sync(bool $prune = false, ?Closure $confirmPrune = null, ?array $demo = null, ?Closure $progress = null): SyncReport
+    {
+        $report   = new SyncReport();
+        $progress ??= static function (string $code, int $done, int $total, array $params): void {
+        };
+
+        // 1. Discover, validate, check dependencies, permissions and API routes.
+        $modules = $this->discovery->discover();
+        [$manifests, $errors] = $this->validate($modules);
+
+        $builder   = new CatalogueBuilder();
+        $catalogue = $builder->build($manifests);
+        $errors    = [...$errors, ...$builder->errors()];
+
+        if ($errors === []) {
+            $errors = (new ApiRouteChecker())->check($manifests);
+        }
+
+        $errors = [...$errors, ...($this->themes ?? new ThemeValidator())->validateAll()];
+
+        if ($errors !== []) {
+            throw new SyncFailedException($errors);
+        }
+
+        $report->order = (new DependencyResolver())->order($manifests);
+
+        $folders = [];
+
+        foreach ($modules as $name => $module) {
+            $folders[$name] = $module->path;
+        }
+
+        $report->namespacesChanged = $this->namespaceFile->write($folders);
+
+        // 2. Migrations: third-party packages as they ship, then modules in dependency order.
+        $namespaces = [...ModuleMigrator::PACKAGE_NAMESPACES];
+
+        foreach ($report->order as $name) {
+            $namespaces[] = $modules[$name]->namespace;
+        }
+
+        foreach ($namespaces as $i => $namespace) {
+            $progress('migrations', $i + 1, count($namespaces), ['namespace' => $namespace]);
+            $report->migrations[$namespace] = $this->migrator->migrate($namespace);
+        }
+
+        // 2b/3. Seed on first install, then upsert the registry.
+        $registry = $this->registry ?? model(ModuleModel::class, false);
+        $known    = $registry->allByName();
+        $now      = Time::now()->toDateTimeString();
+        $enable   = $this->enablesNewModules($known === []);
+
+        foreach ($report->order as $i => $name) {
+            $manifest = $manifests[$name];
+            $progress('modules', $i + 1, count($report->order), ['module' => $name]);
+
+            if (! isset($known[$name])) {
+                if ($this->seed($name)) {
+                    $report->seeded[] = $name;
+                }
+
+                $registry->insert([
+                    'name'         => $name,
+                    'version'      => $manifest->version,
+                    'enabled'      => ($enable && $manifest->enabledByDefault && ! $this->developmentOnly->refuses($manifest)) || $name === 'Core' ? 1 : 0,
+                    'installed_at' => $now,
+                    'updated_at'   => $now,
+                ]);
+                $report->installed[$name] = $manifest->version;
+            } elseif ($known[$name]['version'] !== $manifest->version) {
+                $registry->update($known[$name]['id'], ['version' => $manifest->version, 'updated_at' => $now]);
+                $report->upgraded[$name] = [$known[$name]['version'], $manifest->version];
+            }
+
+            // 3b. A development-only module never stays enabled outside development (D-41-01).
+            if (isset($known[$name]) && $known[$name]['enabled'] && $this->developmentOnly->refuses($manifest)) {
+                $registry->update($known[$name]['id'], ['enabled' => 0, 'updated_at' => $now]);
+                $report->devOnlyDisabled[] = $name;
+                security_log('Core', 'devonly_disabled', ['resource' => 'modules', 'summary' => $name, 'changes' => ['environment' => ENVIRONMENT]]);
+            }
+        }
+
+        $report->missing = array_values(array_diff(array_keys($known), array_keys($modules)));
+
+        // 4. Permission catalogue; stale permissions are removed only with --prune + confirmation.
+        $progress('permissions', 0, 0, []);
+        $result                     = $this->permissions->upsert($catalogue);
+        $report->permissionsAdded   = $result['added'];
+        $report->permissionsUpdated = $result['updated'];
+        $report->stalePermissions   = $result['stale'];
+
+        if ($prune && $result['stale'] !== [] && $confirmPrune !== null && $confirmPrune($result['stale'])) {
+            $this->permissions->prune($result['stale']);
+            $report->pruned           = $result['stale'];
+            $report->stalePermissions = [];
+        }
+
+        // 5. Default grants (completed with the implied permissions), only once per module.
+        $grants = new DefaultGrants();
+
+        foreach ($registry->allByName() as $name => $row) {
+            if ($row['grants_applied'] || ! isset($manifests[$name])) {
+                continue;
+            }
+
+            $report->grantsApplied[$name] = $this->permissions->grant($grants->expand($manifests[$name]));
+            $registry->update($row['id'], ['grants_applied' => 1]);
+        }
+
+        // 6. Settings definitions, widgets, tasks, notification types, menu link types, calendars, API.
+        $progress('settings', 0, 0, []);
+        $ordered = [];
+
+        foreach ($report->order as $name) {
+            $ordered[$name] = $manifests[$name];
+        }
+
+        $report->declarationsChanged = $this->declarations->store($this->declarations->build($ordered));
+
+        // 7. Assets of the Core, the modules and the themes, and the asset manifest.
+        $progress('assets', 0, 0, []);
+        $report->assets = ($this->assets ?? new AssetPublisher())->publish();
+
+        // 8. Invalidate the caches derived from the manifests.
+        if ($report->hasChanges()) {
+            $this->caches->invalidate();
+        }
+
+        // 9. The reserved groups and Shield's groups, permissions and group matrix, computed
+        //    from the `groups` table, the catalogue and the grants.
+        $progress('groups', 0, 0, []);
+        $groups = new GroupRegistry($this->permissions);
+        $groups->ensureReserved();
+        $groups->mirror();
+        (new ShieldMatrix($this->permissions))->write();
+
+        // 10. The OpenAPI document of api/v1 (writable/api/openapi.json), after the catalogue and
+        //     the declarations so every resource describes itself with the current manifests.
+        $progress('api', 0, 0, []);
+        $openApi                 = ($this->openApi ?? new OpenApiDocument())->write();
+        $report->openApiChanged  = $openApi['changed'];
+        $report->openApiPaths    = $openApi['paths'];
+        $report->openApiWarnings = $openApi['warnings'];
+
+        // Demo data (optional): after the caches, so the registry is current.
+        if ($demo !== null) {
+            $manager = $this->demo ?? new DemoDataManager();
+            $manager->assertAllowed();
+
+            foreach ($demo === [] ? $manager->modulesWithDemo() : $demo as $module) {
+                if ($manager->load($module)) {
+                    $report->demoLoaded[] = $module;
+                }
+            }
+
+            $report->demoSecrets = $manager->takeSecrets();
+        }
+
+        // 11. The site search index, rebuilt from the search sources of the enabled modules
+        //     (D-50-01, docs/search.md), after the demo data so it is found too.
+        $progress('search', 0, 0, []);
+        $report->searchIndexed = array_sum(($this->search ?? service('search'))->reindex());
+
+        return $report;
+    }
+
+    /**
+     * @param array<string, DiscoveredModule> $modules
+     *
+     * @return array{0: array<string, ModuleManifest>, 1: list<string>}
+     */
+    private function validate(array $modules): array
+    {
+        $manifests = [];
+        $errors    = [];
+        $prefixes  = [];
+
+        if (! isset($modules['Core'])) {
+            $errors[] = lang('Core.sync.coreMissing');
+        }
+
+        foreach ($modules as $name => $module) {
+            array_push($errors, ...$module->errors);
+
+            if ($module->manifest === null) {
+                continue;
+            }
+
+            $manifests[$name] = $module->manifest;
+
+            // Permission prefixes must be unique across modules (resource 'name' overrides).
+            foreach (array_keys($module->manifest->resources) as $resource) {
+                $prefix = $module->manifest->permissionPrefix((string) $resource);
+
+                if (isset($prefixes[$prefix]) && $prefixes[$prefix] !== $name) {
+                    $errors[] = lang('Core.manifest.error', [$name, "\$resources['{$resource}']", lang('Core.manifest.duplicatePrefix', [$prefix, $prefixes[$prefix]])]);
+                }
+
+                $prefixes[$prefix] = $name;
+            }
+        }
+
+        $resolver = new DependencyResolver();
+        $resolver->order($manifests);
+
+        return [$manifests, array_merge($errors, $resolver->errors())];
+    }
+
+    /**
+     * Whether modules found for the first time are enabled (D-29-02): always on the first sync of
+     * an installation and outside production; in production only with `Packages.autoEnable`.
+     * A module installed with `modules:install --enable` is enabled by the installer.
+     */
+    private function enablesNewModules(bool $firstSync): bool
+    {
+        if ($this->autoEnable !== null) {
+            return $this->autoEnable || $firstSync;
+        }
+
+        return $firstSync || ENVIRONMENT !== 'production' || (bool) config('Packages')->autoEnable;
+    }
+
+    private function seed(string $module): bool
+    {
+        $class = "Modules\\{$module}\\Database\\Seeds\\{$module}Seeder";
+
+        if (! class_exists($class)) {
+            return false;
+        }
+
+        $seeder = Database::seeder();
+        $seeder->setSilent(true);
+        $seeder->call($class);
+
+        return true;
+    }
+}

@@ -1,0 +1,321 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Demo;
+
+use CodeIgniter\Database\BaseConnection;
+use Config\Database;
+use Modules\Core\Models\ModuleModel;
+
+/**
+ * Loads, removes and reloads the demo data of a module (`modules:demo`, `modules:sync --demo`,
+ * later the installer and the Modules screen).
+ *
+ * - Loading runs `Modules\<Name>\Database\Seeds\<Name>DemoSeeder` (a DemoSeeder) in a
+ *   transaction; it is idempotent: a module whose demo data is loaded is skipped.
+ * - Removing deletes exactly the recorded rows (newest first, so children go before parents) and
+ *   files; a row that other data now depends on is kept and reported.
+ * - With CI_ENVIRONMENT=production both are refused unless `Packages.allowDemoInProduction`.
+ */
+final class DemoDataManager
+{
+    /**
+     * One-time secrets of the demo data loaded by this instance (see takeSecrets()).
+     *
+     * @var array<string, string>
+     */
+    private array $secrets = [];
+
+    /**
+     * @param BaseConnection<object|resource, object|resource>|null $db Default: the default connection
+     */
+    public function __construct(
+        private readonly ?BaseConnection $db = null,
+        private readonly string $environment = ENVIRONMENT,
+        private readonly ?ModuleModel $registry = null,
+    ) {
+    }
+
+    /**
+     * @throws DemoDataException in production unless the setting allows it
+     */
+    public function assertAllowed(): void
+    {
+        if ($this->environment === 'production' && setting('Packages.allowDemoInProduction') !== true) {
+            throw new DemoDataException(lang('Core.demo.refusedProduction'));
+        }
+    }
+
+    public static function seederClass(string $module): string
+    {
+        return "Modules\\{$module}\\Database\\Seeds\\{$module}DemoSeeder";
+    }
+
+    public function hasSeeder(string $module): bool
+    {
+        $class = self::seederClass($module);
+
+        return class_exists($class) && is_subclass_of($class, DemoSeeder::class);
+    }
+
+    public function isLoaded(string $module): bool
+    {
+        return $this->db()->table('demo_records')->where('module', $module)->countAllResults() > 0;
+    }
+
+    /**
+     * Modules whose demo data is loaded.
+     *
+     * @return list<string>
+     */
+    public function loadedModules(): array
+    {
+        $rows = $this->db()->table('demo_records')->select('module')->distinct()->orderBy('module')->get()->getResultArray();
+
+        return array_map(static fn (array $row): string => (string) $row['module'], $rows);
+    }
+
+    /**
+     * Enabled modules that ship a demo seeder.
+     *
+     * @return list<string>
+     */
+    public function modulesWithDemo(): array
+    {
+        $modules = [];
+
+        foreach ($this->registry()->allByName() as $name => $row) {
+            if ($row['enabled'] && $this->hasSeeder($name)) {
+                $modules[] = $name;
+            }
+        }
+
+        return self::ordered($modules);
+    }
+
+    /**
+     * Modules in name order, each after the modules its seeder names in `AFTER` (when they are
+     * in the list; a cycle keeps the name order).
+     *
+     * @param list<string> $modules
+     *
+     * @return list<string>
+     */
+    public static function ordered(array $modules): array
+    {
+        $ordered = [];
+        $pending = $modules;
+
+        while ($pending !== []) {
+            $progress = false;
+
+            foreach ($pending as $i => $module) {
+                $class = self::seederClass($module);
+                $after = class_exists($class) && defined($class . '::AFTER') ? (array) constant($class . '::AFTER') : [];
+                $wait  = array_diff(array_intersect($after, $modules), $ordered);
+
+                if ($wait === []) {
+                    $ordered[] = $module;
+                    unset($pending[$i]);
+                    $progress = true;
+                }
+            }
+
+            if (! $progress) {
+                return [...$ordered, ...array_values($pending)];
+            }
+        }
+
+        return $ordered;
+    }
+
+    /**
+     * @return bool False when the demo data of the module was already loaded
+     *
+     * @throws DemoDataException
+     */
+    public function load(string $module): bool
+    {
+        $this->assertAllowed();
+        $this->assertEnabled($module);
+
+        if (! $this->hasSeeder($module)) {
+            throw new DemoDataException(lang('Core.demo.noSeeder', [$module, self::seederClass($module)]));
+        }
+
+        if ($this->isLoaded($module)) {
+            return false;
+        }
+
+        $class  = self::seederClass($module);
+        $db     = $this->db();
+        $seeder = new $class(config('Database'), $db);
+        \assert($seeder instanceof DemoSeeder);
+
+        // A failed transaction earlier on this connection leaves transStatus false, which would
+        // make transComplete() roll back silently.
+        $db->resetTransStatus()->transException(true)->transStart();
+
+        $demo = new DemoData($module, $db);
+
+        try {
+            $seeder->load($demo);
+
+            if (! $db->transComplete()) {
+                throw new \RuntimeException(lang('Core.demo.notCommitted'));
+            }
+        } catch (\Throwable $e) {
+            $db->transRollback();
+
+            throw new DemoDataException(lang('Core.demo.loadFailed', [$module, $e->getMessage()]), 0, $e);
+        } finally {
+            $db->transException(false);
+        }
+
+        // The secrets (demo passwords) are kept in memory only, to be shown once; never logged.
+        $this->secrets = array_merge($this->secrets, $demo->secrets());
+
+        $this->reindexSearch($module);
+        activity_log('Core', 'demo_loaded', ['resource' => 'modules', 'summary' => $module]);
+
+        return true;
+    }
+
+    /**
+     * Returns and forgets the one-time secrets (e.g. demo users' random passwords) of the demo
+     * data loaded so far, label => value: show them once, never store or log them.
+     *
+     * @return array<string, string>
+     */
+    public function takeSecrets(): array
+    {
+        $secrets       = $this->secrets;
+        $this->secrets = [];
+
+        return $secrets;
+    }
+
+    /**
+     * @throws DemoDataException
+     */
+    public function remove(string $module): DemoRemoval
+    {
+        $this->assertAllowed();
+
+        $db      = $this->db();
+        $removal = new DemoRemoval();
+        $records = $db->table('demo_records')->where('module', $module)->orderBy('id', 'DESC')->get()->getResultArray();
+
+        foreach ($records as $record) {
+            if ($record['file_path'] !== null) {
+                if ($this->deleteFile((string) $record['file_path'])) {
+                    $removal->files++;
+                }
+            } elseif (! $this->deleteRow((string) $record['table_name'], (string) $record['key_column'], (string) $record['record_id'], $removal)) {
+                continue; // kept: the record stays so the row is still known as demo data
+            }
+
+            $db->table('demo_records')->where('id', $record['id'])->delete();
+        }
+
+        $this->reindexSearch($module);
+        activity_log('Core', 'demo_removed', ['resource' => 'modules', 'summary' => $module]);
+
+        return $removal;
+    }
+
+    /**
+     * Removes and loads the demo data again. If some rows had to be kept, nothing is loaded.
+     */
+    public function reload(string $module): DemoRemoval
+    {
+        $removal = $this->remove($module);
+
+        if ($removal->kept === []) {
+            $this->load($module);
+        }
+
+        return $removal;
+    }
+
+    /**
+     * Rebuilds the module's site search sources after its demo data came or went (D-50-01). A
+     * failure is not the demo's: it is logged and `search:reindex` repairs it.
+     */
+    private function reindexSearch(string $module): void
+    {
+        try {
+            service('search')->reindex($module);
+        } catch (\Throwable $e) {
+            log_message('error', 'Search reindex after the demo data of {module} failed: {message}', ['module' => $module, 'message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * @return bool False when the row was kept because other data depends on it
+     */
+    private function deleteRow(string $table, string $keyColumn, string $id, DemoRemoval $removal): bool
+    {
+        $db = $this->db();
+
+        if (! $db->tableExists($db->prefixTable($table), false)) {
+            return true;
+        }
+
+        try {
+            $db->table($table)->where($keyColumn, $id)->delete();
+        } catch (\Throwable) {
+            $removal->kept[] = "{$table}#{$id}";
+
+            return false;
+        }
+
+        if ($db->affectedRows() > 0) {
+            $removal->rows++;
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes a recorded file, only inside WRITEPATH.
+     */
+    private function deleteFile(string $path): bool
+    {
+        $file = realpath(WRITEPATH . $path);
+        $root = realpath(WRITEPATH);
+
+        if ($file === false || $root === false || ! str_starts_with($file, $root . DIRECTORY_SEPARATOR) || ! is_file($file)) {
+            return false;
+        }
+
+        return unlink($file);
+    }
+
+    private function assertEnabled(string $module): void
+    {
+        $row = $this->registry()->allByName()[$module] ?? null;
+
+        if ($row === null) {
+            throw new DemoDataException(lang('Core.toggle.notInstalled', [$module]));
+        }
+
+        if (! $row['enabled']) {
+            throw new DemoDataException(lang('Core.demo.disabled', [$module]));
+        }
+    }
+
+    private function registry(): ModuleModel
+    {
+        return $this->registry ?? model(ModuleModel::class, false);
+    }
+
+    /**
+     * @return BaseConnection<object|resource, object|resource>
+     */
+    private function db(): BaseConnection
+    {
+        return $this->db ?? Database::connect();
+    }
+}
