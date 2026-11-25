@@ -148,6 +148,29 @@ The archive contains the development-only `Devtools` module (`modules/Devtools`,
 repository): it is inert in production (no routes, never enabled; `security:check` reports it if
 it ever is). Do not remove it from the archive; see [`devtools.md`](devtools.md).
 
+### With the script (Windows PowerShell)
+
+`tools/release.ps1` does steps 2–4 on the owner's computer, in this repository and in the projects
+built on it (kpEdu, siFruit: it reads the name from `composer.json` and the GitHub repository from
+`origin`). It checks that `main` is clean and equal to `origin/main`, that the tag is new and that
+`CHANGELOG.md` has the version's section (in kpskeletor also `Version::CORE`), then creates and
+verifies the signed tag (`git tag -s`, GPG or SSH as git is configured), builds
+`<name>-<version>.zip` from it with its `.sha256` and minisign `.minisig` (both verified) and
+publishes the GitHub release with the changelog section as notes. It needs `git`, `minisign` and
+the GitHub CLI `gh` (`gh auth login`); minisign and git ask for their passwords, nothing is stored.
+
+```bash
+powershell -ExecutionPolicy Bypass -File tools\release.ps1 -Version 1.2.0 -DryRun
+```
+```bash
+powershell -ExecutionPolicy Bypass -File tools\release.ps1 -Version 1.2.0
+```
+
+Options: `-SecretKey` (default `%USERPROFILE%\.minisign\kpskeletor.key`), `-PublicKey` (default:
+the `.pub` next to it, `minisign.pub` there or in the repository root), `-Commit` (default
+`origin/main`), `-OutDir` (default `writable\releases`), `-NotesFile`. `-Module <Name>` publishes a
+module package instead ([`installing-modules.md`](installing-modules.md), "Publishing a package").
+
 ## Signing releases (the owner)
 
 Releases are signed with **Ed25519** in the [minisign](https://jedisct1.github.io/minisign/)
