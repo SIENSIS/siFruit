@@ -112,6 +112,14 @@ with `sha256sum -c`. The public key the command prints (`RW…`, the second line
 `minisign.pub`) goes in `$publicKeys` of `app/Config/Packages.php` on every site that installs the
 publisher's packages. The secret key never leaves the publisher's computer.
 
+On the owner's Windows computer, `tools/release.ps1 -Module <Name>` (or `-Module <slug> -Theme`)
+runs `modules:package --sign`, verifies the checksum and the signature, creates the signed git tag
+`<Name>-v<version>` (`theme-<slug>-v<version>` for a theme; not a semantic-version tag, so
+`app:update` never offers it) and publishes a GitHub release that is not marked as the latest,
+with the three files ([`updates.md`](updates.md), "With the script"). It works in kpskeletor and
+in the projects built on it, so a module shared by several projects is published once and
+installed with `modules:install` from its release URL.
+
 The install (`PackageInstaller`) then checks dependencies and the Core version, refuses a module
 of another **author** (`$author` in the manifest) and a downgrade or the same version unless
 `--force`, and:

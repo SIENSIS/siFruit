@@ -16,6 +16,8 @@ manifest.
 
 ### Added
 
+- **`tools/release.ps1`**: signs and publishes application releases and module or theme packages
+  from Windows (`docs/updates.md`, "With the script"; upstream kpskeletor `5fe080b`).
 - siFruit starts from **kpskeletor 1.1.0** (`c5ff670`, https://github.com/SIENSIS/kpskeletor): the
   Core and the modules of the skeleton, without kpskeletor's build sessions and reports. Its
   history is in [kpskeletor's changelog](https://github.com/SIENSIS/kpskeletor/blob/main/CHANGELOG.md).
