@@ -374,16 +374,16 @@
         },
         {
             "name": "codeigniter4/translations",
-            "version": "v4.7.4",
+            "version": "v4.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/codeigniter4/translations.git",
-                "reference": "a5df30934aa25a65bc1f78e6462b47fae0a0179a"
+                "reference": "f87ddac626f71015e44b99c1f81c087082f5a0cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codeigniter4/translations/zipball/a5df30934aa25a65bc1f78e6462b47fae0a0179a",
-                "reference": "a5df30934aa25a65bc1f78e6462b47fae0a0179a",
+                "url": "https://api.github.com/repos/codeigniter4/translations/zipball/f87ddac626f71015e44b99c1f81c087082f5a0cd",
+                "reference": "f87ddac626f71015e44b99c1f81c087082f5a0cd",
                 "shasum": ""
             },
             "require": {
@@ -396,7 +396,7 @@
                 "ext-tokenizer": "*",
                 "friendsofphp/php-cs-fixer": "^3.53",
                 "nexusphp/cs-config": "^3.22",
-                "phpunit/phpunit": "^11.5 || ^12.5"
+                "phpunit/phpunit": "^11.5 || ^12.5 || ^13.4.5"
             },
             "type": "project",
             "extra": {
@@ -421,7 +421,7 @@
                 "slack": "https://codeigniterchat.slack.com",
                 "source": "https://github.com/codeigniter4/translations"
             },
-            "time": "2026-08-05T12:38:16+00:00"
+            "time": "2026-11-18T11:32:03+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
