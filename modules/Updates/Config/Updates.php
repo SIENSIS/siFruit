@@ -31,9 +31,10 @@ class Updates extends BaseConfig
     /**
      * Minisign public keys (the base64 line of `minisign.pub`, starting with `RW`) trusted for
      * release archives, comma separated: two keys during a key rotation; empty = every update is
-     * refused. `.env`: `updates.publicKeys = RW…,RW…`.
+     * refused. `.env`: `updates.publicKeys = RW…,RW…`. Default: the key of kpskeletor's owner
+     * (releases from 1.1.0, `docs/updates.md` "Signing releases").
      */
-    public string $publicKeys = '';
+    public string $publicKeys = 'RWQnDO+3LwpRMySktACY0pBcmiPrViANxFv1gIhHzUS9qbwWuwPHs5hG';
 
     /** Offer pre-releases (`1.2.0-beta.1`) too. */
     public bool $prereleases = false;

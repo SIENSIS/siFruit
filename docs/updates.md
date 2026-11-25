@@ -11,7 +11,7 @@ release. Specification: "Modules" › "Updates"; decisions D-00-48, D-28-01 … 
 |---|---|---|
 | `updates.repository` | empty | Where the application's releases are published: `github:owner/repo`, `gitlab:group/project` (gitlab.com) or `https://gitlab.example.com/group/project`. Empty = no check for the application. |
 | `updates.token` | empty | Token for a private repository (GitHub: a fine-grained token with *Contents: read*; GitLab: `read_api`). Only in `.env`. |
-| `updates.publicKeys` | the owner's key shipped in `Config\Updates` (empty until the owner provides it) | The minisign public key(s) trusted for release archives (the base64 line of `minisign.pub`, `RW…`), comma separated; `.env` replaces the shipped list. **Empty = every archive update is refused.** |
+| `updates.publicKeys` | the owner's key shipped in `Config\Updates` (`RWQnDO+3…`, since 1.1.0) | The minisign public key(s) trusted for release archives (the base64 line of `minisign.pub`, `RW…`), comma separated; `.env` replaces the shipped list. **Empty = every archive update is refused.** |
 | `updates.prereleases` | `false` | Offer pre-releases (`1.2.0-rc.1`). |
 | `updates.method` | `auto` | `auto` (a git checkout updates with git, anything else with the archive), `archive` or `git`. |
 | `updates.gitRemote` | `origin` | Remote fetched by the git method. |
