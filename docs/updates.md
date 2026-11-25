@@ -157,8 +157,9 @@ from `composer.json` and the GitHub repository from `origin`). It asks:
 1. **What to publish:** a version of the application, a module package or a theme package (chosen
    from the list of `modules/` or `themes/` with their versions);
 2. **Test or publish:** "Test" runs every check and prints the commands without changing anything;
-3. **The version** (application): it suggests the newest `## [X.Y.Z]` section of `CHANGELOG.md`
-   without a tag; then asks for confirmation.
+3. **The version** (application): the newest `## [X.Y.Z]` section of `CHANGELOG.md`, which must
+   not have a tag yet (otherwise it stops: write the new version's section first); then asks for
+   confirmation.
 
 It checks that `main` is clean and equal to `origin/main`, that the tag is new and, in
 kpskeletor, that `Version::CORE` is the version; then creates and verifies the signed tag

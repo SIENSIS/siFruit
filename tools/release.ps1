@@ -7,7 +7,7 @@
     It asks what to publish and suggests every value it can find:
 
     Application release
-      - version: the newest "## [X.Y.Z]" section of CHANGELOG.md that has no tag yet;
+      - version: the newest "## [X.Y.Z]" section of CHANGELOG.md (it must not have a tag yet);
       - checks: clean main equal to origin/main, new tag, in kpskeletor Version::CORE = X.Y.Z;
       - signed annotated tag vX.Y.Z (git tag -s: GPG or SSH, as git is configured), verified and
         pushed; <name>-X.Y.Z.zip from the tag (git archive), <zip>.sha256 and the minisign
@@ -224,19 +224,17 @@ if ($kind -eq 0) {
             $versions += $Matches[1]
         }
     }
-    $suggested = ''
-    foreach ($v in $versions) {
-        if (-not (Test-TagExists "v$v")) {
-            $suggested = $v
-            break
-        }
+    if ($versions.Count -eq 0) {
+        Fail 'CHANGELOG.md has no version section (## [X.Y.Z] - <date>).'
     }
-    if ($suggested -eq '') {
-        Fail "Every version of CHANGELOG.md has its tag already. Move the [Unreleased] changes to a new section '## [X.Y.Z] - <date>'$(if ($name -eq 'kpskeletor') { ', raise Version::CORE' }), merge it into main, and run this again."
+    # Only the newest section can be released: an older one without a tag is history, not a release.
+    $newest = $versions[0]
+    if (Test-TagExists "v$newest") {
+        Fail "The newest version of CHANGELOG.md ($newest) is already published. To release a new one: move the [Unreleased] changes to a new section '## [X.Y.Z] - <date>'$(if ($name -eq 'kpskeletor') { ', raise Version::CORE' }), merge it into main, and run this again."
     }
-    $version = Ask 'Version' $suggested
-    if ($versions -notcontains $version) {
-        Fail "CHANGELOG.md has no section '## [$version]'."
+    $version = Ask 'Version' $newest
+    if ($version -ne $newest) {
+        Fail "Only the newest section of CHANGELOG.md ($newest) can be released."
     }
     $tag = "v$version"
     if (Test-TagExists $tag) {
